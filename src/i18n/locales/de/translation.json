@@ -1,0 +1,41 @@
+{
+  "appTitle": "Jog-Steuerung Spielplatz",
+  "appSubtitle": "Modulares CNC-Steuerungssystem mit Zustandsverwaltung",
+  "footer": "CNC-Steuerungssystem ©{{year}} Modulare Architektur",
+  "status": {
+    "connected": "Verbunden",
+    "disconnected": "Getrennt",
+    "connecting": "Verbinden...",
+    "error": "Fehler"
+  },
+  "position": {
+    "current": "Aktuelle Position",
+    "x": "X",
+    "y": "Y", 
+    "z": "Z",
+    "coordinates": "X:{{x}} Y:{{y}} Z:{{z}}",
+    "unit": {
+      "mm": "mm",
+      "in": "Zoll"
+    }
+  },
+  "axis": {
+    "x": "X-Achse",
+    "y": "Y-Achse",
+    "z": "Z-Achse",
+    "highlighted": "{{axis}}-Achse Aktiv"
+  },
+  "common": {
+    "loading": "Laden...",
+    "error": "Fehler",
+    "success": "Erfolgreich",
+    "cancel": "Abbrechen",
+    "ok": "OK",
+    "close": "Schließen",
+    "save": "Speichern",
+    "reset": "Zurücksetzen",
+    "home": "Home",
+    "settings": "Einstellungen",
+    "help": "Hilfe"
+  }
+}

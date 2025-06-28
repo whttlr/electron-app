@@ -1,0 +1,71 @@
+{
+  "errors": {
+    "connection": {
+      "failed": "Verbindung zur Maschine fehlgeschlagen",
+      "lost": "Verbindung zur Maschine verloren", 
+      "timeout": "Verbindungstimeout",
+      "unavailable": "Maschine nicht verfügbar"
+    },
+    "jog": {
+      "failed": "Jog-Befehl fehlgeschlagen",
+      "outOfBounds": "Bewegung würde Maschinengrenzen überschreiten",
+      "notConnected": "Maschine nicht verbunden",
+      "invalidAxis": "Ungültige Achse angegeben",
+      "invalidDistance": "Ungültige Jog-Distanz"
+    },
+    "home": {
+      "failed": "Referenzfahrt fehlgeschlagen",
+      "timeout": "Referenzfahrt-Timeout",
+      "interrupted": "Referenzfahrt unterbrochen"
+    },
+    "general": {
+      "unknown": "Ein unbekannter Fehler ist aufgetreten",
+      "timeout": "Operation-Timeout",
+      "cancelled": "Operation abgebrochen"
+    }
+  },
+  "success": {
+    "connection": {
+      "established": "Erfolgreich mit der Maschine verbunden",
+      "disconnected": "Erfolgreich von der Maschine getrennt"
+    },
+    "jog": {
+      "completed": "Jog-Bewegung abgeschlossen",
+      "started": "Jog-Bewegung gestartet"
+    },
+    "home": {
+      "completed": "Referenzfahrt abgeschlossen",
+      "started": "Referenzfahrt gestartet"
+    },
+    "settings": {
+      "saved": "Einstellungen erfolgreich gespeichert",
+      "reset": "Einstellungen auf Standardwerte zurückgesetzt"
+    }
+  },
+  "warnings": {
+    "limits": {
+      "approaching": "Annäherung an Maschinengrenzen",
+      "reached": "Maschinengrenzen erreicht"
+    },
+    "speed": {
+      "high": "Hohe Jog-Geschwindigkeit ausgewählt - Vorsicht verwenden",
+      "low": "Sehr niedrige Jog-Geschwindigkeit ausgewählt"
+    },
+    "connection": {
+      "unstable": "Verbindung instabil",
+      "slow": "Verbindung reagiert langsam"
+    }
+  },
+  "info": {
+    "startup": "System initialisiert...",
+    "ready": "System bereit",
+    "calibrating": "Maschine kalibrieren...",
+    "standby": "Maschine im Standby-Modus"
+  },
+  "placeholders": {
+    "homePosition": "Maschinen-Referenzfahrt und Kalibrierungssteuerungen würden hier erscheinen.",
+    "machineSettings": "Maschinenkonfiguration und Parameter würden hier erscheinen.",
+    "debugTools": "Debug- und Diagnose-Tools würden hier erscheinen.",
+    "preview3D": "3D-Vorschaubereich"
+  }
+}

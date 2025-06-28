@@ -1,0 +1,44 @@
+{
+  "endpoints": {
+    "base": "http://localhost:3001/api",
+    "machine": {
+      "status": "/machine/status",
+      "position": "/machine/position",
+      "connect": "/machine/connect",
+      "disconnect": "/machine/disconnect",
+      "home": "/machine/home",
+      "jog": "/machine/jog",
+      "settings": "/machine/settings"
+    },
+    "workspace": {
+      "dimensions": "/workspace/dimensions",
+      "bounds": "/workspace/bounds",
+      "settings": "/workspace/settings"
+    },
+    "system": {
+      "health": "/system/health",
+      "version": "/system/version",
+      "diagnostics": "/system/diagnostics"
+    }
+  },
+  "timeouts": {
+    "default": 5000,
+    "position": 1000,
+    "status": 2000,
+    "connection": 10000
+  },
+  "retries": {
+    "maxAttempts": 3,
+    "delay": 1000,
+    "backoffMultiplier": 2
+  },
+  "mock": {
+    "enabled": true,
+    "simulateLatency": true,
+    "latencyRange": {
+      "min": 50,
+      "max": 200
+    },
+    "errorRate": 0.02
+  }
+}

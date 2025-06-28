@@ -1,0 +1,123 @@
+{
+  "defaultDimensions": {
+    "width": 250,
+    "height": 100,
+    "depth": 50
+  },
+  "defaultPosition": {
+    "x": 10,
+    "y": 0,
+    "z": 0
+  },
+  "jogSettings": {
+    "defaultSpeed": 1000,
+    "maxSpeed": 5000,
+    "minSpeed": 1,
+    "metricIncrements": [0.001, 0.01, 0.1, 1, 10, 50, 100],
+    "imperialIncrements": [0.396875, 0.79375, 1.5875, 3.175, 6.35, 12.7, 25.4]
+  },
+  "scaling": {
+    "machineScaleFactor": 50,
+    "visualScale": 0.02
+  },
+  "movement": {
+    "minSpeed": 1,
+    "maxSpeed": 5000,
+    "defaultSpeed": 1000,
+    "acceleration": 100
+  },
+  "features": {
+    "workCoordinateSystems": {
+      "enabled": true,
+      "supportedSystems": ["G54", "G55", "G56", "G57", "G58", "G59"],
+      "defaultSystem": "G54",
+      "maxSystems": 6
+    },
+    "toolDirection": {
+      "enabled": true,
+      "defaultDirection": "clockwise",
+      "supportedDirections": ["clockwise", "counterclockwise"],
+      "commandCodes": {
+        "clockwise": "M03",
+        "counterclockwise": "M04",
+        "stop": "M05"
+      }
+    },
+    "spindleControl": {
+      "enabled": true,
+      "minRPM": 0,
+      "maxRPM": 24000,
+      "defaultRPM": 1000,
+      "stepSize": 100,
+      "hasVariableSpeed": true,
+      "coolantControl": {
+        "enabled": true,
+        "floodCoolant": "M08",
+        "mistCoolant": "M07",
+        "coolantOff": "M09"
+      }
+    },
+    "probing": {
+      "enabled": true,
+      "probeCommands": {
+        "straightProbe": "G38.2",
+        "probeTowardWorkpiece": "G38.3",
+        "probeAwayFromWorkpiece": "G38.4",
+        "probeAwayNoError": "G38.5"
+      },
+      "defaultFeedRate": 100,
+      "retractDistance": 2
+    },
+    "coordinateDisplay": {
+      "showMachineCoordinates": true,
+      "showWorkCoordinates": true,
+      "defaultCoordinateDisplay": "work",
+      "precision": 3
+    },
+    "safetyFeatures": {
+      "softLimits": true,
+      "hardLimits": true,
+      "emergencyStop": true,
+      "feedHold": true,
+      "cycleStart": true,
+      "doorSafety": false
+    }
+  },
+  "gCodeSettings": {
+    "modalGroups": {
+      "motionModes": ["G00", "G01", "G02", "G03"],
+      "coordinateSystems": ["G54", "G55", "G56", "G57", "G58", "G59"],
+      "planeSelection": ["G17", "G18", "G19"],
+      "units": ["G20", "G21"],
+      "distanceMode": ["G90", "G91"],
+      "feedRateMode": ["G93", "G94"]
+    },
+    "defaultSettings": {
+      "motionMode": "G01",
+      "coordinateSystem": "G54",
+      "planeSelection": "G17",
+      "units": "G21",
+      "distanceMode": "G90",
+      "feedRateMode": "G94"
+    }
+  },
+  "machineCapabilities": {
+    "axes": ["X", "Y", "Z"],
+    "simultaneousAxes": 3,
+    "interpolation": {
+      "linear": true,
+      "circular": true,
+      "helical": true
+    },
+    "feedRates": {
+      "rapid": 8000,
+      "maxFeed": 5000,
+      "minFeed": 1
+    },
+    "resolution": {
+      "X": 0.001,
+      "Y": 0.001,
+      "Z": 0.001
+    }
+  }
+}

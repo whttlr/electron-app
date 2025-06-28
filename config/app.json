@@ -1,0 +1,14 @@
+{
+  "name": "jog-controls-playground",
+  "version": "0.1.0",
+  "environment": "development",
+  "features": {
+    "debugPanel": true,
+    "advancedControls": true,
+    "3dVisualization": true
+  },
+  "performance": {
+    "renderInterval": 16,
+    "maxFPS": 60
+  }
+}

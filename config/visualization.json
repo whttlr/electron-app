@@ -1,0 +1,28 @@
+{
+  "preview2D": {
+    "canvasSize": {
+      "width": 400,
+      "height": 300
+    },
+    "gridLines": true,
+    "showAxes": true,
+    "backgroundColor": "#f5f5f5"
+  },
+  "preview3D": {
+    "camera": {
+      "fov": 75,
+      "near": 0.1,
+      "far": 1000,
+      "position": [2, 2, 2]
+    },
+    "lighting": {
+      "ambientIntensity": 0.6,
+      "directionalIntensity": 0.8
+    },
+    "materials": {
+      "machineColor": "#666666",
+      "toolColor": "#ff6b6b",
+      "gridColor": "#cccccc"
+    }
+  }
+}

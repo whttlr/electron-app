@@ -1,0 +1,41 @@
+{
+  "appTitle": "Entorno de Controles de Desplazamiento",
+  "appSubtitle": "Sistema de Control CNC Modular con Gestión de Estado",
+  "footer": "Sistema de Control CNC ©{{year}} Arquitectura Modular",
+  "status": {
+    "connected": "Conectado",
+    "disconnected": "Desconectado",
+    "connecting": "Conectando...",
+    "error": "Error"
+  },
+  "position": {
+    "current": "Posición Actual",
+    "x": "X",
+    "y": "Y", 
+    "z": "Z",
+    "coordinates": "X:{{x}} Y:{{y}} Z:{{z}}",
+    "unit": {
+      "mm": "mm",
+      "in": "pulg"
+    }
+  },
+  "axis": {
+    "x": "Eje X",
+    "y": "Eje Y",
+    "z": "Eje Z",
+    "highlighted": "Eje {{axis}} Activo"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "cancel": "Cancelar",
+    "ok": "OK",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "reset": "Reiniciar",
+    "home": "Inicio",
+    "settings": "Configuración",
+    "help": "Ayuda"
+  }
+}

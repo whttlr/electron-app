@@ -1,0 +1,49 @@
+{
+  "navigation": {
+    "jogControls": "Jog Controls",
+    "workspace": "Workspace",
+    "visualizations": "Visualizations",
+    "2dPreview": "2D Preview",
+    "3dDisplay": "3D Display",
+    "machine": "Machine",
+    "homePosition": "Home Position",
+    "settings": "Settings",
+    "debugTools": "Debug Tools"
+  },
+  "breadcrumbs": {
+    "cncControl": "CNC Control",
+    "jogControls": "Jog Controls",
+    "workspace": "Workspace",
+    "visualizations": "Visualizations",
+    "2dPreview": "2D Preview", 
+    "3dDisplay": "3D Display",
+    "machine": "Machine",
+    "homePosition": "Home Position",
+    "settings": "Settings",
+    "debugTools": "Debug Tools"
+  },
+  "controls": {
+    "jogSpeed": "Jog Speed",
+    "jogIncrement": "Jog Increment",
+    "units": "Units",
+    "metric": "Metric",
+    "imperial": "Imperial",
+    "debug": "Debug",
+    "debugPanel": {
+      "title": "Debug Information",
+      "close": "Close",
+      "open": "Open"
+    }
+  },
+  "cards": {
+    "jogControls": "Jog Controls",
+    "workingAreaPreview": "Working Area Preview",
+    "machinePositionControls": "Machine Position Controls",
+    "settings": "Settings"
+  },
+  "tabs": {
+    "2dPreview": "2D Preview",
+    "3dPreview": "3D Preview",
+    "workspaceControls": "Workspace Controls"
+  }
+}
