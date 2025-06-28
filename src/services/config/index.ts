@@ -5,7 +5,8 @@
  * Provides centralized access to all application configuration.
  */
 
-export { configService } from './ConfigService';
+import { configService } from './ConfigService';
+export { configService };
 export type { ConfigValues, ConfigValues as ConfigServiceValues } from './ConfigService';
 
 // Convenience exports for common configuration access
