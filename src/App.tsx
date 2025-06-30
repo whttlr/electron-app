@@ -12,6 +12,10 @@ import { machineController } from './core/machine';
 import { stateManager } from './services/state';
 import { router, navigationService } from './services/router';
 import { logger } from './services/logger';
+import { CoordinateProvider } from './services/coordinates/CoordinateContext';
+import { globalEventBus } from './services/eventBus';
+import CoordinateDisplay from './ui/controls/CoordinateDisplay';
+import CoordinateSystemSwitcher from './ui/controls/CoordinateSystemSwitcher';
 import './App.css';
 
 const { Header, Content } = Layout;
@@ -129,7 +133,8 @@ function AppContent() {
                 />
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <CoordinateSystemSwitcher compact={true} />
                 <Button
                   type="text"
                   icon={<BugOutlined />}
@@ -185,7 +190,13 @@ function AppContent() {
 function App() {
   return (
     <AntApp>
-      <AppContent />
+      <CoordinateProvider
+        eventBus={globalEventBus}
+        logger={logger}
+        autoInitialize={true}
+      >
+        <AppContent />
+      </CoordinateProvider>
     </AntApp>
   );
 }
