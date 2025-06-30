@@ -49,7 +49,7 @@ export function useMachine() {
     newPosition[axis] += direction * distance;
     
     // Apply bounds checking
-    const bounded = dimensionsController.clampPosition(newPosition);
+    const bounded = dimensionsController.clampToWorkingArea(newPosition);
     setPosition(bounded);
   }, [isConnected, machineState.position, setPosition]);
   

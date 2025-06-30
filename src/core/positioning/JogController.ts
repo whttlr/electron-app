@@ -18,7 +18,25 @@ export class JogController {
     };
   }
 
-  // Jog Operations
+  // Jog Operations  
+  async jog(axis: keyof Position, direction: 1 | -1, customDistance?: number): Promise<Position> {
+    const distance = direction * (customDistance || this.settings.increment);
+    const command: JogCommand = {
+      axis,
+      distance,
+      speed: this.settings.speed
+    };
+    
+    logger.info(`Jog command: ${axis} axis, distance: ${distance}, speed: ${this.settings.speed}`);
+    
+    // Record the jog in history
+    this.addToHistory(command);
+    
+    // Return the command for the caller to execute with current position
+    // The actual position update should be handled by the machine controller
+    return this.positionController.calculateJogTarget({ x: 0, y: 0, z: 0 }, axis, distance);
+  }
+
   async executeJog(current: Position, command: JogCommand): Promise<Position> {
     const { axis, distance, speed = this.settings.speed } = command;
     
@@ -117,6 +135,13 @@ export class JogController {
   }
 
   // History
+  addToHistory(command: JogCommand): void {
+    this.jogHistory.push(command);
+    if (this.jogHistory.length > 100) {
+      this.jogHistory = this.jogHistory.slice(-100);
+    }
+  }
+
   getJogHistory(): JogCommand[] {
     return [...this.jogHistory];
   }

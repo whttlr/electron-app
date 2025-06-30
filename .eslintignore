@@ -1,0 +1,11 @@
+node_modules/
+coverage/
+dist/
+build/
+*.min.js
+*.bundle.js
+.eslintrc.js
+jest.config.js
+vite.config.js
+rollup.config.js
+webpack.config.js

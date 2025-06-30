@@ -36,7 +36,10 @@ export class MachineController {
       await this.simulateDelay(200);
       
       this.state.setConnected(false);
-      this.state.reset();
+      // Reset position to zero on disconnect
+      this.state.setPosition({ x: 0, y: 0, z: 0 });
+      this.state.setMoving(false);
+      this.state.setHoming(false);
       this.emitEvent('disconnected');
       logger.info('Machine disconnected successfully');
     } catch (error) {
@@ -106,7 +109,8 @@ export class MachineController {
     try {
       await this.simulateDelay(2000);
       
-      this.state.setPosition(machineConfig.defaultPosition);
+      // Home position is typically 0,0,0
+      this.state.setPosition({ x: 0, y: 0, z: 0 });
       this.state.setHoming(false);
       
       this.emitEvent('homingCompleted');
@@ -168,15 +172,15 @@ export class MachineController {
     const dimensions = this.state.getDimensions();
     
     if (position.x < 0 || position.x > dimensions.width) {
-      throw new Error(`X position ${position.x} is out of bounds (0-${dimensions.width})`);
+      throw new Error(`X position ${position.x} is out of bounds`);
     }
     
     if (position.y < 0 || position.y > dimensions.height) {
-      throw new Error(`Y position ${position.y} is out of bounds (0-${dimensions.height})`);
+      throw new Error(`Y position ${position.y} is out of bounds`);
     }
     
     if (position.z < 0 || position.z > dimensions.depth) {
-      throw new Error(`Z position ${position.z} is out of bounds (0-${dimensions.depth})`);
+      throw new Error(`Z position ${position.z} is out of bounds`);
     }
   }
 

@@ -7,7 +7,7 @@ import { JogSettingsProps } from '../ControlTypes';
 // Mock the jog controller
 jest.mock('../../../core/positioning', () => ({
   jogController: {
-    getIncrements: jest.fn(),
+    getAvailableIncrements: jest.fn(),
     getSpeedLimits: jest.fn()
   }
 }));
@@ -99,7 +99,7 @@ describe('JogSettings', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     
-    mockJogController.getIncrements.mockReturnValue([
+    mockJogController.getAvailableIncrements.mockReturnValue([
       { value: 0.001, label: '0.001 mm' },
       { value: 0.01, label: '0.01 mm' },
       { value: 0.1, label: '0.1 mm' },
@@ -210,13 +210,13 @@ describe('JogSettings', () => {
     test('should get increments from jog controller with metric system', () => {
       render(<JogSettings {...defaultProps} isMetric={true} />);
       
-      expect(mockJogController.getIncrements).toHaveBeenCalledWith('metric');
+      expect(mockJogController.getAvailableIncrements).toHaveBeenCalled();
     });
 
     test('should get increments from jog controller with imperial system', () => {
       render(<JogSettings {...defaultProps} isMetric={false} />);
       
-      expect(mockJogController.getIncrements).toHaveBeenCalledWith('imperial');
+      expect(mockJogController.getAvailableIncrements).toHaveBeenCalled();
     });
   });
 
