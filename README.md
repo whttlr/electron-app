@@ -182,8 +182,7 @@ electron-app/
 ├── config/                       # Configuration files
 ├── docs/                         # Documentation
 │   └── plugins/                  # Plugin development guides
-├── tools/                        # Development tools
-└── scripts/                      # Build scripts
+└── build-resources/              # Electron build resources
 ```
 
 ### Self-Contained Modules
@@ -195,26 +194,15 @@ The application follows a self-contained module architecture where each function
 - `__mocks__/` - Mock data for testing
 - `README.md` - Module documentation
 
-## CLI Tools Migration
+## UI-Based Plugin System
 
-> ⚠️ **Deprecation Notice**: CLI tools (`cnc-plugin`, `cnc-marketplace`) have been deprecated in favor of the integrated UI system.
+The plugin system is fully integrated into the main application UI, providing a seamless experience for plugin development, management, and distribution.
 
-### Migration Guide
-
-| Old CLI Command | New UI Location |
-|----------------|-----------------|
-| `cnc-marketplace search` | Plugins → Marketplace → Search |
-| `cnc-marketplace install` | Plugins → Marketplace → Install button |
-| `cnc-marketplace update` | Plugins → Local → Check Updates |
-| `cnc-marketplace publish` | Plugins → Registry → Publish |
-| `cnc-plugin create` | Manual plugin creation (see guide above) |
-| `cnc-plugin dev` | Upload plugin to UI for testing |
-
-### Benefits of UI Approach
+### Key Features
 
 - **Visual Feedback**: Real-time progress and status indicators
 - **Dependency Management**: Automatic resolution with user confirmation
-- **Configuration**: Form-based setup instead of command-line options
+- **Configuration**: Form-based setup with visual interface
 - **Integration**: Seamless workflow within the main application
 - **Security**: Secure credential storage and validation
 

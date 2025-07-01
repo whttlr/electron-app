@@ -34,27 +34,8 @@ electron-app/
 │       ├── machine-status-monitor/        # React/TypeScript example
 │       └── gcode-snippets/                # Utility plugin example
 │
-├── tools/                                 # 🔧 CLI Development Tools
-│   ├── plugin-cli/                        # Main plugin development CLI
-│   │   ├── src/
-│   │   │   ├── commands/                  # CLI command implementations
-│   │   │   ├── templates/                 # Plugin templates
-│   │   │   └── cli.ts                     # Main CLI entry point
-│   │   ├── package.json
-│   │   └── README.md
-│   │
-│   ├── marketplace-client/                # Plugin marketplace CLI
-│   │   ├── src/
-│   │   └── package.json
-│   │
-│   └── api-docs-generator/                # API documentation generator
-│       ├── src/
-│       └── package.json
-│
-├── scripts/                               # 🚀 Setup Scripts
-│   ├── setup-dev-tools.sh                # Install CLI tools globally
-│   ├── setup-dev-tools.bat               # Windows version
-│   └── quick-start.sh                     # Simple JS plugin creation
+├── docs/                                   # 📚 Documentation
+│   └── plugins/                           # Plugin development guides
 │
 ├── src/                                   # 🏠 Main Application
 │   ├── components/
@@ -98,23 +79,30 @@ electron-app/
 
 ```mermaid
 graph TD
-    A[Developer] --> B[Install CLI Tools]
-    B --> C[Create Plugin]
+    A[Developer] --> B[Read Documentation]
+    B --> C[Create Plugin Directory]
     C --> D[Develop & Test]
-    D --> E[Integrate to UI]
-    E --> F[Deploy/Share]
+    D --> E[Package as ZIP]
+    E --> F[Upload to UI]
+    F --> G[Configure & Deploy]
     
-    B1[./scripts/setup-dev-tools.sh] --> B
-    B2[./scripts/quick-start.sh] --> B
+    B1[docs/plugins/] --> B
+    B2[Plugin examples] --> B
     
-    C1[cnc-plugin create my-plugin] --> C
-    C2[./create-plugin.sh my-plugin] --> C
+    C1[Manual plugin creation] --> C
+    C2[Follow structure guide] --> C
     
-    D1[Edit src/index.js] --> D
-    D2[Test in browser] --> D
+    D1[Edit src/index.tsx] --> D
+    D2[Test locally] --> D
     
-    E1[Copy to src/plugins/] --> E
-    E2[Auto-render on dashboard] --> E
+    E1[ZIP plugin directory] --> E
+    E2[Include package.json] --> E
+    
+    F1[Plugins tab → Upload] --> F
+    F2[Drag and drop ZIP] --> F
+    
+    G1[Configure placement] --> G
+    G2[Enable plugin] --> G
 ```
 
 ### 2. Plugin Loading Process
@@ -131,28 +119,22 @@ graph LR
     H --> I[Mount UI]
 ```
 
-## 🔧 Development Tools Distribution
+## 🔧 Development Approach
 
-### CLI Tools Installation
+### UI-Based Plugin Development
 
-**Location**: `tools/` directory
-**Installation**: Global npm linking
-**Access**: Available as shell commands
+**Approach**: Integrated plugin management through the main application UI
+**Installation**: No additional setup required
+**Access**: Built into the Plugins tab
 
 ```bash
-# After running setup script, you get:
-cnc-plugin create my-plugin    # Plugin development CLI
-cnc-marketplace search tools   # Marketplace client  
-cnc-api-docs generate src      # Documentation generator
+# Modern approach - everything through the UI:
+# Plugin creation: Manual development following documentation guides
+# Plugin management: Integrated UI in the Plugins tab
+# API documentation: Generated automatically from TypeScript interfaces
+# Marketplace: Browse and install through Marketplace tab
+# Registry: Publish and sync through Registry tab
 ```
-
-### Setup Scripts
-
-**Purpose**: Install development tools without npm publishing
-**Location**: `scripts/` directory
-**Types**:
-- `setup-dev-tools.sh` - Full TypeScript CLI tools
-- `quick-start.sh` - Simple JavaScript plugin creation
 
 ## 📁 Plugin Management (UI-Based System)
 

@@ -50,9 +50,6 @@ electron-app/
 │   ├── ui.json                      # UI theme and layout settings
 │   └── visualization.json           # 3D/2D rendering settings
 │
-├── 📁 tools/                        # Development and build tools
-│   └── 📁 api-docs-generator/       # API documentation generator
-│
 ├── 📁 docs/                         # Project documentation
 │   ├── 📁 architecture/             # Architecture documentation
 │   ├── 📁 platform-deployment/      # Deployment guides
@@ -63,7 +60,6 @@ electron-app/
 │   ├── 📁 pages/                    # Page object models
 │   └── 📁 tests/                    # Test specifications
 │
-├── 📁 scripts/                      # Build and development scripts
 ├── 📁 build-resources/              # Electron build resources
 └── 📁 node_modules/                 # Dependencies
 ```
