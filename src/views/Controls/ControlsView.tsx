@@ -1,248 +1,201 @@
-/**
- * Controls View
- * 
- * Main jog controls interface view, containing the existing jog controls functionality
- * integrated into the routing system.
- */
+import React, { useState } from 'react';
+import { Card, Row, Col, Typography, Button, InputNumber, Select, Space, Alert, Divider } from 'antd';
+import { ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import PluginRenderer from '../../components/PluginRenderer';
 
-import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, App } from 'antd';
-import AxisControl, { HomeControl } from '../../ui/controls/AxisControls';
-import PositionDisplay from '../../ui/controls/PositionDisplay';
-import JogSettings from '../../ui/controls/JogSettings';
-import WorkingAreaPreview from '../../components/WorkingAreaPreview';
-import MachineDisplay3D from '../../components/MachineDisplay3D';
-import { SectionHeader } from '../../ui/shared/SectionHeader';
-import { AXIS_COLORS } from '../../ui/theme/constants';
-import { machineController } from '../../core/machine';
-import { jogController } from '../../core/positioning';
-import { unitConverter } from '../../core/units';
-import { stateManager } from '../../services/state';
-import { logger } from '../../services/logger';
+const { Title } = Typography;
+const { Option } = Select;
 
-interface ControlsViewProps {
-  route?: any;
-  params?: Record<string, string>;
-  query?: Record<string, string>;
-}
+const ControlsView: React.FC = () => {
+  const [jogDistance, setJogDistance] = useState(1);
+  const [feedRate, setFeedRate] = useState(1000);
+  const [position, setPosition] = useState({ x: 0, y: 0, z: 0 });
+  const [isConnected, setIsConnected] = useState(false);
 
-const ControlsView: React.FC<ControlsViewProps> = () => {
-  const { message } = App.useApp();
-  const [appState, setAppState] = useState(stateManager.getState());
-
-  useEffect(() => {
-    // Subscribe to state changes
-    const stateSubscription = stateManager.subscribe(setAppState);
-
-    // Subscribe to machine events
-    const machineSubscription = machineController.on('positionChanged', (event) => {
-      stateManager.setPosition(event.data);
-    });
-
-    // Cleanup
-    return () => {
-      stateSubscription.unsubscribe();
-      machineController.off('positionChanged', machineSubscription);
-    };
-  }, []);
-
-  const handleJog = async (axis: 'x' | 'y' | 'z', direction: 1 | -1, distance: number) => {
-    try {
-      const jogCommand = jogController.calculateStepJog(axis, direction);
-      const currentPosition = appState.machine.position;
-      
-      await jogController.executeJog(currentPosition, {
-        ...jogCommand,
-        distance: distance * direction
-      });
-      
-      // Update machine position
-      await machineController.jog(axis, distance * direction);
-      
-      logger.info(`Jogged ${axis} axis`, { direction, distance });
-    } catch (error) {
-      logger.error('Jog command failed', error);
-      message.error('Jog command failed');
+  const handleJog = (axis: 'x' | 'y' | 'z', direction: 1 | -1) => {
+    if (!isConnected) {
+      console.log('Machine not connected');
+      return;
     }
-  };
-
-  const handleHome = async () => {
-    try {
-      await machineController.home();
-      message.success('Homing completed');
-    } catch (error) {
-      logger.error('Homing failed', error);
-      message.error('Homing failed');
-    }
-  };
-
-  const handleSettingsChange = (settings: Partial<typeof appState.jog>) => {
-    stateManager.setJogSettings(settings);
-    jogController.updateSettings(settings);
     
-    if (settings.isMetric !== undefined) {
-      unitConverter.setSystem(settings.isMetric ? 'metric' : 'imperial');
-      stateManager.setUnits(settings.isMetric ? 'metric' : 'imperial');
-    }
+    const distance = jogDistance * direction;
+    setPosition(prev => ({
+      ...prev,
+      [axis]: prev[axis] + distance
+    }));
+    
+    console.log(`Jogging ${axis.toUpperCase()} by ${distance}mm at ${feedRate}mm/min`);
   };
 
-  const handleAxisHighlight = (axis: 'x' | 'y' | 'z' | null) => {
-    stateManager.setHighlightedAxis(axis);
+  const handleHome = () => {
+    setPosition({ x: 0, y: 0, z: 0 });
+    console.log('Homing all axes');
   };
-
-  const handleJogAxis = (axis: keyof typeof appState.machine.position, direction: 1 | -1) => {
-    handleJog(axis, direction, appState.jog.increment);
-  };
-
-  const handleAxisHighlightControl = (axis: keyof typeof appState.machine.position) => {
-    handleAxisHighlight(axis);
-  };
-
-  const handleClearHighlight = () => {
-    handleAxisHighlight(null);
-  };
-
-  const jogHelpContent = (
-    <div>
-      <p>The Jog Controls allow you to manually move the machine head along the X, Y, and Z axes.</p>
-      <p>Use the directional buttons to move the machine by the selected increment amount.</p>
-      <p>Adjust the jog speed and increment size in the settings below.</p>
-    </div>
-  );
 
   return (
-    <div style={{ padding: '24px' }}>
+    <div>
+      <Title level={2}>Jog Controls</Title>
+      
+      {!isConnected && (
+        <Alert
+          message="Machine Not Connected"
+          description="Connect to your CNC machine to enable jog controls."
+          type="warning"
+          showIcon
+          style={{ marginBottom: '24px' }}
+          action={
+            <Button type="primary" onClick={() => setIsConnected(true)}>
+              Connect
+            </Button>
+          }
+        />
+      )}
+      
       <Row gutter={[16, 16]}>
-        {/* Current Position */}
-        <Col span={24}>
-          <Card title="Current Position">
-            <Row gutter={[16, 16]}>
-              <Col span={8}>
-                <Statistic
-                  title="X Position"
-                  value={appState.machine.position.x}
-                  suffix={appState.jog.isMetric ? 'mm' : 'in'}
-                  precision={3}
-                />
-              </Col>
-              <Col span={8}>
-                <Statistic
-                  title="Y Position"
-                  value={appState.machine.position.y}
-                  suffix={appState.jog.isMetric ? 'mm' : 'in'}
-                  precision={3}
-                />
-              </Col>
-              <Col span={8}>
-                <Statistic
-                  title="Z Position"
-                  value={appState.machine.position.z}
-                  suffix={appState.jog.isMetric ? 'mm' : 'in'}
-                  precision={3}
-                />
-              </Col>
-            </Row>
+        <Col xs={24} md={12}>
+          <Card title="Position Display">
+            <div style={{ textAlign: 'center', fontSize: '18px', marginBottom: '16px' }}>
+              <div>X: {position.x.toFixed(3)} mm</div>
+              <div>Y: {position.y.toFixed(3)} mm</div>
+              <div>Z: {position.z.toFixed(3)} mm</div>
+            </div>
+            <Button type="primary" block onClick={handleHome}>
+              Home All Axes
+            </Button>
           </Card>
         </Col>
-
-        {/* Machine Position Controls */}
-        <Col xs={24} lg={12}>
-          <Card
-            title={
-              <SectionHeader 
-                level={5}
-                title="Machine Position Controls" 
-                helpTitle="Using Jog Controls"
-                helpContent={jogHelpContent}
-              />
-            }
-          >
-            <Row gutter={[24, 0]} align="middle" justify="center">
-              <Col xs={6} sm={6}>
-                <AxisControl
-                  axis="x"
-                  label="X Axis"
-                  color={AXIS_COLORS.y} // Note: UI shows Y movement as X axis
-                  onJog={(direction) => handleJogAxis('y', direction)} // Y movement
-                  disabled={!appState.machine.isConnected}
-                  onHighlight={() => handleAxisHighlightControl('x')}
-                  onClearHighlight={handleClearHighlight}
-                />
-              </Col>
+        
+        <Col xs={24} md={12}>
+          <Card title="Jog Settings">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <div>
+                <label>Jog Distance (mm):</label>
+                <Select 
+                  value={jogDistance} 
+                  onChange={setJogDistance}
+                  style={{ width: '100%', marginTop: '8px' }}
+                >
+                  <Option value={0.1}>0.1 mm</Option>
+                  <Option value={1}>1 mm</Option>
+                  <Option value={10}>10 mm</Option>
+                  <Option value={100}>100 mm</Option>
+                </Select>
+              </div>
               
-              <Col xs={6} sm={6}>
-                <AxisControl
-                  axis="y"
-                  label="Y Axis"
-                  color={AXIS_COLORS.x} // Note: UI shows X movement as Y axis
-                  onJog={(direction) => handleJogAxis('x', direction)} // X movement
-                  disabled={!appState.machine.isConnected}
-                  onHighlight={() => handleAxisHighlightControl('y')}
-                  onClearHighlight={handleClearHighlight}
+              <div>
+                <label>Feed Rate (mm/min):</label>
+                <InputNumber
+                  value={feedRate}
+                  onChange={(value) => setFeedRate(value || 1000)}
+                  min={1}
+                  max={10000}
+                  style={{ width: '100%', marginTop: '8px' }}
                 />
-              </Col>
-
-              <Col xs={6} sm={6}>
-                <AxisControl
-                  axis="z"
-                  label="Z Axis"
-                  color={AXIS_COLORS.z}
-                  onJog={(direction) => handleJogAxis('z', direction)}
-                  disabled={!appState.machine.isConnected}
-                  onHighlight={() => handleAxisHighlightControl('z')}
-                  onClearHighlight={handleClearHighlight}
-                />
-              </Col>
-
-              <Col xs={6} sm={6}>
-                <HomeControl
-                  onHome={handleHome}
-                  disabled={!appState.machine.isConnected}
-                />
-              </Col>
-            </Row>
-          </Card>
-        </Col>
-
-        {/* Settings */}
-        <Col xs={24} lg={12}>
-          <JogSettings
-            speed={appState.jog.speed}
-            increment={appState.jog.increment}
-            isMetric={appState.jog.isMetric}
-            onSpeedChange={(speed) => handleSettingsChange({ speed })}
-            onIncrementChange={(increment) => handleSettingsChange({ increment })}
-            onUnitChange={(isMetric) => handleSettingsChange({ isMetric })}
-            disabled={!appState.machine.isConnected}
-          />
-        </Col>
-
-        {/* 2D Preview */}
-        <Col xs={24} lg={12}>
-          <Card title="2D Working Area Preview">
-            <WorkingAreaPreview
-              width={appState.machine.dimensions.width}
-              height={appState.machine.dimensions.height}
-              depth={appState.machine.dimensions.depth}
-              highlightAxis={appState.ui.highlightedAxis}
-              toolPosition={appState.machine.position}
-            />
-          </Card>
-        </Col>
-
-        {/* 3D Preview */}
-        <Col xs={24} lg={12}>
-          <Card title="3D Machine Preview">
-            <MachineDisplay3D
-              width={appState.machine.dimensions.width}
-              height={appState.machine.dimensions.height}
-              depth={appState.machine.dimensions.depth}
-              highlightAxis={appState.ui.highlightedAxis}
-              toolPosition={appState.machine.position}
-            />
+              </div>
+            </Space>
           </Card>
         </Col>
       </Row>
+      
+      <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
+        <Col xs={24} md={8}>
+          <Card title="X/Y Controls">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
+              <div></div>
+              <Button
+                type="primary"
+                icon={<ArrowUpOutlined />}
+                onClick={() => handleJog('y', 1)}
+                disabled={!isConnected}
+              >
+                Y+
+              </Button>
+              <div></div>
+              
+              <Button
+                type="primary"
+                icon={<ArrowLeftOutlined />}
+                onClick={() => handleJog('x', -1)}
+                disabled={!isConnected}
+              >
+                X-
+              </Button>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                XY
+              </div>
+              <Button
+                type="primary"
+                icon={<ArrowRightOutlined />}
+                onClick={() => handleJog('x', 1)}
+                disabled={!isConnected}
+              >
+                X+
+              </Button>
+              
+              <div></div>
+              <Button
+                type="primary"
+                icon={<ArrowDownOutlined />}
+                onClick={() => handleJog('y', -1)}
+                disabled={!isConnected}
+              >
+                Y-
+              </Button>
+              <div></div>
+            </div>
+          </Card>
+        </Col>
+        
+        <Col xs={24} md={8}>
+          <Card title="Z Controls">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Button
+                type="primary"
+                block
+                icon={<ArrowUpOutlined />}
+                onClick={() => handleJog('z', 1)}
+                disabled={!isConnected}
+              >
+                Z+ (Up)
+              </Button>
+              <Button
+                type="primary"
+                block
+                icon={<ArrowDownOutlined />}
+                onClick={() => handleJog('z', -1)}
+                disabled={!isConnected}
+              >
+                Z- (Down)
+              </Button>
+            </Space>
+          </Card>
+        </Col>
+        
+        <Col xs={24} md={8}>
+          <Card title="Quick Actions">
+            <Space direction="vertical" style={{ width: '100%' }}>
+              <Button block disabled={!isConnected}>
+                Set Origin (G92)
+              </Button>
+              <Button block disabled={!isConnected}>
+                Go to Origin
+              </Button>
+              <Button block disabled={!isConnected}>
+                Probe Z
+              </Button>
+              <Button block disabled={!isConnected} danger>
+                Emergency Stop
+              </Button>
+            </Space>
+          </Card>
+        </Col>
+      </Row>
+
+      {/* Render plugins configured for the controls screen */}
+      <div style={{ marginTop: '32px' }}>
+        <Divider>Control Plugins</Divider>
+        <PluginRenderer screen="controls" />
+      </div>
     </div>
   );
 };

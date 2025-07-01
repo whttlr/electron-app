@@ -1,0 +1,386 @@
+# {{displayName}}
+
+{{description}}
+
+## Features
+
+- ✨ Full TypeScript support with strict type checking
+- ⚛️ React components with modern hooks
+- 🧪 Comprehensive testing with Jest and React Testing Library
+- 🎨 CSS modules for component styling
+- 🔧 ESLint and Prettier for code quality
+- 📦 Webpack build configuration
+- 🔥 Hot reload development server
+- 🌐 Internationalization support
+- 📊 Plugin API integration
+- 🛡️ Error boundaries and error handling
+
+{{#features}}
+### Additional Features
+
+{{#if machineControl}}
+- 🤖 **Machine Control Integration** - Direct control of CNC machine operations
+{{/if}}
+{{#if visualization}}
+- 📈 **Real-time Data Visualization** - Live charts and graphs for machine data
+{{/if}}
+{{#if fileProcessing}}
+- 📁 **File Processing Capabilities** - G-code parsing and manipulation
+{{/if}}
+{{#if customGcode}}
+- ⚙️ **Custom G-code Commands** - Extend machine functionality with custom commands
+{{/if}}
+{{#if automation}}
+- 🔄 **Workflow Automation** - Automate repetitive tasks and processes
+{{/if}}
+{{#if advancedConfig}}
+- ⚙️ **Advanced Configuration UI** - Rich configuration interface for plugin settings
+{{/if}}
+{{/features}}
+
+## Installation
+
+### From Plugin Manager (Recommended)
+
+1. Open CNC Jog Controls
+2. Go to **Plugins** > **Plugin Manager**
+3. Search for "{{displayName}}"
+4. Click **Install** and follow the prompts
+
+### Manual Installation
+
+1. Download the latest release from the [releases page]({{repository}}/releases)
+2. Open CNC Jog Controls
+3. Go to **Plugins** > **Plugin Manager**
+4. Click **Install from File**
+5. Select the downloaded plugin file
+
+### Development Installation
+
+```bash
+# Clone the repository
+git clone {{repository}}.git
+cd {{pluginName}}
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+## Usage
+
+After installation, {{displayName}} will appear in your plugins list. To use the plugin:
+
+1. **Activate the Plugin**: Go to **Plugins** > **Plugin Manager** and ensure {{displayName}} is enabled
+2. **Open the Panel**: Click **Plugins** > **{{displayName}}** > **Show Panel**
+3. **Configure Settings**: Access settings via **Plugins** > **{{displayName}}** > **Settings**
+
+### Main Features
+
+#### Control Panel
+
+The main control panel provides:
+- Real-time status monitoring
+- Quick action buttons
+- Configuration options
+- Data visualization
+
+#### Settings
+
+Customize the plugin behavior through the settings dialog:
+- Enable/disable features
+- Adjust refresh intervals
+- Configure display options
+- Set operational parameters
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- npm 8+
+- CNC Jog Controls development environment
+
+### Getting Started
+
+```bash
+# Clone the repository
+git clone {{repository}}.git
+cd {{pluginName}}
+
+# Install dependencies
+npm install
+
+# Start development server with hot reload
+npm run dev
+```
+
+### Available Scripts
+
+- `npm run dev` - Start development server with hot reload
+- `npm run build` - Build plugin for production
+- `npm run test` - Run tests
+- `npm run test:watch` - Run tests in watch mode
+- `npm run test:coverage` - Run tests with coverage report
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint issues automatically
+- `npm run type-check` - Run TypeScript type checking
+- `npm run format` - Format code with Prettier
+- `npm run validate` - Validate plugin configuration
+- `npm run package` - Package plugin for distribution
+
+### Project Structure
+
+```
+{{pluginName}}/
+├── src/
+│   ├── components/          # React components
+│   │   ├── MainPanel.tsx    # Main plugin panel
+│   │   ├── SettingsDialog.tsx # Settings configuration
+│   │   └── shared/          # Reusable components
+│   ├── services/            # Business logic services
+│   │   ├── DataService.ts   # Data processing service
+│   │   └── StorageService.ts # Data persistence
+│   ├── hooks/               # Custom React hooks
+│   ├── utils/               # Utility functions
+│   ├── types/               # TypeScript type definitions
+│   ├── styles/              # CSS styles
+│   ├── assets/              # Static assets
+│   ├── locales/             # Internationalization
+│   ├── config/              # Configuration files
+│   ├── manifest.json        # Plugin manifest
+│   └── index.ts             # Main plugin entry
+├── tests/                   # Test files
+│   ├── unit/                # Unit tests
+│   ├── integration/         # Integration tests
+│   ├── fixtures/            # Test data
+│   └── utils/               # Test utilities
+├── docs/                    # Documentation
+├── dist/                    # Built output (generated)
+└── package.json             # npm configuration
+```
+
+### Plugin Architecture
+
+The plugin follows the CNC Jog Controls plugin architecture with:
+
+- **Main Plugin Class**: Entry point extending the base Plugin class
+- **Services Layer**: Business logic and data management
+- **Components Layer**: React UI components
+- **Utils Layer**: Pure utility functions
+- **Types Layer**: TypeScript type definitions
+
+### Testing
+
+Run the test suite:
+
+```bash
+# Run all tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+### Code Quality
+
+Maintain code quality with:
+
+```bash
+# Lint code
+npm run lint
+
+# Fix linting issues
+npm run lint:fix
+
+# Format code
+npm run format
+
+# Type check
+npm run type-check
+```
+
+## API Reference
+
+### Plugin Class
+
+The main plugin class provides lifecycle methods:
+
+```typescript
+class {{#camelCase}}{{pluginName}}{{/camelCase}}Plugin extends Plugin {
+  async onActivate(context: PluginContext): Promise<void>
+  async onDeactivate(context: PluginContext): Promise<void>
+  async onConfigurationUpdate(config: any): Promise<void>
+}
+```
+
+### Services
+
+#### DataService
+
+Handles data processing and machine integration:
+
+```typescript
+class DataService {
+  async initialize(context: PluginContext): Promise<void>
+  async loadInitialData(): Promise<void>
+  updateMachineStatus(status: MachineStatus): void
+  updatePosition(position: Position): void
+}
+```
+
+#### StorageService
+
+Manages data persistence:
+
+```typescript
+class StorageService {
+  async saveState(state: any): Promise<void>
+  async loadState(): Promise<any>
+  async saveConfiguration(config: any): Promise<void>
+}
+```
+
+### Components
+
+#### MainPanel
+
+Main plugin interface component:
+
+```typescript
+interface MainPanelProps {
+  // Component props
+}
+
+export const MainPanel: React.FC<MainPanelProps>
+```
+
+#### SettingsDialog
+
+Plugin configuration interface:
+
+```typescript
+interface SettingsDialogProps {
+  onSave: (config: any) => void
+  onCancel: () => void
+}
+
+export const SettingsDialog: React.FC<SettingsDialogProps>
+```
+
+## Configuration
+
+The plugin supports extensive configuration through the settings dialog and configuration files:
+
+### Default Configuration
+
+```json
+{
+  "enabled": true,
+  "autoStart": false,
+  "refreshInterval": 1000,
+  "showNotifications": true,
+  "advanced": {
+    "debugMode": false,
+    "logLevel": "info"
+  }
+}
+```
+
+### Settings Schema
+
+Configuration is validated against a JSON schema located at `src/config/schema.json`.
+
+## Internationalization
+
+The plugin supports multiple languages through the i18n system:
+
+- Default locale: English (en)
+- Supported locales: English
+- Translation files: `src/locales/`
+
+To add a new language:
+
+1. Create a new translation file: `src/locales/[locale].json`
+2. Update the manifest.json `supportedLocales` array
+3. Implement translations for all keys
+
+## Contributing
+
+Contributions are welcome! Please read our [contributing guidelines](CONTRIBUTING.md) before submitting changes.
+
+### Development Workflow
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/amazing-feature`
+3. Make your changes
+4. Add tests for new functionality
+5. Run tests and linting: `npm test && npm run lint`
+6. Commit your changes: `git commit -m 'Add amazing feature'`
+7. Push to the branch: `git push origin feature/amazing-feature`
+8. Submit a pull request
+
+### Code Standards
+
+- Follow the existing code style
+- Write tests for new functionality
+- Update documentation as needed
+- Use TypeScript for type safety
+- Follow React best practices
+
+## Troubleshooting
+
+### Common Issues
+
+**Plugin won't load:**
+- Check that all dependencies are installed
+- Verify the plugin manifest is valid
+- Check the browser console for error messages
+
+**Development server won't start:**
+- Ensure port 3001 is available
+- Check that Node.js version is 18+
+- Verify all dependencies are installed
+
+**Build fails:**
+- Run `npm run type-check` to identify TypeScript errors
+- Check for ESLint errors with `npm run lint`
+- Ensure all imports are valid
+
+**Tests fail:**
+- Check test setup in `tests/setup/setupTests.ts`
+- Verify mock implementations
+- Check for TypeScript errors in test files
+
+### Getting Help
+
+- **Documentation**: [Plugin Development Guide](https://docs.cnc-jog-controls.com/plugins/)
+- **API Reference**: [Plugin API Documentation](https://docs.cnc-jog-controls.com/plugins/api/)
+- **Issues**: [GitHub Issues]({{repository}}/issues)
+- **Community**: [Discord Server](https://discord.gg/cnc-jog-controls)
+
+## License
+
+This project is licensed under the {{license}} License - see the [LICENSE](LICENSE) file for details.
+
+## Changelog
+
+See [CHANGELOG.md](docs/CHANGELOG.md) for a detailed list of changes and releases.
+
+## Acknowledgments
+
+- CNC Jog Controls team for the plugin framework
+- React team for the UI framework
+- TypeScript team for type safety
+- Jest team for the testing framework
+
+---
+
+**{{displayName}}** - {{description}}
+
+Made with ❤️ by {{author.name}}

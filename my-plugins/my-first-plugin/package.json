@@ -1,0 +1,20 @@
+{
+  "name": "my-first-plugin",
+  "version": "1.0.0",
+  "description": "A CNC Jog Controls plugin",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "echo 'Open src/index.js to start developing!'",
+    "build": "echo 'Plugin ready for use'"
+  },
+  "cncPlugin": {
+    "apiVersion": "1.0.0",
+    "category": "utility",
+    "displayName": "my first plugin",
+    "description": "A custom CNC plugin",
+    "permissions": ["machine.status.read"]
+  },
+  "keywords": ["cnc", "plugin", "machining"],
+  "author": "Your Name",
+  "license": "MIT"
+}

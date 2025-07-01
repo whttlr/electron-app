@@ -1,0 +1,26 @@
+{
+  "name": "machine-monitor",
+  "version": "1.0.0",
+  "description": "Real-time machine monitoring and analytics plugin",
+  "main": "src/index.js",
+  "keywords": ["cnc", "monitoring", "analytics"],
+  "cncPlugin": {
+    "apiVersion": "1.0.0",
+    "category": "monitoring",
+    "displayName": "Machine Monitor",
+    "description": "Real-time machine status monitoring with charts and analytics",
+    "permissions": ["machine.status.read", "machine.history.read"],
+    "ui": {
+      "placement": "standalone",
+      "screen": "new",
+      "size": {
+        "width": "auto",
+        "height": "auto"
+      },
+      "priority": 200,
+      "requiresNewScreen": true,
+      "screenTitle": "Machine Monitor",
+      "screenIcon": "BarChartOutlined"
+    }
+  }
+}

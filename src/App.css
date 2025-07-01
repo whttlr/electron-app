@@ -6,19 +6,22 @@
   background-color: #282c34;
   padding: 20px;
   color: white;
-  margin-bottom: 20px;
 }
 
-.App-header h1 {
-  margin: 0 0 10px 0;
-  font-size: 2rem;
+.App-link {
+  color: #61dafb;
 }
 
-.App-header p {
-  margin: 0;
-  opacity: 0.8;
+/* Layout customizations */
+.ant-layout-header {
+  height: 64px;
+  line-height: 64px;
 }
 
-main {
-  text-align: left;
+.ant-layout-sider {
+  background: #fff !important;
+}
+
+.ant-layout-content {
+  background: #fff;
 }
