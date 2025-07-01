@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Row, Col, Modal, Typography } from 'antd';
 import { usePlugins, Plugin } from '../../services/plugin';
 
@@ -10,7 +10,22 @@ interface PluginRendererProps {
 }
 
 const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) => {
-  const { plugins } = usePlugins();
+  const { plugins, getPluginAPI } = usePlugins();
+  const [pluginAPI] = useState(getPluginAPI());
+  const [configExample, setConfigExample] = useState<any>(null);
+
+  useEffect(() => {
+    // Demonstrate plugin API usage
+    if (pluginAPI.config.isLoaded()) {
+      const machineConfig = pluginAPI.config.getSection('machine');
+      const jogDefaults = pluginAPI.config.get('machine.jogSettings.defaultSpeed');
+      setConfigExample({
+        machineConfig,
+        jogDefaults,
+        workArea: pluginAPI.config.getWithFallback('machine.defaultDimensions', { width: 100, height: 100 })
+      });
+    }
+  }, [pluginAPI]);
 
   // Filter plugins for this screen and placement
   const relevantPlugins = plugins.filter(plugin => 
@@ -26,6 +41,7 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
   const renderPluginContent = (plugin: Plugin) => {
     // This is a placeholder for actual plugin content
     // In a real implementation, this would load and render the plugin's React components
+    // and pass the pluginAPI to them for configuration access
     return (
       <div style={{ padding: '16px', textAlign: 'center' }}>
         <div style={{ fontSize: '32px', marginBottom: '8px' }}>🔌</div>
@@ -40,10 +56,18 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
           fontSize: '10px',
           textAlign: 'left'
         }}>
-          <strong>Config:</strong><br/>
+          <strong>Plugin Config:</strong><br/>
           Type: {plugin.type}<br/>
           Placement: {plugin.config?.placement}<br/>
           Priority: {plugin.config?.priority}
+          {configExample && (
+            <>
+              <br/><br/>
+              <strong>Available App Config:</strong><br/>
+              Jog Speed: {configExample.jogDefaults}<br/>
+              Work Area: {configExample.workArea.width}×{configExample.workArea.height}
+            </>
+          )}
         </div>
       </div>
     );

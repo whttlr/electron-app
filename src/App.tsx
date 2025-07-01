@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import { DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined } from '@ant-design/icons';
 import { PluginProvider, usePlugins } from './services/plugin';
@@ -30,12 +30,12 @@ const AppContent: React.FC = () => {
     {
       key: '/',
       icon: <DashboardOutlined />,
-      label: <Link to="/">Dashboard</Link>
+      label: <Link to="/" data-testid="nav-dashboard">Dashboard</Link>
     },
     {
       key: '/controls',
       icon: <ControlOutlined />,
-      label: <Link to="/controls">Controls</Link>
+      label: <Link to="/controls" data-testid="nav-controls">Controls</Link>
     },
     // Add standalone plugin menu items
     ...standalonePlugins.map(plugin => ({
@@ -48,12 +48,12 @@ const AppContent: React.FC = () => {
     {
       key: '/plugins',
       icon: <AppstoreOutlined />,
-      label: <Link to="/plugins">Plugins</Link>
+      label: <Link to="/plugins" data-testid="nav-plugins">Plugins</Link>
     },
     {
       key: '/settings',
       icon: <SettingOutlined />,
-      label: <Link to="/settings">Settings</Link>
+      label: <Link to="/settings" data-testid="nav-settings">Settings</Link>
     }
   ];
 

@@ -4,6 +4,7 @@ export { PluginProvider, usePlugins } from './PluginContext';
 // Re-export types
 export type { 
   Plugin, 
-  PluginContextType, 
-  PluginConfig 
+  PluginAPI,
+  PluginUpdate,
+  RegistryConfig
 } from './PluginContext';

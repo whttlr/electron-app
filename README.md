@@ -26,6 +26,9 @@ A comprehensive CNC machine control application with an integrated UI-based plug
 git clone <repository-url>
 cd electron-app
 npm install
+
+# Initialize the database (first time only)
+npx prisma migrate dev --name init
 ```
 
 ### 2. Run the Application
@@ -205,6 +208,24 @@ The plugin system is fully integrated into the main application UI, providing a 
 - **Configuration**: Form-based setup with visual interface
 - **Integration**: Seamless workflow within the main application
 - **Security**: Secure credential storage and validation
+
+## Database Schema Updates
+
+When making changes to the database schema:
+
+```bash
+# Generate and apply a new migration
+npx prisma migrate dev --name <migration-name>
+
+# Apply migrations in production
+npx prisma migrate deploy
+
+# Generate Prisma client (after schema changes)
+npx prisma generate
+
+# View database in Prisma Studio
+npx prisma studio
+```
 
 ## Building for Production
 

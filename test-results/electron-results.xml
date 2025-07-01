@@ -1,0 +1,343 @@
+<testsuites id="" name="" tests="19" failures="17" skipped="0" errors="0" time="110.156117">
+<testsuite name="tests/dashboard-electron.spec.ts" timestamp="2025-07-01T20:16:21.952Z" hostname="" tests="8" failures="6" skipped="0" time="102.642" errors="0">
+<testcase name="Electron App - Dashboard › should launch electron app and load dashboard" classname="tests/dashboard-electron.spec.ts" time="1.374">
+</testcase>
+<testcase name="Electron App - Dashboard › should display dashboard elements" classname="tests/dashboard-electron.spec.ts" time="33.737">
+<failure message="dashboard-electron.spec.ts:31:7 should display dashboard elements" type="FAILURE">
+<![CDATA[  tests/dashboard-electron.spec.ts:31:7 › Electron App - Dashboard › should display dashboard elements 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('[data-testid="dashboard-container"]') to be visible
+
+
+      31 |   test('should display dashboard elements', async ({ page }) => {
+      32 |     // Wait for the dashboard to load
+    > 33 |     await page.waitForSelector('[data-testid="dashboard-container"]', { 
+         |                ^
+      34 |       timeout: 30000 
+      35 |     });
+      36 |
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/e2e/tests/dashboard-electron.spec.ts:33:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/electron/tests-dashboard-electron-E-9d154--display-dashboard-elements/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/electron/tests-dashboard-electron-E-9d154--display-dashboard-elements/test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|electron/tests-dashboard-electron-E-9d154--display-dashboard-elements/test-failed-1.png]]
+
+[[ATTACHMENT|electron/tests-dashboard-electron-E-9d154--display-dashboard-elements/test-failed-2.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Electron App - Dashboard › should navigate to controls page" classname="tests/dashboard-electron.spec.ts" time="33.047">
+<failure message="dashboard-electron.spec.ts:55:7 should navigate to controls page" type="FAILURE">
+<![CDATA[  tests/dashboard-electron.spec.ts:55:7 › Electron App - Dashboard › should navigate to controls page 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('[data-testid="dashboard-container"]') to be visible
+
+
+      55 |   test('should navigate to controls page', async ({ page }) => {
+      56 |     // Wait for dashboard to load
+    > 57 |     await page.waitForSelector('[data-testid="dashboard-container"]');
+         |                ^
+      58 |
+      59 |     // Click on jog controls quick action
+      60 |     await page.click('[data-testid="quick-action-jog-controls"]');
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/e2e/tests/dashboard-electron.spec.ts:57:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/electron/tests-dashboard-electron-E-d2c9e-d-navigate-to-controls-page/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|electron/tests-dashboard-electron-E-d2c9e-d-navigate-to-controls-page/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Electron App - Dashboard › should handle window controls" classname="tests/dashboard-electron.spec.ts" time="1.316">
+<failure message="dashboard-electron.spec.ts:70:7 should handle window controls" type="FAILURE">
+<![CDATA[  tests/dashboard-electron.spec.ts:70:7 › Electron App - Dashboard › should handle window controls ─
+
+    Error: electronApplication.evaluate: TypeError: Cannot read properties of undefined (reading 'minimize')
+        at eval (eval at evaluate (:291:30), <anonymous>:5:18)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at c._init (node:electron/js2c/browser_init:2:58523)
+        at p (/Users/tylerhenry/Desktop/whttlr/electron-app/dist-electron/main/main.js:1:392)
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/dist-electron/main/main.js:1:753
+        at eval (eval at evaluate (:291:30), <anonymous>:5:18)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at p (/Users/tylerhenry/Desktop/whttlr/electron-app/dist-electron/main/main.js:1:392)
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/dist-electron/main/main.js:1:753
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/e2e/tests/dashboard-electron.spec.ts:72:23
+]]>
+</failure>
+</testcase>
+<testcase name="Electron App - Dashboard › should maintain state across page navigation" classname="tests/dashboard-electron.spec.ts" time="0.775">
+<failure message="dashboard-electron.spec.ts:91:7 should maintain state across page navigation" type="FAILURE">
+<![CDATA[  tests/dashboard-electron.spec.ts:91:7 › Electron App - Dashboard › should maintain state across page navigation 
+
+    Error: page.evaluate: SecurityError: Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/e2e/tests/dashboard-electron.spec.ts:93:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/electron/tests-dashboard-electron-E-41219-tate-across-page-navigation/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|electron/tests-dashboard-electron-E-41219-tate-across-page-navigation/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Electron App - Dashboard › should display all dashboard cards in correct layout" classname="tests/dashboard-electron.spec.ts" time="30.95">
+<failure message="dashboard-electron.spec.ts:113:7 should display all dashboard cards in correct layout" type="FAILURE">
+<![CDATA[  tests/dashboard-electron.spec.ts:113:7 › Electron App - Dashboard › should display all dashboard cards in correct layout 
+
+    TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for locator('[data-testid="dashboard-container"]') to be visible
+
+
+      113 |   test('should display all dashboard cards in correct layout', async ({ page }) => {
+      114 |     // Wait for dashboard
+    > 115 |     await page.waitForSelector('[data-testid="dashboard-container"]');
+          |                ^
+      116 |
+      117 |     // Check all main cards
+      118 |     const cards = [
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/e2e/tests/dashboard-electron.spec.ts:115:16
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results/electron/tests-dashboard-electron-E-7708d-ard-cards-in-correct-layout/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+]]>
+</failure>
+<system-out>
+<![CDATA[
+[[ATTACHMENT|electron/tests-dashboard-electron-E-7708d-ard-cards-in-correct-layout/test-failed-1.png]]
+]]>
+</system-out>
+</testcase>
+<testcase name="Electron App - Dashboard › should show correct window title" classname="tests/dashboard-electron.spec.ts" time="0.604">
+<failure message="dashboard-electron.spec.ts:142:7 should show correct window title" type="FAILURE">
+<![CDATA[  tests/dashboard-electron.spec.ts:142:7 › Electron App - Dashboard › should show correct window title 
+
+    Error: electronApplication.evaluate: TypeError: Cannot read properties of undefined (reading 'getTitle')
+        at eval (eval at evaluate (:291:30), <anonymous>:5:25)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at c._init (node:electron/js2c/browser_init:2:58523)
+        at p (/Users/tylerhenry/Desktop/whttlr/electron-app/dist-electron/main/main.js:1:392)
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/dist-electron/main/main.js:1:753
+        at eval (eval at evaluate (:291:30), <anonymous>:5:25)
+        at UtilityScript.evaluate (<anonymous>:293:16)
+        at UtilityScript.<anonymous> (<anonymous>:1:44)
+        at p (/Users/tylerhenry/Desktop/whttlr/electron-app/dist-electron/main/main.js:1:392)
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/dist-electron/main/main.js:1:753
+        at /Users/tylerhenry/Desktop/whttlr/electron-app/e2e/tests/dashboard-electron.spec.ts:143:37
+]]>
+</failure>
+</testcase>
+<testcase name="Electron App - Dashboard › should handle app menu interactions" classname="tests/dashboard-electron.spec.ts" time="0.839">
+</testcase>
+</testsuite>
+<testsuite name="tests/dashboard.spec.ts" timestamp="2025-07-01T20:16:21.952Z" hostname="" tests="10" failures="10" skipped="0" time="0.014" errors="0">
+<testcase name="Dashboard › should load dashboard page successfully" classname="tests/dashboard.spec.ts" time="0.002">
+<failure message="dashboard.spec.ts:8:7 should load dashboard page successfully" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:8:7 › Dashboard › should load dashboard page successfully ────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should display all dashboard cards" classname="tests/dashboard.spec.ts" time="0.002">
+<failure message="dashboard.spec.ts:18:7 should display all dashboard cards" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:18:7 › Dashboard › should display all dashboard cards ────────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should show connection status" classname="tests/dashboard.spec.ts" time="0.002">
+<failure message="dashboard.spec.ts:24:7 should show connection status" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:24:7 › Dashboard › should show connection status ─────────────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should display machine position cards" classname="tests/dashboard.spec.ts" time="0.001">
+<failure message="dashboard.spec.ts:33:7 should display machine position cards" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:33:7 › Dashboard › should display machine position cards ─────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should display workspace dimensions" classname="tests/dashboard.spec.ts" time="0.001">
+<failure message="dashboard.spec.ts:46:7 should display workspace dimensions" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:46:7 › Dashboard › should display workspace dimensions ───────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should show system status with initialization" classname="tests/dashboard.spec.ts" time="0.002">
+<failure message="dashboard.spec.ts:57:7 should show system status with initialization" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:57:7 › Dashboard › should show system status with initialization ─────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should display machine features configuration" classname="tests/dashboard.spec.ts" time="0.001">
+<failure message="dashboard.spec.ts:66:7 should display machine features configuration" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:66:7 › Dashboard › should display machine features configuration ─────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should have working quick actions" classname="tests/dashboard.spec.ts" time="0.001">
+<failure message="dashboard.spec.ts:78:7 should have working quick actions" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:78:7 › Dashboard › should have working quick actions ─────────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should handle responsive layout" classname="tests/dashboard.spec.ts" time="0.001">
+<failure message="dashboard.spec.ts:91:7 should handle responsive layout" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:91:7 › Dashboard › should handle responsive layout ───────────────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+<testcase name="Dashboard › should display configuration information" classname="tests/dashboard.spec.ts" time="0.001">
+<failure message="dashboard.spec.ts:109:7 should display configuration information" type="FAILURE">
+<![CDATA[  tests/dashboard.spec.ts:109:7 › Dashboard › should display configuration information ─────────────
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+<testsuite name="tests/navigation.spec.ts" timestamp="2025-07-01T20:16:21.952Z" hostname="" tests="1" failures="1" skipped="0" time="0.001" errors="0">
+<testcase name="Navigation › should navigate between dashboard and jog controls" classname="tests/navigation.spec.ts" time="0.001">
+<failure message="navigation.spec.ts:18:7 should navigate between dashboard and jog controls" type="FAILURE">
+<![CDATA[  tests/navigation.spec.ts:18:7 › Navigation › should navigate between dashboard and jog controls ──
+
+    Error: browserType.launch: Executable doesn't exist at /Users/tylerhenry/Library/Caches/ms-playwright/chromium_headless_shell-1179/chrome-mac/headless_shell
+    ╔═════════════════════════════════════════════════════════════════════════╗
+    ║ Looks like Playwright Test or Playwright was just installed or updated. ║
+    ║ Please run the following command to download new browsers:              ║
+    ║                                                                         ║
+    ║     npx playwright install                                              ║
+    ║                                                                         ║
+    ║ <3 Playwright Team                                                      ║
+    ╚═════════════════════════════════════════════════════════════════════════╝
+]]>
+</failure>
+</testcase>
+</testsuite>
+</testsuites>

@@ -7,20 +7,21 @@ const { Title, Paragraph } = Typography;
 
 const DashboardView: React.FC = () => {
   return (
-    <div>
+    <div data-testid="dashboard-container">
       <Title level={2}>CNC Dashboard</Title>
       <Paragraph>
         Welcome to the CNC Jog Controls dashboard. Select a section below to get started.
       </Paragraph>
       
-      <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
+      <Row gutter={[16, 16]} style={{ marginTop: '24px' }} className="dashboard-grid">
         <Col xs={24} sm={12} md={6}>
           <Card
             className="dashboard-card"
+            data-testid="quick-actions"
             title="Jog Controls"
             extra={<ControlOutlined />}
             actions={[
-              <Button type="primary" href="/controls">
+              <Button type="primary" href="/controls" data-testid="quick-action-jog-controls">
                 Open Controls
               </Button>
             ]}
@@ -32,6 +33,7 @@ const DashboardView: React.FC = () => {
         <Col xs={24} sm={12} md={6}>
           <Card
             className="dashboard-card"
+            data-testid="connection-status"
             title="Machine Status"
             extra={<ToolOutlined />}
             actions={[
@@ -47,6 +49,7 @@ const DashboardView: React.FC = () => {
         <Col xs={24} sm={12} md={6}>
           <Card
             className="dashboard-card"
+            data-testid="plugins-card"
             title="Plugins"
             extra={<AppstoreOutlined />}
             actions={[
@@ -62,6 +65,7 @@ const DashboardView: React.FC = () => {
         <Col xs={24} sm={12} md={6}>
           <Card
             className="dashboard-card"
+            data-testid="settings-card"
             title="Settings"
             extra={<SettingOutlined />}
             actions={[

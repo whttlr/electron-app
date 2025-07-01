@@ -1,4 +1,8 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { configService } from '../config/ConfigService';
+import { CompleteConfig } from '../config/types';
+import { databaseService } from '../database/DatabaseService';
+import { PluginRecord, PluginStateRecord } from '../database/types';
 
 export interface Plugin {
   id: string;
@@ -54,10 +58,31 @@ export interface PluginUpdate {
   releaseDate?: string;
 }
 
+// Plugin API interface for access to application resources
+export interface PluginAPI {
+  config: {
+    get: <T>(path: string) => T | null;
+    getSection: (section: keyof CompleteConfig) => any | null;
+    getWithFallback: <T>(path: string, fallback: T) => T;
+    isLoaded: () => boolean;
+    reload: () => Promise<void>;
+  };
+  // Future: add more APIs like state, machine control, etc.
+}
+
 interface PluginContextType {
   plugins: Plugin[];
   setPlugins: React.Dispatch<React.SetStateAction<Plugin[]>>;
+  isLoading: boolean;
+  error: string | null;
   getStandalonePlugins: () => Plugin[];
+  // Plugin API access
+  getPluginAPI: () => PluginAPI;
+  // Database operations
+  loadPlugins: () => Promise<void>;
+  savePlugin: (plugin: Plugin) => Promise<void>;
+  deletePlugin: (pluginId: string) => Promise<void>;
+  updatePluginState: (pluginId: string, state: Partial<PluginStateRecord>) => Promise<void>;
   // Version management
   checkForUpdates: () => Promise<PluginUpdate[]>;
   updatePlugin: (pluginId: string, version?: string) => Promise<void>;
@@ -90,55 +115,228 @@ interface PluginProviderProps {
 }
 
 export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
-  const [plugins, setPlugins] = useState<Plugin[]>([
-    {
-      id: 'machine-monitor',
-      name: 'Machine Status Monitor',
-      version: '1.0.0',
-      description: 'Real-time machine status monitoring with performance charts',
-      status: 'active',
-      type: 'visualization',
-      installedAt: '2024-01-01T00:00:00Z',
-      source: 'local',
-      config: {
-        placement: 'standalone',
-        screen: 'new',
-        size: { width: 'auto', height: 'auto' },
-        priority: 100,
-        autoStart: true,
-        permissions: ['machine.read', 'status.read'],
-        menuTitle: 'Machine Monitor',
-        menuIcon: 'monitor',
-        routePath: '/machine-monitor'
-      }
-    },
-    {
-      id: 'gcode-snippets',
-      name: 'G-code Snippets',
-      version: '1.0.0',
-      description: 'Manage and insert common G-code snippets',
-      status: 'active',
-      type: 'productivity',
-      installedAt: '2024-01-01T00:00:00Z',
-      source: 'local',
-      config: {
-        placement: 'modal',
-        screen: 'main',
-        size: { width: 600, height: 'auto' },
-        priority: 150,
-        autoStart: false,
-        permissions: ['file.read', 'file.write', 'machine.control']
-      }
-    }
-  ]);
-
+  const [plugins, setPlugins] = useState<Plugin[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [registryConfig, setRegistryConfig] = useState<RegistryConfig | null>(null);
+
+  // Initialize database and load plugins on mount
+  useEffect(() => {
+    const initializeDatabase = async () => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        await databaseService.initialize();
+        await loadPlugins();
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to initialize database';
+        setError(errorMessage);
+        console.error('Database initialization failed:', err);
+        
+        // Fall back to default plugins if database fails
+        setPlugins([
+          {
+            id: 'machine-monitor',
+            name: 'Machine Status Monitor',
+            version: '1.0.0',
+            description: 'Real-time machine status monitoring with performance charts',
+            status: 'active',
+            type: 'visualization',
+            installedAt: '2024-01-01T00:00:00Z',
+            source: 'local',
+            config: {
+              placement: 'standalone',
+              screen: 'new',
+              size: { width: 'auto', height: 'auto' },
+              priority: 100,
+              autoStart: true,
+              permissions: ['machine.read', 'status.read'],
+              menuTitle: 'Machine Monitor',
+              menuIcon: 'monitor',
+              routePath: '/machine-monitor'
+            }
+          },
+          {
+            id: 'gcode-snippets',
+            name: 'G-code Snippets',
+            version: '1.0.0',
+            description: 'Manage and insert common G-code snippets',
+            status: 'active',
+            type: 'productivity',
+            installedAt: '2024-01-01T00:00:00Z',
+            source: 'local',
+            config: {
+              placement: 'modal',
+              screen: 'main',
+              size: { width: 600, height: 'auto' },
+              priority: 150,
+              autoStart: false,
+              permissions: ['file.read', 'file.write', 'machine.control']
+            }
+          }
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    initializeDatabase();
+    
+    // Cleanup on unmount
+    return () => {
+      databaseService.cleanup().catch(console.error);
+    };
+  }, []);
 
   const getStandalonePlugins = () => {
     return plugins.filter(plugin => 
       plugin.status === 'active' && 
       plugin.config?.placement === 'standalone'
     );
+  };
+
+  // Create plugin API with access to configuration
+  const getPluginAPI = (): PluginAPI => {
+    return {
+      config: {
+        get: <T,>(path: string) => configService.getConfigValue<T>(path),
+        getSection: (section: keyof CompleteConfig) => {
+          const config = configService.getConfig();
+          return config ? config[section] : null;
+        },
+        getWithFallback: <T,>(path: string, fallback: T) => 
+          configService.getConfigValueWithFallback<T>(path, fallback),
+        isLoaded: () => configService.isLoaded(),
+        reload: () => configService.reload(),
+      },
+    };
+  };
+
+  // Database operations
+  const loadPlugins = async (): Promise<void> => {
+    try {
+      const pluginRecords = await databaseService.getPlugins();
+      const transformedPlugins: Plugin[] = pluginRecords.map(record => ({
+        id: record.pluginId,
+        name: record.name,
+        version: record.version,
+        description: record.description || '',
+        status: record.status,
+        type: record.type,
+        installedAt: record.installedAt.toISOString(),
+        updatedAt: record.updatedAt.toISOString(),
+        source: record.source,
+        updateAvailable: record.updateAvailable,
+        latestVersion: record.latestVersion,
+        registryId: record.registryId,
+        publisherId: record.publisherId,
+        config: record.state ? {
+          placement: record.state.placement,
+          screen: record.state.screen,
+          size: {
+            width: record.state.width === 'auto' ? 'auto' : Number(record.state.width) || 'auto',
+            height: record.state.height === 'auto' ? 'auto' : Number(record.state.height) || 'auto'
+          },
+          priority: record.state.priority,
+          autoStart: record.state.autoStart,
+          permissions: record.state.permissions,
+          menuTitle: record.state.menuTitle,
+          menuIcon: record.state.menuIcon,
+          routePath: record.state.routePath,
+        } : undefined
+      }));
+      
+      setPlugins(transformedPlugins);
+    } catch (err) {
+      console.error('Failed to load plugins from database:', err);
+      throw err;
+    }
+  };
+
+  const savePlugin = async (plugin: Plugin): Promise<void> => {
+    try {
+      await databaseService.upsertPlugin({
+        pluginId: plugin.id,
+        name: plugin.name,
+        version: plugin.version,
+        description: plugin.description,
+        type: plugin.type,
+        source: plugin.source,
+        status: plugin.status,
+        updateAvailable: plugin.updateAvailable || false,
+        latestVersion: plugin.latestVersion,
+        registryId: plugin.registryId,
+        publisherId: plugin.publisherId,
+        lastCheckedAt: plugin.updatedAt ? new Date(plugin.updatedAt) : undefined
+      });
+
+      // Save plugin state if it exists
+      if (plugin.config) {
+        await updatePluginState(plugin.id, {
+          enabled: plugin.status === 'active',
+          placement: plugin.config.placement,
+          screen: plugin.config.screen,
+          width: typeof plugin.config.size?.width === 'number' ? plugin.config.size.width.toString() : plugin.config.size?.width,
+          height: typeof plugin.config.size?.height === 'number' ? plugin.config.size.height.toString() : plugin.config.size?.height,
+          priority: plugin.config.priority || 100,
+          autoStart: plugin.config.autoStart || false,
+          permissions: plugin.config.permissions,
+          menuTitle: plugin.config.menuTitle,
+          menuIcon: plugin.config.menuIcon,
+          routePath: plugin.config.routePath,
+        });
+      }
+
+      // Reload plugins to reflect changes
+      await loadPlugins();
+    } catch (err) {
+      console.error('Failed to save plugin:', err);
+      throw err;
+    }
+  };
+
+  const deletePlugin = async (pluginId: string): Promise<void> => {
+    try {
+      await databaseService.deletePlugin(pluginId);
+      setPlugins(prev => prev.filter(p => p.id !== pluginId));
+    } catch (err) {
+      console.error('Failed to delete plugin:', err);
+      throw err;
+    }
+  };
+
+  const updatePluginState = async (pluginId: string, state: Partial<PluginStateRecord>): Promise<void> => {
+    try {
+      await databaseService.updatePluginState(pluginId, state);
+      // Update local state
+      setPlugins(prev => prev.map(plugin => {
+        if (plugin.id === pluginId) {
+          return {
+            ...plugin,
+            status: state.enabled !== undefined ? (state.enabled ? 'active' : 'inactive') : plugin.status,
+            config: {
+              ...plugin.config,
+              placement: state.placement || plugin.config?.placement,
+              screen: state.screen || plugin.config?.screen,
+              size: {
+                width: state.width || plugin.config?.size?.width || 'auto',
+                height: state.height || plugin.config?.size?.height || 'auto',
+              },
+              priority: state.priority !== undefined ? state.priority : plugin.config?.priority,
+              autoStart: state.autoStart !== undefined ? state.autoStart : plugin.config?.autoStart,
+              permissions: state.permissions || plugin.config?.permissions,
+              menuTitle: state.menuTitle || plugin.config?.menuTitle,
+              menuIcon: state.menuIcon || plugin.config?.menuIcon,
+              routePath: state.routePath || plugin.config?.routePath,
+            }
+          };
+        }
+        return plugin;
+      }));
+    } catch (err) {
+      console.error('Failed to update plugin state:', err);
+      throw err;
+    }
   };
 
   // Version management
@@ -293,7 +491,14 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
     <PluginContext.Provider value={{ 
       plugins, 
       setPlugins, 
+      isLoading,
+      error,
       getStandalonePlugins,
+      getPluginAPI,
+      loadPlugins,
+      savePlugin,
+      deletePlugin,
+      updatePluginState,
       checkForUpdates,
       updatePlugin,
       updateAllPlugins,
