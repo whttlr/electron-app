@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, Row, Col, Typography, Button, Divider } from 'antd';
 import { ControlOutlined, ToolOutlined, SettingOutlined, AppstoreOutlined } from '@ant-design/icons';
-import PluginRenderer from '../../components/PluginRenderer';
+import { PluginRenderer } from '../../components';
 
 const { Title, Paragraph } = Typography;
 

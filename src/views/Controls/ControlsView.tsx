@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Row, Col, Typography, Button, InputNumber, Select, Space, Alert, Divider } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
-import PluginRenderer from '../../components/PluginRenderer';
+import { PluginRenderer, WorkingAreaPreview, MachineDisplay2D } from '../../components';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -11,6 +11,9 @@ const ControlsView: React.FC = () => {
   const [feedRate, setFeedRate] = useState(1000);
   const [position, setPosition] = useState({ x: 0, y: 0, z: 0 });
   const [isConnected, setIsConnected] = useState(false);
+  const [workArea] = useState({ x: 300, y: 200, z: 50 });
+  const [showGrid, setShowGrid] = useState(true);
+  const [showTrail, setShowTrail] = useState(false);
 
   const handleJog = (axis: 'x' | 'y' | 'z', direction: 1 | -1) => {
     if (!isConnected) {
@@ -32,6 +35,16 @@ const ControlsView: React.FC = () => {
     console.log('Homing all axes');
   };
 
+  const handleSetOrigin = () => {
+    // In a real implementation, this would send G92 command
+    console.log('Setting current position as origin (G92)');
+  };
+
+  const handleGoHome = () => {
+    setPosition({ x: 0, y: 0, z: 0 });
+    console.log('Going to home position (G28)');
+  };
+
   return (
     <div>
       <Title level={2}>Jog Controls</Title>
@@ -50,6 +63,30 @@ const ControlsView: React.FC = () => {
           }
         />
       )}
+
+      {/* 3D and 2D Preview Section */}
+      <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+        <Col xs={24} lg={12}>
+          <WorkingAreaPreview
+            currentPosition={position}
+            workArea={workArea}
+            showGrid={showGrid}
+            onGridToggle={setShowGrid}
+          />
+        </Col>
+        <Col xs={24} lg={12}>
+          <MachineDisplay2D
+            currentPosition={position}
+            workArea={workArea}
+            showGrid={showGrid}
+            showTrail={showTrail}
+            onGridToggle={setShowGrid}
+            onTrailToggle={setShowTrail}
+            onSetOrigin={handleSetOrigin}
+            onGoHome={handleGoHome}
+          />
+        </Col>
+      </Row>
       
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>

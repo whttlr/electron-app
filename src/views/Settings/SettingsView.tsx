@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider } from 'antd';
 import { SettingOutlined, SaveOutlined } from '@ant-design/icons';
-import PluginRenderer from '../../components/PluginRenderer';
+import { PluginRenderer } from '../../components';
 
 const { Title } = Typography;
 const { Option } = Select;

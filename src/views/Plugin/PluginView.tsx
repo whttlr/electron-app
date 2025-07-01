@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { Typography, Card, Alert } from 'antd';
-import { usePlugins } from '../../contexts/PluginContext';
+import { usePlugins } from '../../services/plugin';
 
 const { Title, Paragraph } = Typography;
 

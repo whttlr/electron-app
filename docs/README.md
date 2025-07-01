@@ -381,10 +381,20 @@ This directory also contains comprehensive architectural plans and documentation
 ### 🏗️ [Architecture](./architecture/)
 Fundamental system architecture and design patterns that define how the application is structured and organized.
 
-- **[Electron Architecture Plan](./architecture/electron-architecture-plan.md)** - Desktop application architecture using Electron framework ✅ **IMPLEMENTED**
+- **[ARCHITECTURE.md](./architecture/ARCHITECTURE.md)** - Complete project architecture overview including React/TypeScript stack and self-contained modules ✅ **IMPLEMENTED**
 - **[Cross-Platform Strategy Plan](./architecture/cross-platform-strategy-plan.md)** - Strategy for sharing logic between desktop and mobile apps using Tauri + Capacitor
 - **[Coordinate System Management Plan](./architecture/coordinate-system-management-plan.md)** - Single source of truth for machine vs work coordinate systems
-- **[Plugin Ecosystem Plan](./architecture/plugin-ecosystem-plan.md)** - Extensible plugin architecture and integration framework
+
+### 🔌 [Plugins](./plugins/)
+Comprehensive plugin system documentation for extending application functionality with UI-based marketplace and registry management.
+
+- **[PLUGIN-ARCHITECTURE-OVERVIEW.md](./plugins/PLUGIN-ARCHITECTURE-OVERVIEW.md)** - Complete plugin system architecture and capabilities ✅ **IMPLEMENTED**
+- **[PLUGIN-INTEGRATION-GUIDE.md](./plugins/PLUGIN-INTEGRATION-GUIDE.md)** - Step-by-step guide for integrating plugins into the UI ✅ **IMPLEMENTED**  
+- **[PLUGIN-UPLOAD-SYSTEM.md](./plugins/PLUGIN-UPLOAD-SYSTEM.md)** - Detailed technical documentation for the ZIP-based plugin upload system ✅ **IMPLEMENTED**
+- **[UI-PLACEMENT-GUIDE.md](./plugins/UI-PLACEMENT-GUIDE.md)** - Guide for plugin UI placement options and configurations ✅ **IMPLEMENTED**
+- **[Getting Started](./plugins/getting-started/)** - Plugin development tutorials and examples ✅ **IMPLEMENTED**
+- **[API Reference](./plugins/api-reference/)** - Complete plugin API documentation ✅ **IMPLEMENTED**
+- **[MARKETPLACE-INTEGRATION.md](./plugins/MARKETPLACE-INTEGRATION.md)** - UI-based marketplace with dependency resolution and registry publishing ✅ **IMPLEMENTED**
 
 ### ⚙️ [Core Systems](./core-systems/)
 Essential system components that provide the foundational functionality for CNC machine control and operation.

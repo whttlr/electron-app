@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import { DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined } from '@ant-design/icons';
-import { PluginProvider, usePlugins } from './contexts/PluginContext';
+import { PluginProvider, usePlugins } from './services/plugin';
 import DashboardView from './views/Dashboard/DashboardView';
 import PluginsView from './views/Plugins/PluginsView';
 import SettingsView from './views/Settings/SettingsView';
