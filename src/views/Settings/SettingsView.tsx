@@ -1,44 +1,133 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider, Spin, Alert } from 'antd';
 import { SettingOutlined, SaveOutlined } from '@ant-design/icons';
 import { PluginRenderer } from '../../components';
+import { useMachineConfig, useStateConfig, useUIConfig, useAPIConfig } from '../../services/config';
 
 const { Title } = Typography;
 const { Option } = Select;
 
 const SettingsView: React.FC = () => {
   const [form] = Form.useForm();
-  const [settings, setSettings] = useState({
-    machine: {
-      name: 'CNC Router',
-      workArea: { x: 300, y: 200, z: 50 },
-      units: 'metric',
-      homePosition: { x: 0, y: 0, z: 0 }
-    },
-    jog: {
-      defaultSpeed: 1000,
-      acceleration: 500,
-      maxSpeed: 5000,
-      distances: [0.1, 1, 10, 100]
-    },
-    ui: {
-      theme: 'light',
-      language: 'en',
-      showGrid: true,
-      showCoordinates: true,
-      autoConnect: false
-    },
-    connection: {
-      port: '/dev/ttyUSB0',
-      baudRate: 115200,
-      timeout: 5000
+  
+  // Configuration hooks
+  const { 
+    machineConfig, 
+    isLoading: machineLoading, 
+    error: machineError,
+    workingAreaDimensions,
+    defaultPosition,
+    feedRateLimits
+  } = useMachineConfig();
+  
+  const { 
+    stateConfig, 
+    isLoading: stateLoading 
+  } = useStateConfig();
+  
+  const { 
+    uiConfig, 
+    isLoading: uiLoading 
+  } = useUIConfig();
+  
+  const { 
+    apiConfig, 
+    isLoading: apiLoading 
+  } = useAPIConfig();
+
+  const [settings, setSettings] = useState<any>(null);
+  
+  // Initialize settings from config when loaded
+  useEffect(() => {
+    if (machineConfig && stateConfig && uiConfig && apiConfig) {
+      const workArea = workingAreaDimensions();
+      const homePos = defaultPosition();
+      const feedLimits = feedRateLimits();
+      
+      const configSettings = {
+        machine: {
+          name: 'CNC Router', // Could be from app config
+          workArea: {
+            x: workArea.width,
+            y: workArea.height,
+            z: workArea.depth
+          },
+          units: stateConfig.defaultState.machine.units,
+          homePosition: {
+            x: homePos.x,
+            y: homePos.y,
+            z: homePos.z
+          }
+        },
+        jog: {
+          defaultSpeed: machineConfig.jogSettings.defaultSpeed,
+          acceleration: machineConfig.movement.acceleration,
+          maxSpeed: feedLimits.max,
+          distances: machineConfig.jogSettings.metricIncrements
+        },
+        ui: {
+          theme: stateConfig.defaultState.ui.theme,
+          language: stateConfig.defaultState.ui.language,
+          showGrid: true, // Could be from UI config
+          showCoordinates: true, // Could be from UI config
+          autoConnect: false // Could be from connection config
+        },
+        connection: {
+          port: '/dev/ttyUSB0', // Could be from defaults config
+          baudRate: 115200, // Could be from defaults config
+          timeout: apiConfig.timeouts.connection
+        }
+      };
+      
+      setSettings(configSettings);
+      form.setFieldsValue(configSettings);
     }
-  });
+  }, [machineConfig, stateConfig, uiConfig, apiConfig, form, workingAreaDimensions, defaultPosition, feedRateLimits]);
 
   const handleSave = (values: any) => {
     console.log('Saving settings:', values);
     setSettings({ ...settings, ...values });
   };
+
+  const isLoading = machineLoading || stateLoading || uiLoading || apiLoading;
+  const hasError = machineError;
+
+  if (isLoading) {
+    return (
+      <div style={{ textAlign: 'center', padding: '50px' }}>
+        <Spin size="large" />
+        <div style={{ marginTop: '16px' }}>Loading configuration...</div>
+      </div>
+    );
+  }
+
+  if (hasError) {
+    return (
+      <div>
+        <Title level={2}>Settings</Title>
+        <Alert
+          message="Configuration Error"
+          description={`Failed to load configuration: ${hasError}`}
+          type="error"
+          showIcon
+        />
+      </div>
+    );
+  }
+
+  if (!settings) {
+    return (
+      <div>
+        <Title level={2}>Settings</Title>
+        <Alert
+          message="Configuration Loading"
+          description="Waiting for configuration to load..."
+          type="info"
+          showIcon
+        />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -47,7 +136,6 @@ const SettingsView: React.FC = () => {
       <Form
         form={form}
         layout="vertical"
-        initialValues={settings}
         onFinish={handleSave}
       >
         <Row gutter={[16, 16]}>

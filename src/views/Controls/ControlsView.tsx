@@ -1,19 +1,52 @@
-import React, { useState } from 'react';
-import { Card, Row, Col, Typography, Button, InputNumber, Select, Space, Alert, Divider } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Card, Row, Col, Typography, Button, InputNumber, Select, Space, Alert, Divider, Spin } from 'antd';
 import { ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { PluginRenderer, WorkingAreaPreview, MachineDisplay2D } from '../../components';
+import { useMachineConfig, useStateConfig } from '../../services/config/useConfig';
 
 const { Title } = Typography;
 const { Option } = Select;
 
 const ControlsView: React.FC = () => {
+  // Configuration hooks
+  const { 
+    machineConfig, 
+    isLoading: machineLoading, 
+    error: machineError,
+    jogIncrements,
+    feedRateLimits,
+    workingAreaDimensions,
+    defaultPosition
+  } = useMachineConfig();
+  
+  const { 
+    stateConfig, 
+    isLoading: stateLoading 
+  } = useStateConfig();
+
+  // State management
   const [jogDistance, setJogDistance] = useState(1);
   const [feedRate, setFeedRate] = useState(1000);
   const [position, setPosition] = useState({ x: 0, y: 0, z: 0 });
   const [isConnected, setIsConnected] = useState(false);
-  const [workArea] = useState({ x: 300, y: 200, z: 50 });
   const [showGrid, setShowGrid] = useState(true);
   const [showTrail, setShowTrail] = useState(false);
+  const [isMetric, setIsMetric] = useState(true);
+
+  // Derived values from config
+  const workArea = workingAreaDimensions();
+  const feedLimits = feedRateLimits();
+  const availableIncrements = jogIncrements(isMetric);
+
+  // Initialize values from config when loaded
+  useEffect(() => {
+    if (machineConfig && stateConfig) {
+      setJogDistance(machineConfig.jogSettings.metricIncrements[2] || 1); // Default to 3rd increment
+      setFeedRate(machineConfig.jogSettings.defaultSpeed);
+      setPosition(defaultPosition());
+      setIsConnected(stateConfig.defaultState.machine.isConnected);
+    }
+  }, [machineConfig, stateConfig, defaultPosition]);
 
   const handleJog = (axis: 'x' | 'y' | 'z', direction: 1 | -1) => {
     if (!isConnected) {
@@ -31,7 +64,8 @@ const ControlsView: React.FC = () => {
   };
 
   const handleHome = () => {
-    setPosition({ x: 0, y: 0, z: 0 });
+    const homePos = defaultPosition();
+    setPosition(homePos);
     console.log('Homing all axes');
   };
 
@@ -41,9 +75,31 @@ const ControlsView: React.FC = () => {
   };
 
   const handleGoHome = () => {
-    setPosition({ x: 0, y: 0, z: 0 });
+    const homePos = defaultPosition();
+    setPosition(homePos);
     console.log('Going to home position (G28)');
   };
+
+  // Show loading spinner while configuration loads
+  if (machineLoading || stateLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+        <Spin size="large" tip="Loading configuration..." />
+      </div>
+    );
+  }
+
+  // Show error if configuration failed to load
+  if (machineError) {
+    return (
+      <Alert
+        message="Configuration Error"
+        description={`Failed to load machine configuration: ${machineError}`}
+        type="error"
+        showIcon
+      />
+    );
+  }
 
   return (
     <div>
@@ -92,9 +148,9 @@ const ControlsView: React.FC = () => {
         <Col xs={24} md={12}>
           <Card title="Position Display">
             <div style={{ textAlign: 'center', fontSize: '18px', marginBottom: '16px' }}>
-              <div>X: {position.x.toFixed(3)} mm</div>
-              <div>Y: {position.y.toFixed(3)} mm</div>
-              <div>Z: {position.z.toFixed(3)} mm</div>
+              <div>X: {position.x.toFixed(machineConfig?.features.coordinateDisplay.precision || 3)} {isMetric ? 'mm' : 'in'}</div>
+              <div>Y: {position.y.toFixed(machineConfig?.features.coordinateDisplay.precision || 3)} {isMetric ? 'mm' : 'in'}</div>
+              <div>Z: {position.z.toFixed(machineConfig?.features.coordinateDisplay.precision || 3)} {isMetric ? 'mm' : 'in'}</div>
             </div>
             <Button type="primary" block onClick={handleHome}>
               Home All Axes
@@ -106,16 +162,29 @@ const ControlsView: React.FC = () => {
           <Card title="Jog Settings">
             <Space direction="vertical" style={{ width: '100%' }}>
               <div>
-                <label>Jog Distance (mm):</label>
+                <label>Unit System:</label>
+                <Select
+                  value={isMetric ? 'metric' : 'imperial'}
+                  onChange={(value) => setIsMetric(value === 'metric')}
+                  style={{ width: '100%', marginTop: '8px' }}
+                >
+                  <Option value="metric">Metric (mm)</Option>
+                  <Option value="imperial">Imperial (inches)</Option>
+                </Select>
+              </div>
+              
+              <div>
+                <label>Jog Distance ({isMetric ? 'mm' : 'in'}):</label>
                 <Select 
                   value={jogDistance} 
                   onChange={setJogDistance}
                   style={{ width: '100%', marginTop: '8px' }}
                 >
-                  <Option value={0.1}>0.1 mm</Option>
-                  <Option value={1}>1 mm</Option>
-                  <Option value={10}>10 mm</Option>
-                  <Option value={100}>100 mm</Option>
+                  {availableIncrements.map((increment, index) => (
+                    <Option key={increment} value={increment}>
+                      {increment} {isMetric ? 'mm' : 'in'}
+                    </Option>
+                  ))}
                 </Select>
               </div>
               
@@ -123,9 +192,10 @@ const ControlsView: React.FC = () => {
                 <label>Feed Rate (mm/min):</label>
                 <InputNumber
                   value={feedRate}
-                  onChange={(value) => setFeedRate(value || 1000)}
-                  min={1}
-                  max={10000}
+                  onChange={(value) => setFeedRate(value || feedLimits.default)}
+                  min={feedLimits.min}
+                  max={feedLimits.max}
+                  step={10}
                   style={{ width: '100%', marginTop: '8px' }}
                 />
               </div>
