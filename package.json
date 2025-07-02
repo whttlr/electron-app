@@ -155,8 +155,7 @@
     },
     "win": {
       "target": "nsis",
-      "certificateFile": null,
-      "certificatePassword": null
+      "forceCodeSigning": false
     },
     "linux": {
       "target": "AppImage",
