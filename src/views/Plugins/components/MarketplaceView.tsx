@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Card, Row, Col, Input, Select, Spin, List, Space, Button, Tag, Rate, Tooltip, Avatar, Text,
+  Card, Row, Col, Input, Select, Spin, List, Space, Button, Tag, Rate, Tooltip, Avatar, Typography,
 } from 'antd';
 import {
   SearchOutlined,
@@ -12,6 +12,8 @@ import {
   SafetyOutlined,
   CheckCircleOutlined,
 } from '@ant-design/icons';
+
+const { Text } = Typography;
 
 interface MarketplacePlugin {
   id: string;
