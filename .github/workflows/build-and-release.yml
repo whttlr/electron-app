@@ -102,6 +102,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ELECTRON_CACHE: ~/.cache/electron
           ELECTRON_BUILDER_CACHE: ~/.cache/electron-builder
+          API_REPO_URL: https://github.com/whttlr/api.git
           
       - name: Upload build artifacts (macOS)
         uses: actions/upload-artifact@v4

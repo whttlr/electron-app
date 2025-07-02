@@ -40,7 +40,7 @@
     "build:all": "npm run build && npm run build:electron",
     "build:all-electron": "npm run build:electron-renderer && npm run build:electron",
     "preview": "vite preview",
-    "integrate-api": "node scripts/api-integration.js",
+    "integrate-api": "node scripts/api-integration.mjs",
     "build:with-api": "npm run integrate-api && npm run build:all",
     "electron:dev": "npm run integrate-api && npm run build:electron && concurrently \"npm run start\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
     "electron:build": "npm run build:with-api && electron-builder",

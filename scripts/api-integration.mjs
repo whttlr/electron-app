@@ -109,7 +109,10 @@ class ApiIntegrator {
 // CLI usage
 if (import.meta.url === `file://${process.argv[1]}`) {
   const integrator = new ApiIntegrator();
-  integrator.integrateApi().catch(process.exit);
+  integrator.integrateApi().catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });
 }
 
 export default ApiIntegrator;
