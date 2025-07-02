@@ -250,9 +250,9 @@ jobs:
       - name: Get latest release info
         id: latest_release
         run: |
-          # Check if any releases exist
-          if gh release list --limit 1 | grep -q .; then
-            LATEST_RELEASE=$(gh release view --json tagName,url,assets --jq '{tag: .tagName, url: .url, assets: .assets}')
+          # Try to get latest release, handle case where no releases exist
+          if LATEST_RELEASE=$(gh release view --json tagName,url,assets --jq '{tag: .tagName, url: .url, assets: .assets}' 2>/dev/null); then
+            echo "Releases found, using latest release info"
             echo "release_info=$LATEST_RELEASE" >> $GITHUB_OUTPUT
             echo "has_release=true" >> $GITHUB_OUTPUT
           else
