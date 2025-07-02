@@ -27,17 +27,22 @@ function createWindow() {
     mainWindow?.show();
   });
 
-  // Load from appropriate source based on environment
-  const isDev = process.env.NODE_ENV === 'development';
+  // Use app.isPackaged to reliably detect production vs development
+  console.log(`Environment check:`, {
+    NODE_ENV: process.env.NODE_ENV,
+    isPackaged: app.isPackaged,
+    __dirname: __dirname
+  });
   
-  if (isDev) {
-    // Use development server for development
-    mainWindow.loadURL('http://localhost:5173'); // Vite default port
+  if (!app.isPackaged) {
+    // Development mode - load from Vite dev server
+    console.log('Development mode: Loading from Vite dev server...');
+    mainWindow.loadURL('http://localhost:5173');
   } else {
-    // Load from built files in production
+    // Production mode - load from built files
+    console.log('Production mode: Loading from built files...');
     const indexPath = path.join(__dirname, '../../dist/index.html');
-    console.log(`Loading Electron app from: ${indexPath}`);
-    console.log(`Current __dirname: ${__dirname}`);
+    console.log(`Loading from: ${indexPath}`);
     console.log(`File exists: ${require('fs').existsSync(indexPath)}`);
     mainWindow.loadFile(indexPath);
   }
@@ -52,8 +57,8 @@ function createWindow() {
     console.log('Page finished loading successfully');
   });
 
-  // Only open DevTools in actual development (not test)
-  if (process.env.NODE_ENV === 'development') {
+  // Only open DevTools in development mode
+  if (!app.isPackaged) {
     mainWindow.webContents.openDevTools();
   }
 
