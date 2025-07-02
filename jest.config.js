@@ -1,6 +1,8 @@
 export default {
   testEnvironment: 'jsdom',
   setupFilesAfterEnv: ['<rootDir>/src/setupTests.ts'],
+  maxWorkers: 2,
+  workerIdleMemoryLimit: '512MB',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@config/(.*)$': '<rootDir>/config/$1',

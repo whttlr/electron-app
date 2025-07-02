@@ -411,6 +411,336 @@ npm run test:e2e          # Run Playwright end-to-end tests
 npm run lint              # Run ESLint code analysis
 ```
 
+## 🔄 GitHub Actions Workflows
+
+### Available Workflows
+
+The project includes several GitHub Actions workflows for continuous integration and deployment:
+
+#### 1. Unit Tests
+```yaml
+# Trigger: Push, Pull Request
+# Path: .github/workflows/test.yml
+name: Unit Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run test:ci
+```
+
+#### 2. Security Scanning
+```yaml
+# Trigger: Push to main, Pull Request, Schedule
+# Path: .github/workflows/security.yml
+name: Security Scan
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'  # Weekly on Monday
+jobs:
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm audit --audit-level=moderate
+      - name: Run Snyk Security Scan
+        uses: snyk/actions/node@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+```
+
+#### 3. ESLint Code Analysis
+```yaml
+# Trigger: Push, Pull Request
+# Path: .github/workflows/lint.yml
+name: Code Quality
+on: [push, pull_request]
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - name: Upload ESLint Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eslint-report
+          path: eslint-report.json
+```
+
+#### 4. Playwright E2E Tests
+```yaml
+# Trigger: Push to main, Pull Request
+# Path: .github/workflows/e2e.yml
+name: E2E Tests
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npm run build
+      - run: npm run test:e2e
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+```
+
+#### 5. Email Notifications
+```yaml
+# Trigger: Workflow failure, Release
+# Path: .github/workflows/notify.yml
+name: Notifications
+on:
+  workflow_run:
+    workflows: ["Build and Release"]
+    types: [completed]
+  release:
+    types: [published]
+jobs:
+  email:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Email on Failure
+        if: github.event.workflow_run.conclusion == 'failure'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Build Failed: ${{ github.repository }}"
+          body: |
+            The build failed for repository ${{ github.repository }}.
+            
+            Commit: ${{ github.sha }}
+            Branch: ${{ github.ref }}
+            Workflow: ${{ github.event.workflow_run.name }}
+            
+            View details: ${{ github.event.workflow_run.html_url }}
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+      
+      - name: Send Release Email
+        if: github.event_name == 'release'
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "New Release: ${{ github.event.release.tag_name }}"
+          body: |
+            A new release has been published!
+            
+            Release: ${{ github.event.release.name }}
+            Tag: ${{ github.event.release.tag_name }}
+            
+            ${{ github.event.release.body }}
+            
+            Download: ${{ github.event.release.html_url }}
+          to: ${{ secrets.NOTIFICATION_EMAIL }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+```
+
+#### 6. Slack Integration
+```yaml
+# Trigger: Push to main, Release, Workflow failure
+# Path: .github/workflows/slack.yml
+name: Slack Notifications
+on:
+  push:
+    branches: [main]
+  release:
+    types: [published]
+  workflow_run:
+    workflows: ["Build and Release", "Unit Tests", "E2E Tests"]
+    types: [completed]
+jobs:
+  slack:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Slack Notification - Build Status
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          channel: '#cnc-builds'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          fields: repo,message,commit,author,action,eventName,ref,workflow
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+          MATRIX_CONTEXT: ${{ toJson(matrix) }}
+      
+      - name: Slack Notification - Release
+        if: github.event_name == 'release'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: 'success'
+          channel: '#cnc-releases'
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+          custom_payload: |
+            {
+              text: "🚀 New Release Published!",
+              attachments: [{
+                color: 'good',
+                fields: [{
+                  title: 'Release',
+                  value: '${{ github.event.release.tag_name }}',
+                  short: true
+                }, {
+                  title: 'Repository',
+                  value: '${{ github.repository }}',
+                  short: true
+                }],
+                actions: [{
+                  type: 'button',
+                  text: 'Download Release',
+                  url: '${{ github.event.release.html_url }}'
+                }]
+              }]
+            }
+```
+
+#### 7. Release Automation
+```yaml
+# Trigger: Tag push, Manual dispatch
+# Path: .github/workflows/release.yml
+name: Publish Release
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        type: string
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+      - run: npm run test:ci
+      
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.event.inputs.version || github.ref_name }}
+          release_name: Release ${{ github.event.inputs.version || github.ref_name }}
+          body: |
+            ## What's Changed
+            - Automated release from GitHub Actions
+            
+            ## Downloads
+            - [Windows Installer](../../releases/latest/download/CNC-Jog-Controls-Setup.exe)
+            - [macOS DMG](../../releases/latest/download/CNC-Jog-Controls.dmg)
+            - [Linux AppImage](../../releases/latest/download/CNC-Jog-Controls.AppImage)
+          draft: false
+          prerelease: false
+```
+
+### Required Secrets
+
+Set up these secrets in your GitHub repository settings (`Settings > Secrets and variables > Actions`):
+
+```bash
+# Email notifications
+EMAIL_USERNAME=your-email@gmail.com
+EMAIL_PASSWORD=your-app-password
+NOTIFICATION_EMAIL=team@yourcompany.com
+
+# Slack integration
+SLACK_WEBHOOK=https://hooks.slack.com/services/...
+
+# Security scanning
+SNYK_TOKEN=your-snyk-token
+
+# GitHub token (automatically provided)
+GITHUB_TOKEN=automatic
+```
+
+### Usage Examples
+
+#### Running Tests Locally
+```bash
+# Before pushing - run the same checks as CI
+npm run lint                    # ESLint analysis
+npm run test:ci                 # Unit tests with coverage
+npm run build                   # Build verification
+npm run test:e2e                # E2E tests
+```
+
+#### Triggering Workflows
+```bash
+# Push to main - triggers all workflows
+git push origin main
+
+# Create release - triggers release workflow
+git tag v1.0.0
+git push origin v1.0.0
+
+# Manual release via GitHub UI
+# Go to Actions > Publish Release > Run workflow
+```
+
+#### Security Scanning
+```bash
+# Local security audit
+npm audit --audit-level=moderate
+
+# Check for vulnerabilities
+npm audit fix
+
+# Run Snyk locally (requires token)
+npx snyk test
+```
+
 ## 📚 Documentation System
 
 ### **Live Documentation Site**

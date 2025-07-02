@@ -8,11 +8,10 @@ import { PluginProvider } from '../../../services/plugin';
 import { createMockPlugin } from '../../../services/plugin/__mocks__/mockPlugins';
 
 // Mock Ant Design Modal
-const mockModalInfo = jest.fn();
 jest.mock('antd', () => ({
   ...jest.requireActual('antd'),
   Modal: {
-    info: mockModalInfo,
+    info: jest.fn(),
   },
 }));
 
@@ -42,6 +41,9 @@ const TestWrapper: React.FC<{
 
   return <MockPluginProvider>{children}</MockPluginProvider>;
 };
+
+// Get access to the mocked Modal
+const { Modal } = jest.requireMock('antd');
 
 describe('PluginRenderer', () => {
   beforeEach(() => {
@@ -321,7 +323,7 @@ describe('PluginRenderer', () => {
       const modalCard = screen.getByText('Modal Plugin').closest('.ant-card');
       fireEvent.click(modalCard!);
 
-      expect(mockModalInfo).toHaveBeenCalledWith({
+      expect(Modal.info).toHaveBeenCalledWith({
         title: 'Modal Plugin',
         content: expect.anything(),
         width: 800,
@@ -350,7 +352,7 @@ describe('PluginRenderer', () => {
       const modalCard = screen.getByText('Auto Modal').closest('.ant-card');
       fireEvent.click(modalCard!);
 
-      expect(mockModalInfo).toHaveBeenCalledWith({
+      expect(Modal.info).toHaveBeenCalledWith({
         title: 'Auto Modal',
         content: expect.anything(),
         width: 600, // default width

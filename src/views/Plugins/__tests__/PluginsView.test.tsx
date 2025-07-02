@@ -49,7 +49,7 @@ jest.mock('../../../services/plugin', () => ({
   usePlugins: () => mockUsePlugins,
 }));
 
-// Mock message API
+// Create mock objects at module level
 const mockMessage = {
   success: jest.fn(),
   error: jest.fn(),
