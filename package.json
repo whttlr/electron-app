@@ -136,8 +136,8 @@
     },
     "publish": {
       "provider": "github",
-      "owner": "jogger-cnc",
-      "repo": "jog-controls"
+      "owner": "whttlr",
+      "repo": "electron-app"
     },
     "mac": {
       "category": "public.app-category.developer-tools",
