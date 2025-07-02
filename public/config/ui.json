@@ -1,0 +1,20 @@
+{
+  "theme": {
+    "primaryColor": "#1890ff",
+    "axisColors": {
+      "x": "#2f2",
+      "y": "#f00", 
+      "z": "#00f"
+    }
+  },
+  "layout": {
+    "defaultCardSize": "small",
+    "defaultGutter": [16, 16],
+    "containerPadding": "20px",
+    "maxWidth": "1400px"
+  },
+  "animations": {
+    "transitionDuration": "0.3s",
+    "easingFunction": "ease-in-out"
+  }
+}

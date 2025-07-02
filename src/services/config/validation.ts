@@ -10,7 +10,7 @@ import {
   APIConfig,
   DefaultsConfig,
   VisualizationConfig,
-} from './types';
+} from './types/index';
 
 export interface ValidationResult {
   isValid: boolean;

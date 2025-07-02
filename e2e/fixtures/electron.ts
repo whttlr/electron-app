@@ -17,9 +17,16 @@ export const test = base.extend<{
       args: [electronMain],
       env: {
         ...process.env,
-        NODE_ENV: 'test'
+        NODE_ENV: 'test',
+        // Use built files instead of dev server
+        ELECTRON_IS_PACKAGED: 'false'
       },
-      timeout: 30000 // 30 second timeout for app launch
+      timeout: 60000 // 60 second timeout for app launch
+    });
+
+    // Wait for the app to be ready
+    await electronApp.evaluate(async ({ app }) => {
+      await app.whenReady();
     });
 
     // Use the app in tests

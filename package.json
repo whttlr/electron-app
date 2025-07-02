@@ -6,7 +6,6 @@
   "homepage": "./",
   "dependencies": {
     "@ant-design/icons": "^5.0.0",
-    "@prisma/client": "^6.11.0",
     "@react-three/drei": "^9.0.0",
     "@react-three/fiber": "^8.0.0",
     "@types/jszip": "^3.4.0",
@@ -84,7 +83,6 @@
     "jest": "^30.0.3",
     "jest-environment-jsdom": "^30.0.2",
     "jest-watch-typeahead": "^3.0.1",
-    "prisma": "^6.11.0",
     "ts-jest": "^29.4.0",
     "typescript": "^5.0.0",
     "vite": "^4.0.0",
@@ -141,8 +139,7 @@
       ]
     },
     "win": {
-      "target": "nsis",
-      "publisherName": "Jogger CNC Tools"
+      "target": "nsis"
     },
     "linux": {
       "target": "AppImage",

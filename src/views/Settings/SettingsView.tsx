@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider, Spin, Alert } from 'antd';
+import { Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider, Spin, Alert, message } from 'antd';
 import { SettingOutlined, SaveOutlined } from '@ant-design/icons';
 import { PluginRenderer } from '../../components';
 import { useMachineConfig, useStateConfig, useUIConfig, useAPIConfig } from '../../services/config';
+import { AppSettings } from '../../services/settings';
+import { useSettings } from '../../contexts/SettingsContext';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -10,7 +12,15 @@ const { Option } = Select;
 const SettingsView: React.FC = () => {
   const [form] = Form.useForm();
   
-  // Configuration hooks
+  // Global settings context
+  const { 
+    settings, 
+    isLoading: isLoadingSettings, 
+    error: settingsError,
+    updateSettings 
+  } = useSettings();
+  
+  // Configuration hooks (for fallback defaults)
   const { 
     machineConfig, 
     isLoading: machineLoading, 
@@ -35,68 +45,41 @@ const SettingsView: React.FC = () => {
     isLoading: apiLoading 
   } = useAPIConfig();
 
-  const [settings, setSettings] = useState<any>(null);
+  const [isSaving, setIsSaving] = useState(false);
   
-  // Initialize settings from config when loaded
+  // Update form when settings change
   useEffect(() => {
-    if (machineConfig && stateConfig && uiConfig && apiConfig) {
-      const workArea = workingAreaDimensions();
-      const homePos = defaultPosition();
-      const feedLimits = feedRateLimits();
-      
-      const configSettings = {
-        machine: {
-          name: 'CNC Router', // Could be from app config
-          workArea: {
-            x: workArea.width,
-            y: workArea.height,
-            z: workArea.depth
-          },
-          units: stateConfig.defaultState.machine.units,
-          homePosition: {
-            x: homePos.x,
-            y: homePos.y,
-            z: homePos.z
-          }
-        },
-        jog: {
-          defaultSpeed: machineConfig.jogSettings.defaultSpeed,
-          acceleration: machineConfig.movement.acceleration,
-          maxSpeed: feedLimits.max,
-          distances: machineConfig.jogSettings.metricIncrements
-        },
-        ui: {
-          theme: stateConfig.defaultState.ui.theme,
-          language: stateConfig.defaultState.ui.language,
-          showGrid: true, // Could be from UI config
-          showCoordinates: true, // Could be from UI config
-          autoConnect: false // Could be from connection config
-        },
-        connection: {
-          port: '/dev/ttyUSB0', // Could be from defaults config
-          baudRate: 115200, // Could be from defaults config
-          timeout: apiConfig.timeouts.connection
-        }
-      };
-      
-      setSettings(configSettings);
-      form.setFieldsValue(configSettings);
+    if (settings) {
+      form.setFieldsValue(settings);
     }
-  }, [machineConfig, stateConfig, uiConfig, apiConfig, form, workingAreaDimensions, defaultPosition, feedRateLimits]);
+  }, [settings, form]);
 
-  const handleSave = (values: any) => {
-    console.log('Saving settings:', values);
-    setSettings({ ...settings, ...values });
+  const handleSave = async (values: any) => {
+    try {
+      setIsSaving(true);
+      
+      // Save settings via global context
+      await updateSettings(values);
+      
+      message.success('Settings saved successfully');
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      message.error('Failed to save settings');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const isLoading = machineLoading || stateLoading || uiLoading || apiLoading;
-  const hasError = machineError;
+  const isLoading = machineLoading || stateLoading || uiLoading || apiLoading || isLoadingSettings;
+  const hasError = machineError || settingsError;
 
   if (isLoading) {
     return (
       <div style={{ textAlign: 'center', padding: '50px' }}>
         <Spin size="large" />
-        <div style={{ marginTop: '16px' }}>Loading configuration...</div>
+        <div style={{ marginTop: '16px' }}>
+          {isLoadingSettings ? 'Loading settings...' : 'Loading configuration...'}
+        </div>
       </div>
     );
   }
@@ -130,7 +113,7 @@ const SettingsView: React.FC = () => {
   }
 
   return (
-    <div>
+    <div data-testid="settings-container">
       <Title level={2}>Settings</Title>
       
       <Form
@@ -254,8 +237,15 @@ const SettingsView: React.FC = () => {
         
         <Row style={{ marginTop: '24px' }}>
           <Col span={24}>
-            <Button type="primary" htmlType="submit" icon={<SaveOutlined />} size="large">
-              Save Settings
+            <Button 
+              type="primary" 
+              htmlType="submit" 
+              icon={<SaveOutlined />} 
+              size="large"
+              loading={isSaving}
+              disabled={isSaving}
+            >
+              {isSaving ? 'Saving...' : 'Save Settings'}
             </Button>
           </Col>
         </Row>

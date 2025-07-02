@@ -1,6 +1,11 @@
 When working on task in the TODO section, once complete, move to the DONE section.
 
 
+[] Add hooks to claude
+[] look for other claude features
+
+
+
 TODO:
 - [] Update playwright tests to open the main application window
 - [] Lets add to .gitignore a sqlite

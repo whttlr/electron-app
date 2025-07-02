@@ -3,6 +3,11 @@
 // Configuration service
 export { ConfigService, configService } from './ConfigService';
 
+// Configuration modules
+export { ConfigLoader } from './ConfigLoader';
+export { ConfigEventEmitter } from './ConfigEventEmitter';
+export { ConfigUtils } from './ConfigUtils';
+
 // Configuration types
 export type {
   CompleteConfig,
@@ -21,7 +26,7 @@ export type {
   JogSettings,
   MachineFeatures,
   CONFIG_FILES,
-} from './types';
+} from './types/index';
 
 // Validation utilities
 export { validateConfig, ConfigValidator } from './validation';

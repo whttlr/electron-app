@@ -332,7 +332,7 @@ Each module folder must contain:
 - **Utils**: Pure utility functions without dependencies
 
 ### Architecture Enforcement
-- **File size limit**: 300 lines maximum per file
+- **File size limit**: 500 lines maximum per file
 - **Single responsibility**: Each file/module has one clear purpose
 - **Configuration centralization**: No hardcoded values in logic files
 - **Import discipline**: Clear dependency boundaries between layers

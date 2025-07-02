@@ -9,9 +9,9 @@ export interface PluginRecord {
   type: 'utility' | 'visualization' | 'control' | 'productivity';
   source: 'local' | 'marketplace' | 'registry';
   status: 'active' | 'inactive';
-  installedAt: Date;
-  updatedAt: Date;
-  lastCheckedAt?: Date;
+  installedAt: Date | string; // Can be string when loaded from localStorage
+  updatedAt: Date | string;   // Can be string when loaded from localStorage
+  lastCheckedAt?: Date | string; // Can be string when loaded from localStorage
   updateAvailable: boolean;
   latestVersion?: string;
   registryId?: string;
@@ -35,8 +35,8 @@ export interface PluginStateRecord {
   menuIcon?: string;
   routePath?: string;
   customSettings?: Record<string, any>;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: Date | string; // Can be string when loaded from localStorage
+  updatedAt: Date | string; // Can be string when loaded from localStorage
 }
 
 export interface CommandRecord {
@@ -45,7 +45,7 @@ export interface CommandRecord {
   type: 'gcode' | 'jog' | 'macro' | 'system';
   source: 'user' | 'plugin' | 'system' | 'macro';
   pluginId?: string;
-  executedAt: Date;
+  executedAt: Date | string; // Can be string when loaded from localStorage
   duration?: number;
   status: 'success' | 'error' | 'cancelled';
   error?: string;
@@ -64,9 +64,17 @@ export interface AppStateRecord {
   workOffset?: { x: number; y: number; z: number };
   theme: string;
   language: string;
-  lastConnectedAt?: Date;
-  sessionStartedAt: Date;
-  updatedAt: Date;
+  lastConnectedAt?: Date | string; // Can be string when loaded from localStorage
+  sessionStartedAt: Date | string;  // Can be string when loaded from localStorage
+  updatedAt: Date | string;         // Can be string when loaded from localStorage
+  // Additional settings fields
+  showGrid?: boolean;
+  showCoordinates?: boolean;
+  autoConnect?: boolean;
+  // JSON strings for complex settings
+  machineSettings?: string;
+  jogSettings?: string;
+  connectionSettings?: string;
 }
 
 export interface SettingHistoryRecord {
@@ -76,7 +84,7 @@ export interface SettingHistoryRecord {
   newValue: any;
   changedBy: 'user' | 'system' | 'plugin';
   pluginId?: string;
-  changedAt: Date;
+  changedAt: Date | string; // Can be string when loaded from localStorage
 }
 
 export interface PluginDependencyRecord {

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Spin, Alert } from 'antd';
 import { DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined } from '@ant-design/icons';
 import { PluginProvider, usePlugins } from './services/plugin';
+import { databaseService } from './services/database';
+import { SettingsProvider } from './contexts/SettingsContext';
 import DashboardView from './views/Dashboard/DashboardView';
 import PluginsView from './views/Plugins/PluginsView';
 import SettingsView from './views/Settings/SettingsView';
@@ -117,11 +119,63 @@ const AppContent: React.FC = () => {
 };
 
 function App() {
+  const [isDbInitialized, setIsDbInitialized] = useState(false);
+  const [dbError, setDbError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const initializeDatabase = async () => {
+      try {
+        await databaseService.initialize();
+        setIsDbInitialized(true);
+      } catch (error) {
+        console.error('Failed to initialize database:', error);
+        setDbError(error instanceof Error ? error.message : 'Unknown database error');
+      }
+    };
+
+    initializeDatabase();
+  }, []);
+
+  if (dbError) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh',
+        padding: '24px'
+      }}>
+        <Alert
+          message="Database Initialization Failed"
+          description={`Failed to initialize the database: ${dbError}. Please restart the application.`}
+          type="error"
+          showIcon
+        />
+      </div>
+    );
+  }
+
+  if (!isDbInitialized) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '100vh' 
+      }}>
+        <Spin size="large" />
+        <div style={{ marginLeft: '16px' }}>Initializing database...</div>
+      </div>
+    );
+  }
+
   return (
     <Router>
-      <PluginProvider>
-        <AppContent />
-      </PluginProvider>
+      <SettingsProvider>
+        <PluginProvider>
+          <AppContent />
+        </PluginProvider>
+      </SettingsProvider>
     </Router>
   );
 }

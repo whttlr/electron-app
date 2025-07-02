@@ -1,0 +1,102 @@
+{
+  "machine": {
+    "connection": {
+      "defaultPort": "/dev/ttyUSB0",
+      "baudRate": 115200,
+      "timeout": 5000,
+      "autoReconnect": true,
+      "reconnectDelay": 2000
+    },
+    "limits": {
+      "soft": {
+        "x": { "min": -100, "max": 100 },
+        "y": { "min": -100, "max": 100 },
+        "z": { "min": -50, "max": 50 }
+      },
+      "hard": {
+        "x": { "min": -110, "max": 110 },
+        "y": { "min": -110, "max": 110 },
+        "z": { "min": -60, "max": 60 }
+      }
+    },
+    "homing": {
+      "sequence": ["z", "x", "y"],
+      "speed": 500,
+      "enabled": true
+    }
+  },
+  "jog": {
+    "increments": {
+      "metric": {
+        "values": [0.001, 0.01, 0.1, 1, 10, 50, 100],
+        "default": 1,
+        "unit": "mm"
+      },
+      "imperial": {
+        "values": [0.396875, 0.79375, 1.5875, 3.175, 6.35, 12.7, 25.4],
+        "default": 3.175,
+        "unit": "in",
+        "labels": ["1/64\"", "1/32\"", "1/16\"", "1/8\"", "1/4\"", "1/2\"", "1\""]
+      }
+    },
+    "speed": {
+      "default": 1000,
+      "min": 1,
+      "max": 5000,
+      "step": 10,
+      "unit": "mm/min"
+    },
+    "safety": {
+      "maxDistancePerJog": 50,
+      "requireConfirmation": false,
+      "enableSoftLimits": true
+    }
+  },
+  "visualization": {
+    "preview2D": {
+      "backgroundColor": "#f5f5f5",
+      "gridColor": "#e0e0e0",
+      "axisColors": {
+        "x": "#ff4d4f",
+        "y": "#52c41a",
+        "z": "#1890ff"
+      },
+      "toolColor": "#fa541c",
+      "refreshRate": 30
+    },
+    "preview3D": {
+      "backgroundColor": "#f0f0f0",
+      "cameraPosition": {
+        "x": 50,
+        "y": 50,
+        "z": 100
+      },
+      "lighting": {
+        "ambient": 0.4,
+        "directional": 0.6
+      },
+      "refreshRate": 60
+    }
+  },
+  "ui": {
+    "theme": {
+      "primaryColor": "#1890ff",
+      "borderRadius": 6,
+      "spacing": 16
+    },
+    "animations": {
+      "enabled": true,
+      "duration": 300,
+      "easing": "ease-in-out"
+    },
+    "responsiveness": {
+      "breakpoints": {
+        "xs": 480,
+        "sm": 768,
+        "md": 992,
+        "lg": 1200,
+        "xl": 1600
+      }
+    }
+  }
+}

@@ -21,7 +21,7 @@ const DashboardView: React.FC = () => {
             title="Jog Controls"
             extra={<ControlOutlined />}
             actions={[
-              <Button type="primary" href="/controls" data-testid="quick-action-jog-controls">
+              <Button type="link" href="/controls" data-testid="quick-action-jog-controls">
                 Open Controls
               </Button>
             ]}
@@ -37,7 +37,7 @@ const DashboardView: React.FC = () => {
             title="Machine Status"
             extra={<ToolOutlined />}
             actions={[
-              <Button type="default">
+              <Button  type="link">
                 View Status
               </Button>
             ]}
@@ -53,7 +53,7 @@ const DashboardView: React.FC = () => {
             title="Plugins"
             extra={<AppstoreOutlined />}
             actions={[
-              <Button type="default" href="/plugins">
+              <Button type="link" href="/plugins">
                 Manage Plugins
               </Button>
             ]}
@@ -69,7 +69,7 @@ const DashboardView: React.FC = () => {
             title="Settings"
             extra={<SettingOutlined />}
             actions={[
-              <Button type="default" href="/settings">
+              <Button type="link" href="/settings">
                 Configure
               </Button>
             ]}

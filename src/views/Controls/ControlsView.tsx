@@ -102,7 +102,7 @@ const ControlsView: React.FC = () => {
   }
 
   return (
-    <div>
+    <div data-testid="controls-container">
       <Title level={2}>Jog Controls</Title>
       
       {!isConnected && (
@@ -121,7 +121,7 @@ const ControlsView: React.FC = () => {
       )}
 
       {/* 3D and 2D Preview Section */}
-      <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
+      {/* <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} lg={12}>
           <WorkingAreaPreview
             currentPosition={position}
@@ -142,7 +142,7 @@ const ControlsView: React.FC = () => {
             onGoHome={handleGoHome}
           />
         </Col>
-      </Row>
+      </Row> */}
       
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>

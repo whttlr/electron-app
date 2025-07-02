@@ -5,12 +5,17 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   root: '.',
+  base: './', // Use relative paths for Electron compatibility
   build: {
     outDir: 'dist'
   },
   server: {
-    port: 3001,
-    open: true
+    port: 5173,
+    open: true,
+    headers: {
+      // Allow external requests during development
+      'Content-Security-Policy': "default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: file: https: http:; connect-src 'self' https: http: ws: wss:;"
+    }
   },
   resolve: {
     alias: {

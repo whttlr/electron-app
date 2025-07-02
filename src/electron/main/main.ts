@@ -26,9 +26,15 @@ function createWindow() {
     mainWindow?.show();
   });
 
-  // Always use development server for testing
-  // This avoids file:// protocol issues with ES modules
-  mainWindow.loadURL('http://localhost:3001');
+  // Load from built files for testing, dev server for development
+  if (process.env.NODE_ENV === 'test') {
+    // Load from built files during testing
+    const filePath = path.join(__dirname, '../../dist/index.html');
+    mainWindow.loadFile(filePath);
+  } else {
+    // Use development server for development
+    mainWindow.loadURL('http://localhost:3001');
+  }
   
   // Only open DevTools in actual development (not test)
   if (process.env.NODE_ENV === 'development') {

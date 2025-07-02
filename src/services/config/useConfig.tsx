@@ -14,7 +14,7 @@ import {
   VisualizationConfig,
   ConfigLoadingState,
   ConfigEvent,
-} from './types';
+} from './types/index';
 
 /**
  * Hook for accessing complete configuration
