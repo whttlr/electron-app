@@ -31,7 +31,7 @@ export class CommandHistoryService {
       positionBefore?: { x: number; y: number; z: number };
       feedRate?: number;
       spindleSpeed?: number;
-    }
+    },
   ): Promise<string> {
     const commandRecord = await databaseService.addCommandHistory({
       command,
@@ -58,7 +58,7 @@ export class CommandHistoryService {
       error?: string;
       response?: string;
       positionAfter?: { x: number; y: number; z: number };
-    }
+    },
   ): Promise<void> {
     // Note: This would require an update method in DatabaseService
     // For now, we'll just log the result
@@ -78,7 +78,7 @@ export class CommandHistoryService {
       status?: 'success' | 'error' | 'cancelled';
       from?: Date;
       to?: Date;
-    }
+    },
   ): Promise<CommandRecord[]> {
     return await databaseService.getCommandHistory(limit, offset, filters);
   }
@@ -110,7 +110,7 @@ export class CommandHistoryService {
   public async clearOldHistory(olderThanDays = 30): Promise<number> {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - olderThanDays);
-    
+
     return await databaseService.clearCommandHistory(cutoffDate);
   }
 
@@ -125,17 +125,17 @@ export class CommandHistoryService {
     bySource: Record<string, number>;
   }> {
     const allCommands = await this.getHistory(10000); // Get a large sample
-    
+
     const stats = {
       totalCommands: allCommands.length,
-      successCount: allCommands.filter(c => c.status === 'success').length,
-      errorCount: allCommands.filter(c => c.status === 'error').length,
+      successCount: allCommands.filter((c) => c.status === 'success').length,
+      errorCount: allCommands.filter((c) => c.status === 'error').length,
       byType: {} as Record<string, number>,
       bySource: {} as Record<string, number>,
     };
 
     // Count by type
-    allCommands.forEach(command => {
+    allCommands.forEach((command) => {
       stats.byType[command.type] = (stats.byType[command.type] || 0) + 1;
       stats.bySource[command.source] = (stats.bySource[command.source] || 0) + 1;
     });
@@ -152,10 +152,10 @@ export class CommandHistoryService {
     feedRate: number,
     currentPosition: { x: number; y: number; z: number },
     source: 'user' | 'plugin' = 'user',
-    pluginId?: string
+    pluginId?: string,
   ): Promise<string> {
     const command = `G91 G1 ${axis.toUpperCase()}${distance} F${feedRate} G90`;
-    
+
     return this.recordCommand(command, 'jog', source, {
       pluginId,
       positionBefore: currentPosition,
@@ -170,7 +170,7 @@ export class CommandHistoryService {
     gcode: string,
     currentPosition?: { x: number; y: number; z: number },
     source: 'user' | 'plugin' = 'user',
-    pluginId?: string
+    pluginId?: string,
   ): Promise<string> {
     return this.recordCommand(gcode, 'gcode', source, {
       pluginId,
@@ -183,7 +183,7 @@ export class CommandHistoryService {
    */
   public async recordSystemCommand(
     command: string,
-    source: 'user' | 'system' = 'system'
+    source: 'user' | 'system' = 'system',
   ): Promise<string> {
     return this.recordCommand(command, 'system', source);
   }

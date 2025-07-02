@@ -1,6 +1,23 @@
 import React from 'react';
-import { Card, Row, Col, Button, Upload, message, List, Tag, Space, Badge, Dropdown, Divider } from 'antd';
-import { UploadOutlined, AppstoreOutlined, SettingOutlined, DeleteOutlined, DownloadOutlined, SyncOutlined, ExportOutlined, ImportOutlined, BranchesOutlined, CheckCircleOutlined, ExclamationCircleOutlined, MoreOutlined, GlobalOutlined, SafetyOutlined } from '@ant-design/icons';
+import {
+  Card, Row, Col, Button, Upload, message, List, Tag, Space, Badge, Dropdown, Divider,
+} from 'antd';
+import {
+  UploadOutlined,
+  AppstoreOutlined,
+  SettingOutlined,
+  DeleteOutlined,
+  DownloadOutlined,
+  SyncOutlined,
+  ExportOutlined,
+  ImportOutlined,
+  BranchesOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
+  MoreOutlined,
+  GlobalOutlined,
+  SafetyOutlined,
+} from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { Plugin, PluginUpdate } from '../../../services/plugin';
 
@@ -36,8 +53,7 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
   openConfigModal,
   removePlugin,
   getTypeColor,
-}) => {
-  return (
+}) => (
     <div>
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24} md={8}>
@@ -46,7 +62,7 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
               <Button icon={<UploadOutlined />}>Select Plugin ZIP File</Button>
             </Upload>
             <Divider />
-            <Upload 
+            <Upload
               accept=".json"
               beforeUpload={handleImportPlugins}
               showUploadList={false}
@@ -55,7 +71,7 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
             </Upload>
           </Card>
         </Col>
-        
+
         <Col xs={24} md={8}>
           <Card title="Plugin Statistics">
             <div style={{ textAlign: 'center' }}>
@@ -64,7 +80,7 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
               </div>
               <div>Total Plugins</div>
               <div style={{ marginTop: '16px' }}>
-                <Badge count={plugins.filter(p => p.status === 'active').length} color="green">
+                <Badge count={plugins.filter((p) => p.status === 'active').length} color="green">
                   <span style={{ color: '#52c41a', marginRight: '16px' }}>Active</span>
                 </Badge>
                 <Badge count={updates.length} color="orange">
@@ -78,16 +94,16 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
         <Col xs={24} md={8}>
           <Card title="Actions">
             <Space direction="vertical" style={{ width: '100%' }}>
-              <Button 
-                icon={<SyncOutlined />} 
+              <Button
+                icon={<SyncOutlined />}
                 onClick={handleCheckForUpdates}
                 loading={checkingUpdates}
                 block
               >
                 Check Updates
               </Button>
-              <Button 
-                icon={<ExportOutlined />} 
+              <Button
+                icon={<ExportOutlined />}
                 onClick={handleExportPlugins}
                 block
               >
@@ -100,7 +116,7 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
 
       {/* Update Notifications */}
       {updates.length > 0 && (
-        <Card 
+        <Card
           title={
             <Space>
               <ExclamationCircleOutlined style={{ color: '#faad14' }} />
@@ -109,8 +125,8 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
             </Space>
           }
           extra={
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<DownloadOutlined />}
               onClick={handleUpdateAll}
               size="small"
@@ -126,15 +142,15 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
             renderItem={(update) => (
               <List.Item
                 actions={[
-                  <Button 
-                    type="primary" 
+                  <Button
+                    type="primary"
                     size="small"
                     icon={<DownloadOutlined />}
                     loading={updatingPlugin === update.pluginId}
                     onClick={() => handleUpdatePlugin(update.pluginId, update.latestVersion)}
                   >
                     Update
-                  </Button>
+                  </Button>,
                 ]}
               >
                 <List.Item.Meta
@@ -146,7 +162,7 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
           />
         </Card>
       )}
-      
+
       <Card title="Installed Plugins" extra={<AppstoreOutlined />}>
         <List
           itemLayout="horizontal"
@@ -171,7 +187,7 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
                 >
                   {plugin.status === 'active' ? 'Disable' : 'Enable'}
                 </Button>,
-                <Button 
+                <Button
                   icon={<SettingOutlined />}
                   onClick={() => openConfigModal(plugin)}
                 >
@@ -206,11 +222,11 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
                         danger: true,
                         onClick: () => removePlugin(plugin.id),
                       },
-                    ].filter(Boolean)
+                    ].filter(Boolean),
                   }}
                 >
                   <Button icon={<MoreOutlined />} />
-                </Dropdown>
+                </Dropdown>,
               ].filter(Boolean)}
             >
               <List.Item.Meta
@@ -268,7 +284,7 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
             </List.Item>
           )}
         />
-        
+
         {plugins.length === 0 && (
           <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
             <AppstoreOutlined style={{ fontSize: '48px', marginBottom: '16px' }} />
@@ -278,7 +294,6 @@ const LocalPluginsView: React.FC<LocalPluginsViewProps> = ({
         )}
       </Card>
     </div>
-  );
-};
+);
 
 export default LocalPluginsView;

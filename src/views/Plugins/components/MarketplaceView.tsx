@@ -1,6 +1,17 @@
 import React from 'react';
-import { Card, Row, Col, Input, Select, Spin, List, Space, Button, Tag, Rate, Tooltip, Avatar, Text } from 'antd';
-import { SearchOutlined, DownloadOutlined, GlobalOutlined, AppstoreOutlined, UserOutlined, ClockCircleOutlined, SafetyOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import {
+  Card, Row, Col, Input, Select, Spin, List, Space, Button, Tag, Rate, Tooltip, Avatar, Text,
+} from 'antd';
+import {
+  SearchOutlined,
+  DownloadOutlined,
+  GlobalOutlined,
+  AppstoreOutlined,
+  UserOutlined,
+  ClockCircleOutlined,
+  SafetyOutlined,
+  CheckCircleOutlined,
+} from '@ant-design/icons';
 
 interface MarketplacePlugin {
   id: string;
@@ -53,8 +64,7 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
   formatDownloads,
   isPluginInstalled,
   getTypeColor,
-}) => {
-  return (
+}) => (
     <div>
       {/* Search and Filter Section */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
@@ -121,8 +131,8 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
       </Row>
 
       {/* Plugin List */}
-      <Card 
-        title="Available Plugins" 
+      <Card
+        title="Available Plugins"
         extra={
           <Space>
             <Button
@@ -149,9 +159,9 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                 <List.Item
                   actions={[
                     <Space>
-                      <Rate 
-                        disabled 
-                        value={marketplacePlugin.rating} 
+                      <Rate
+                        disabled
+                        value={marketplacePlugin.rating}
                         style={{ fontSize: '14px' }}
                       />
                       <Text type="secondary">({marketplacePlugin.rating})</Text>
@@ -167,7 +177,7 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                         Installed
                       </Button>
                     ) : (
-                      <Button 
+                      <Button
                         type="primary"
                         icon={<DownloadOutlined />}
                         onClick={() => installMarketplacePlugin(marketplacePlugin)}
@@ -177,7 +187,7 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       </Button>
                     ),
                     marketplacePlugin.homepage && (
-                      <Button 
+                      <Button
                         type="link"
                         icon={<GlobalOutlined />}
                         href={marketplacePlugin.homepage}
@@ -185,12 +195,12 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                       >
                         Homepage
                       </Button>
-                    )
+                    ),
                   ].filter(Boolean)}
                 >
                   <List.Item.Meta
                     avatar={
-                      <Avatar 
+                      <Avatar
                         size={48}
                         icon={<AppstoreOutlined />}
                         style={{ backgroundColor: '#1890ff' }}
@@ -237,7 +247,7 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
                           <Text type="secondary">{marketplacePlugin.size}</Text>
                         </Space>
                         <div style={{ marginTop: '8px' }}>
-                          {marketplacePlugin.tags.map(tag => (
+                          {marketplacePlugin.tags.map((tag) => (
                             <Tag key={tag} size="small" style={{ margin: '2px' }}>
                               {tag}
                             </Tag>
@@ -257,7 +267,7 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
               );
             }}
           />
-          
+
           {getFilteredMarketplacePlugins().length === 0 && !marketplaceLoading && (
             <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
               <SearchOutlined style={{ fontSize: '48px', marginBottom: '16px' }} />
@@ -268,7 +278,6 @@ const MarketplaceView: React.FC<MarketplaceViewProps> = ({
         </Spin>
       </Card>
     </div>
-  );
-};
+);
 
 export default MarketplaceView;

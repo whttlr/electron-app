@@ -22,7 +22,7 @@ export const mockMachineState: MockMachineState = {
   isConnected: false,
   status: 'idle',
   speed: 1000,
-  feedRate: 1000
+  feedRate: 1000,
 };
 
 export const mockMachineConfig: MockMachineConfig = {
@@ -31,22 +31,23 @@ export const mockMachineConfig: MockMachineConfig = {
   workArea: { x: 300, y: 200, z: 50 },
   maxSpeed: 5000,
   acceleration: 1000,
-  units: 'metric'
+  units: 'metric',
 };
 
 export const createMockMachineState = (overrides: Partial<MockMachineState> = {}): MockMachineState => ({
   ...mockMachineState,
-  ...overrides
+  ...overrides,
 });
 
 export const createMockMachineConfig = (overrides: Partial<MockMachineConfig> = {}): MockMachineConfig => ({
   ...mockMachineConfig,
-  ...overrides
+  ...overrides,
 });
 
 // Mock machine controller for testing
 export class MockMachineController {
   private state: MockMachineState;
+
   private config: MockMachineConfig;
 
   constructor(config: MockMachineConfig = mockMachineConfig) {
@@ -101,9 +102,9 @@ export class MockMachineController {
   private isPositionValid(position: { x: number; y: number; z: number }): boolean {
     const { workArea } = this.config;
     return (
-      position.x >= -workArea.x / 2 && position.x <= workArea.x / 2 &&
-      position.y >= -workArea.y / 2 && position.y <= workArea.y / 2 &&
-      position.z >= 0 && position.z <= workArea.z
+      position.x >= -workArea.x / 2 && position.x <= workArea.x / 2
+      && position.y >= -workArea.y / 2 && position.y <= workArea.y / 2
+      && position.z >= 0 && position.z <= workArea.z
     );
   }
 
@@ -124,7 +125,7 @@ export class MockMachineController {
     const newPosition = {
       x: this.state.position.x + delta.x,
       y: this.state.position.y + delta.y,
-      z: this.state.position.z + delta.z
+      z: this.state.position.z + delta.z,
     };
     await this.moveAbsolute(newPosition);
   }

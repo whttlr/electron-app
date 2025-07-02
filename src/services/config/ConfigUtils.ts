@@ -1,7 +1,9 @@
 // Configuration Utility Functions
 // Helper functions for retrieving specific configuration values
 
-import { CompleteConfig, MachineConfig, StateConfig, UIConfig } from './types/index';
+import {
+  CompleteConfig, MachineConfig, StateConfig, UIConfig,
+} from './types/index';
 
 export class ConfigUtils {
   /**
@@ -13,7 +15,7 @@ export class ConfigUtils {
       return isMetric ? [0.1, 1, 10, 100] : [0.396875, 0.79375, 1.5875, 3.175];
     }
 
-    return isMetric 
+    return isMetric
       ? machineConfig.jogSettings.metricIncrements
       : machineConfig.jogSettings.imperialIncrements;
   }
@@ -36,7 +38,9 @@ export class ConfigUtils {
   /**
    * Get working area dimensions
    */
-  public static getWorkingAreaDimensions(machineConfig: MachineConfig | null): { width: number; height: number; depth: number } {
+  public static getWorkingAreaDimensions(
+    machineConfig: MachineConfig | null,
+  ): { width: number; height: number; depth: number } {
     if (!machineConfig) {
       return { width: 100, height: 100, depth: 50 };
     }

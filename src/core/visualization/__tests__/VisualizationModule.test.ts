@@ -26,7 +26,7 @@ describe('Core Visualization Module', () => {
     test('should maintain consistent interface for future exports', () => {
       expect(VisualizationModule).toEqual({
         version: '1.0.0',
-        description: '3D/2D visualization calculations and scene management'
+        description: '3D/2D visualization calculations and scene management',
       });
     });
   });
@@ -66,7 +66,7 @@ describe('VisualizationController', () => {
     test('should calculate optimal camera position', () => {
       const workArea = { x: 300, y: 200, z: 50 };
       const cameraPos = controller.calculateOptimalCameraPosition(workArea);
-      
+
       expect(cameraPos.x).toBeGreaterThan(0);
       expect(cameraPos.y).toBeGreaterThan(0);
       expect(cameraPos.z).toBeGreaterThan(0);
@@ -75,10 +75,10 @@ describe('VisualizationController', () => {
     test('should calculate scale factor for different work areas', () => {
       const smallArea = { x: 100, y: 100, z: 25 };
       const largeArea = { x: 1000, y: 800, z: 200 };
-      
+
       const smallScale = controller.calculateScale(smallArea, 400, 300);
       const largeScale = controller.calculateScale(largeArea, 400, 300);
-      
+
       expect(smallScale).toBeGreaterThan(largeScale);
     });
   });
@@ -87,9 +87,9 @@ describe('VisualizationController', () => {
     test('should convert 3D to 2D screen coordinates', () => {
       const worldPos = { x: 50, y: 25, z: 10 };
       const screenSize = { width: 400, height: 300 };
-      
+
       const screenPos = controller.worldToScreen(worldPos, screenSize);
-      
+
       expect(screenPos.x).toBeGreaterThanOrEqual(0);
       expect(screenPos.x).toBeLessThanOrEqual(screenSize.width);
       expect(screenPos.y).toBeGreaterThanOrEqual(0);
@@ -99,9 +99,9 @@ describe('VisualizationController', () => {
     test('should convert screen to world coordinates', () => {
       const screenPos = { x: 200, y: 150 };
       const screenSize = { width: 400, height: 300 };
-      
+
       const worldPos = controller.screenToWorld(screenPos, screenSize);
-      
+
       expect(worldPos).toHaveProperty('x');
       expect(worldPos).toHaveProperty('y');
       expect(typeof worldPos.x).toBe('number');
@@ -112,7 +112,7 @@ describe('VisualizationController', () => {
   describe('Grid Generation', () => {
     test('should generate grid lines', () => {
       const gridLines = controller.generateGridLines();
-      
+
       expect(gridLines).toHaveProperty('major');
       expect(gridLines).toHaveProperty('minor');
       expect(Array.isArray(gridLines.major)).toBe(true);
@@ -123,7 +123,7 @@ describe('VisualizationController', () => {
       const spacing = controller.calculateGridSpacing(1);
       expect(spacing.major).toBe(50);
       expect(spacing.minor).toBe(10);
-      
+
       const smallSpacing = controller.calculateGridSpacing(0.1);
       expect(smallSpacing.major).toBe(500);
       expect(smallSpacing.minor).toBe(100);
@@ -134,7 +134,7 @@ describe('VisualizationController', () => {
     test('should calculate level of detail based on distance', () => {
       const nearLOD = controller.calculateLOD(5);
       const farLOD = controller.calculateLOD(50);
-      
+
       expect(nearLOD).toBeGreaterThan(farLOD);
     });
 
@@ -143,17 +143,17 @@ describe('VisualizationController', () => {
         min: { x: -10, y: -10, z: -10 },
         max: { x: 10, y: 10, z: 10 }
       };
-      
+
       const visibleBounds = {
         min: { x: -20, y: -20, z: -20 },
         max: { x: 20, y: 20, z: 20 }
       };
-      
+
       const hiddenBounds = {
         min: { x: 100, y: 100, z: 100 },
         max: { x: 110, y: 110, z: 110 }
       };
-      
+
       expect(controller.shouldCull(bounds, visibleBounds)).toBe(false);
       expect(controller.shouldCull(bounds, hiddenBounds)).toBe(true);
     });
@@ -163,7 +163,7 @@ describe('VisualizationController', () => {
     test('should interpolate between positions', () => {
       const startPos = { x: 0, y: 0, z: 0 };
       const endPos = { x: 100, y: 50, z: 25 };
-      
+
       const midPos = controller.interpolatePosition(startPos, endPos, 0.5);
       expect(midPos).toEqual({ x: 50, y: 25, z: 12.5 });
     });
@@ -171,9 +171,9 @@ describe('VisualizationController', () => {
     test('should calculate smooth camera transitions', () => {
       const currentCamera = { x: 10, y: 10, z: 10 };
       const targetCamera = { x: 20, y: 20, z: 20 };
-      
+
       const transition = controller.calculateCameraTransition(currentCamera, targetCamera, 1000);
-      
+
       expect(transition).toHaveProperty('duration');
       expect(transition).toHaveProperty('easing');
       expect(transition).toHaveProperty('keyframes');
@@ -184,7 +184,7 @@ describe('VisualizationController', () => {
     test('should calculate lighting for position', () => {
       const position = { x: 0, y: 0, z: 0 };
       const lighting = controller.calculateLighting(position);
-      
+
       expect(lighting).toHaveProperty('ambient');
       expect(lighting).toHaveProperty('directional');
       expect(lighting).toHaveProperty('specular');
@@ -193,7 +193,7 @@ describe('VisualizationController', () => {
     test('should adjust lighting based on scene scale', () => {
       const smallScale = controller.calculateLightingForScale(0.5);
       const largeScale = controller.calculateLightingForScale(2.0);
-      
+
       expect(smallScale.intensity).not.toBe(largeScale.intensity);
     });
   });

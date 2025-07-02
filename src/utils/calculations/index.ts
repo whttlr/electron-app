@@ -7,5 +7,5 @@
 // Placeholder for calculation utilities
 export const CalculationsModule = {
   version: '1.0.0',
-  description: 'Mathematical calculations and transformations'
+  description: 'Mathematical calculations and transformations',
 };

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Modal, Form, Row, Col, Select, Input, InputNumber, Switch } from 'antd';
+import {
+  Modal, Form, Row, Col, Select, Input, InputNumber, Switch,
+} from 'antd';
 import { Plugin } from '../../../services/plugin';
 
 interface PluginConfigurationModalProps {
@@ -18,8 +20,7 @@ const PluginConfigurationModal: React.FC<PluginConfigurationModalProps> = ({
   onSave,
   onCancel,
   onPlacementChange,
-}) => {
-  return (
+}) => (
     <Modal
       title={`Configure ${selectedPlugin?.name || 'Plugin'}`}
       open={visible}
@@ -40,7 +41,7 @@ const PluginConfigurationModal: React.FC<PluginConfigurationModalProps> = ({
               name="placement"
               tooltip="Where the plugin UI will be displayed"
             >
-              <Select 
+              <Select
                 placeholder="Select placement"
                 onChange={onPlacementChange}
               >
@@ -68,8 +69,7 @@ const PluginConfigurationModal: React.FC<PluginConfigurationModalProps> = ({
         </Row>
 
         {/* Show menu configuration for standalone plugins */}
-        <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => 
-          prevValues.placement !== currentValues.placement
+        <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.placement !== currentValues.placement
         }>
           {({ getFieldValue }) => {
             const placement = getFieldValue('placement');
@@ -100,14 +100,14 @@ const PluginConfigurationModal: React.FC<PluginConfigurationModalProps> = ({
                     </Form.Item>
                   </Col>
                 </Row>
-                
+
                 <Form.Item
                   label="Route Path"
                   name="routePath"
                   tooltip="URL path for this plugin screen (e.g., /machine-monitor)"
                   rules={[
                     { required: true, message: 'Route path is required for standalone screens' },
-                    { pattern: /^\/[a-z0-9-]+$/, message: 'Route path must start with / and contain only lowercase letters, numbers, and hyphens' }
+                    { pattern: /^\/[a-z0-9-]+$/, message: 'Route path must start with / and contain only lowercase letters, numbers, and hyphens' },
                   ]}
                 >
                   <Input placeholder="/my-plugin" />
@@ -181,7 +181,6 @@ const PluginConfigurationModal: React.FC<PluginConfigurationModalProps> = ({
         </Form.Item>
       </Form>
     </Modal>
-  );
-};
+);
 
 export default PluginConfigurationModal;

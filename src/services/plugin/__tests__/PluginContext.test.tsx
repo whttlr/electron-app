@@ -5,7 +5,7 @@ import { PluginProvider, usePlugins, Plugin } from '../PluginContext';
 // Test component that uses the plugin context
 const TestComponent: React.FC = () => {
   const { plugins, setPlugins, getStandalonePlugins } = usePlugins();
-  
+
   const addTestPlugin = () => {
     const newPlugin: Plugin = {
       id: 'test-plugin',
@@ -16,10 +16,10 @@ const TestComponent: React.FC = () => {
       type: 'utility',
       config: {
         placement: 'dashboard',
-        screen: 'main'
-      }
+        screen: 'main',
+      },
     };
-    setPlugins(prev => [...prev, newPlugin]);
+    setPlugins((prev) => [...prev, newPlugin]);
   };
 
   const standalonePlugins = getStandalonePlugins();
@@ -32,7 +32,7 @@ const TestComponent: React.FC = () => {
         Add Plugin
       </button>
       <div data-testid="plugin-list">
-        {plugins.map(plugin => (
+        {plugins.map((plugin) => (
           <div key={plugin.id} data-testid={`plugin-${plugin.id}`}>
             {plugin.name} - {plugin.status}
           </div>
@@ -54,7 +54,7 @@ describe('PluginContext', () => {
       render(
         <PluginProvider>
           <TestComponent />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       expect(screen.getByTestId('plugin-count')).toHaveTextContent('2');
@@ -66,7 +66,7 @@ describe('PluginContext', () => {
       render(
         <PluginProvider>
           <TestComponent />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       // Only machine-monitor is standalone
@@ -77,7 +77,7 @@ describe('PluginContext', () => {
       render(
         <PluginProvider>
           <TestComponent />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       expect(screen.getByTestId('plugin-count')).toHaveTextContent('2');
@@ -94,7 +94,7 @@ describe('PluginContext', () => {
       render(
         <PluginProvider>
           <TestComponent />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       expect(screen.getByTestId('standalone-count')).toHaveTextContent('1');
@@ -113,7 +113,7 @@ describe('PluginContext', () => {
     test('should throw error when used outside PluginProvider', () => {
       // Suppress console.error for this test
       const consoleSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      
+
       expect(() => {
         render(<ComponentWithoutProvider />);
       }).toThrow('usePlugins must be used within a PluginProvider');
@@ -125,7 +125,7 @@ describe('PluginContext', () => {
       render(
         <PluginProvider>
           <TestComponent />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       // Should render without throwing
@@ -137,7 +137,7 @@ describe('PluginContext', () => {
     test('should filter only active standalone plugins', () => {
       const TestStandaloneComponent: React.FC = () => {
         const { plugins, setPlugins, getStandalonePlugins } = usePlugins();
-        
+
         const addInactiveStandalone = () => {
           const inactivePlugin: Plugin = {
             id: 'inactive-standalone',
@@ -148,10 +148,10 @@ describe('PluginContext', () => {
             type: 'utility',
             config: {
               placement: 'standalone',
-              screen: 'new'
-            }
+              screen: 'new',
+            },
           };
-          setPlugins(prev => [...prev, inactivePlugin]);
+          setPlugins((prev) => [...prev, inactivePlugin]);
         };
 
         const standalonePlugins = getStandalonePlugins();
@@ -170,7 +170,7 @@ describe('PluginContext', () => {
       render(
         <PluginProvider>
           <TestStandaloneComponent />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       expect(screen.getByTestId('standalone-plugins')).toHaveTextContent('1');
@@ -191,7 +191,7 @@ describe('PluginContext', () => {
 
         return (
           <div>
-            {standalonePlugins.map(plugin => (
+            {standalonePlugins.map((plugin) => (
               <div key={plugin.id} data-testid={`standalone-${plugin.id}`}>
                 <span data-testid={`${plugin.id}-placement`}>{plugin.config?.placement}</span>
                 <span data-testid={`${plugin.id}-status`}>{plugin.status}</span>
@@ -205,7 +205,7 @@ describe('PluginContext', () => {
       render(
         <PluginProvider>
           <TestStandaloneDetails />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       expect(screen.getByTestId('machine-monitor-placement')).toHaveTextContent('standalone');
@@ -218,7 +218,7 @@ describe('PluginContext', () => {
     test('should handle plugins with minimal configuration', () => {
       const TestMinimalPlugin: React.FC = () => {
         const { setPlugins } = usePlugins();
-        
+
         const addMinimalPlugin = () => {
           const minimalPlugin: Plugin = {
             id: 'minimal',
@@ -226,10 +226,10 @@ describe('PluginContext', () => {
             version: '1.0.0',
             description: 'A minimal plugin',
             status: 'active',
-            type: 'utility'
+            type: 'utility',
             // No config object
           };
-          setPlugins(prev => [...prev, minimalPlugin]);
+          setPlugins((prev) => [...prev, minimalPlugin]);
         };
 
         return (
@@ -243,7 +243,7 @@ describe('PluginContext', () => {
         <PluginProvider>
           <TestMinimalPlugin />
           <TestComponent />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       act(() => {
@@ -256,7 +256,7 @@ describe('PluginContext', () => {
     test('should handle all plugin types', () => {
       const TestPluginTypes: React.FC = () => {
         const { setPlugins } = usePlugins();
-        
+
         const addAllTypes = () => {
           const pluginTypes: Plugin['type'][] = ['utility', 'visualization', 'control', 'productivity'];
           const newPlugins = pluginTypes.map((type, index) => ({
@@ -265,9 +265,9 @@ describe('PluginContext', () => {
             version: '1.0.0',
             description: `A ${type} plugin`,
             status: 'active' as const,
-            type
+            type,
           }));
-          setPlugins(prev => [...prev, ...newPlugins]);
+          setPlugins((prev) => [...prev, ...newPlugins]);
         };
 
         return (
@@ -281,7 +281,7 @@ describe('PluginContext', () => {
         <PluginProvider>
           <TestPluginTypes />
           <TestComponent />
-        </PluginProvider>
+        </PluginProvider>,
       );
 
       act(() => {

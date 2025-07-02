@@ -7,5 +7,5 @@
 // Placeholder for helper utilities
 export const HelpersModule = {
   version: '1.0.0',
-  description: 'General utility functions and helpers'
+  description: 'General utility functions and helpers',
 };

@@ -35,10 +35,10 @@ describe('Core Positioning Module', () => {
       // - JogController class
       // - Position and jog interfaces
       // - Coordinate transformation utilities
-      
+
       expect(PositioningModule).toEqual({
         version: '1.0.0',
-        description: 'Position tracking and jog control logic'
+        description: 'Position tracking and jog control logic',
       });
     });
   });
@@ -96,7 +96,7 @@ describe('PositionController', () => {
       const machineCoords = { x: 100, y: 50, z: 10 };
       const workOffset = { x: 50, y: 25, z: 5 };
       controller.setWorkOffset(workOffset);
-      
+
       const workCoords = controller.machineToWork(machineCoords);
       expect(workCoords).toEqual({ x: 50, y: 25, z: 5 });
     });
@@ -105,7 +105,7 @@ describe('PositionController', () => {
       const workCoords = { x: 50, y: 25, z: 5 };
       const workOffset = { x: 50, y: 25, z: 5 };
       controller.setWorkOffset(workOffset);
-      
+
       const machineCoords = controller.workToMachine(workCoords);
       expect(machineCoords).toEqual({ x: 100, y: 50, z: 10 });
     });
@@ -140,9 +140,9 @@ describe('JogController', () => {
     test('should perform relative jog movement', async () => {
       const initialPosition = { x: 0, y: 0, z: 0 };
       const jogDistance = { x: 10, y: 0, z: 0 };
-      
+
       await jogController.jogRelative('x', 10);
-      
+
       const newPosition = positionController.getCurrentPosition();
       expect(newPosition).toEqual({ x: 10, y: 0, z: 0 });
     });
@@ -150,7 +150,7 @@ describe('JogController', () => {
     test('should validate jog movement bounds', async () => {
       // Move close to boundary
       positionController.setPosition({ x: 145, y: 95, z: 45 });
-      
+
       // Try to jog beyond boundary
       await expect(jogController.jogRelative('x', 20)).rejects.toThrow('Jog movement exceeds bounds');
     });
@@ -158,7 +158,7 @@ describe('JogController', () => {
     test('should support different jog distances', async () => {
       await jogController.jogRelative('y', 0.1);
       expect(positionController.getCurrentPosition().y).toBeCloseTo(0.1);
-      
+
       await jogController.jogRelative('y', 10);
       expect(positionController.getCurrentPosition().y).toBeCloseTo(10.1);
     });
@@ -174,7 +174,7 @@ describe('JogController', () => {
       expect(() => {
         jogController.setSpeed(-100);
       }).toThrow('Speed must be positive');
-      
+
       expect(() => {
         jogController.setSpeed(10000);
       }).toThrow('Speed exceeds maximum');
@@ -184,10 +184,10 @@ describe('JogController', () => {
   describe('Continuous Jogging', () => {
     test('should start continuous jog', async () => {
       jogController.startContinuousJog('x', 1);
-      
+
       // Simulate time passing
       await new Promise(resolve => setTimeout(resolve, 100));
-      
+
       const position = positionController.getCurrentPosition();
       expect(position.x).toBeGreaterThan(0);
     });
@@ -195,12 +195,12 @@ describe('JogController', () => {
     test('should stop continuous jog', async () => {
       jogController.startContinuousJog('y', 1);
       await new Promise(resolve => setTimeout(resolve, 50));
-      
+
       const intermediatePosition = positionController.getCurrentPosition();
-      
+
       jogController.stopContinuousJog();
       await new Promise(resolve => setTimeout(resolve, 50));
-      
+
       const finalPosition = positionController.getCurrentPosition();
       expect(finalPosition.y).toBe(intermediatePosition.y);
     });

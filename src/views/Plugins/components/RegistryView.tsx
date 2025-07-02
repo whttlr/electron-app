@@ -1,5 +1,7 @@
 import React from 'react';
-import { Card, Row, Col, Typography, Divider } from 'antd';
+import {
+  Card, Row, Col, Typography, Divider,
+} from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { Plugin } from '../../../services/plugin';
 
@@ -34,8 +36,7 @@ interface RegistryViewProps {
 const RegistryView: React.FC<RegistryViewProps> = ({
   plugins,
   marketplacePlugins,
-}) => {
-  return (
+}) => (
     <div>
       <Card title="Plugin Registry" style={{ marginTop: '20px' }}>
         <div style={{ padding: '20px', textAlign: 'center' }}>
@@ -47,9 +48,9 @@ const RegistryView: React.FC<RegistryViewProps> = ({
           <Text type="secondary" style={{ fontFamily: 'monospace', fontSize: '12px' }}>
             https://github.com/whttlr/plugin-registry
           </Text>
-          
+
           <Divider />
-          
+
           <Row gutter={[16, 16]}>
             <Col span={8}>
               <div style={{ textAlign: 'center' }}>
@@ -62,7 +63,7 @@ const RegistryView: React.FC<RegistryViewProps> = ({
             <Col span={8}>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#52c41a' }}>
-                  {plugins.filter(p => p.source === 'registry').length}
+                  {plugins.filter((p) => p.source === 'registry').length}
                 </div>
                 <Text type="secondary">Installed from Registry</Text>
               </div>
@@ -70,7 +71,7 @@ const RegistryView: React.FC<RegistryViewProps> = ({
             <Col span={8}>
               <div style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#faad14' }}>
-                  {plugins.filter(p => p.source === 'local').length}
+                  {plugins.filter((p) => p.source === 'local').length}
                 </div>
                 <Text type="secondary">Local Plugins</Text>
               </div>
@@ -79,7 +80,6 @@ const RegistryView: React.FC<RegistryViewProps> = ({
         </div>
       </Card>
     </div>
-  );
-};
+);
 
 export default RegistryView;

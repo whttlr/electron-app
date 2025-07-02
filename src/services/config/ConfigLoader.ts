@@ -11,7 +11,7 @@ import {
   DefaultsConfig,
   VisualizationConfig,
   CONFIG_FILES,
-  ConfigFileName
+  ConfigFileName,
 } from './types/index';
 import { validateConfig, ValidationResult } from './validation';
 
@@ -33,7 +33,7 @@ export class ConfigLoader {
         configPath = '/config';
       }
     }
-    
+
     // Set the config path appropriately
     if (configPath.startsWith('./') || (!configPath.startsWith('/') && typeof window !== 'undefined' && window.location.protocol === 'file:')) {
       // For relative paths in Electron
@@ -77,13 +77,13 @@ export class ConfigLoader {
       // In a real Electron app, you'd use fs.readFile or similar
       // For now, we'll use fetch to load from the public directory
       const response = await fetch(`${this.configPath}/${fileName}`);
-      
+
       if (!response.ok) {
         throw new Error(`Failed to load ${fileName}: ${response.status} ${response.statusText}`);
       }
 
       const config = await response.json();
-      
+
       // Validate the configuration based on the file type
       const validationResult = this.validateConfigFile(config, fileName);
 

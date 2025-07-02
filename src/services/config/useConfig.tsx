@@ -1,7 +1,9 @@
 // React Hook for Configuration Service
 // Provides reactive access to configuration data in React components
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import {
+  useState, useEffect, useCallback, useMemo,
+} from 'react';
 import { configService } from './ConfigService';
 import {
   CompleteConfig,
@@ -26,7 +28,7 @@ export const useConfig = () => {
   useEffect(() => {
     // Initialize config service if not already loaded
     if (!configService.isLoaded() && !configService.isLoading()) {
-      configService.initialize().catch(error => {
+      configService.initialize().catch((error) => {
         console.error('Failed to initialize config service:', error);
       });
     }
@@ -77,21 +79,13 @@ export const useMachineConfig = () => {
 
   const machineConfig = useMemo(() => config?.machine || null, [config?.machine]);
 
-  const jogIncrements = useCallback((isMetric: boolean = true) => {
-    return configService.getJogIncrements(isMetric);
-  }, []);
+  const jogIncrements = useCallback((isMetric: boolean = true) => configService.getJogIncrements(isMetric), []);
 
-  const feedRateLimits = useCallback(() => {
-    return configService.getFeedRateLimits();
-  }, []);
+  const feedRateLimits = useCallback(() => configService.getFeedRateLimits(), []);
 
-  const workingAreaDimensions = useCallback(() => {
-    return configService.getWorkingAreaDimensions();
-  }, []);
+  const workingAreaDimensions = useCallback(() => configService.getWorkingAreaDimensions(), []);
 
-  const defaultPosition = useCallback(() => {
-    return configService.getDefaultPosition();
-  }, []);
+  const defaultPosition = useCallback(() => configService.getDefaultPosition(), []);
 
   return {
     machineConfig,
@@ -116,9 +110,7 @@ export const useStateConfig = () => {
 
   const stateConfig = useMemo(() => config?.state || null, [config?.state]);
 
-  const pollingIntervals = useCallback(() => {
-    return configService.getPollingIntervals();
-  }, []);
+  const pollingIntervals = useCallback(() => configService.getPollingIntervals(), []);
 
   return {
     stateConfig,
@@ -140,9 +132,7 @@ export const useUIConfig = () => {
 
   const uiConfig = useMemo(() => config?.ui || null, [config?.ui]);
 
-  const axisColors = useCallback(() => {
-    return configService.getAxisColors();
-  }, []);
+  const axisColors = useCallback(() => configService.getAxisColors(), []);
 
   return {
     uiConfig,
@@ -213,7 +203,7 @@ export const useVisualizationConfig = () => {
 /**
  * Hook for accessing configuration values by path
  */
-export const useConfigValue = <T,>(path: string, fallback?: T) => {
+export const useConfigValue = <T, >(path: string, fallback?: T) => {
   const { config, loadingState } = useConfig();
 
   const value = useMemo(() => {

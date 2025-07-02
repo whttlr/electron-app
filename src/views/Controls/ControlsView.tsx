@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Typography, Button, InputNumber, Select, Space, Alert, Divider, Spin } from 'antd';
-import { ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined } from '@ant-design/icons';
+import {
+  Card, Row, Col, Typography, Button, InputNumber, Select, Space, Alert, Divider, Spin,
+} from 'antd';
+import {
+  ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined,
+} from '@ant-design/icons';
 import { PluginRenderer, WorkingAreaPreview, MachineDisplay2D } from '../../components';
 import { useMachineConfig, useStateConfig } from '../../services/config/useConfig';
 
@@ -9,19 +13,19 @@ const { Option } = Select;
 
 const ControlsView: React.FC = () => {
   // Configuration hooks
-  const { 
-    machineConfig, 
-    isLoading: machineLoading, 
+  const {
+    machineConfig,
+    isLoading: machineLoading,
     error: machineError,
     jogIncrements,
     feedRateLimits,
     workingAreaDimensions,
-    defaultPosition
+    defaultPosition,
   } = useMachineConfig();
-  
-  const { 
-    stateConfig, 
-    isLoading: stateLoading 
+
+  const {
+    stateConfig,
+    isLoading: stateLoading,
   } = useStateConfig();
 
   // State management
@@ -53,13 +57,13 @@ const ControlsView: React.FC = () => {
       console.log('Machine not connected');
       return;
     }
-    
+
     const distance = jogDistance * direction;
-    setPosition(prev => ({
+    setPosition((prev) => ({
       ...prev,
-      [axis]: prev[axis] + distance
+      [axis]: prev[axis] + distance,
     }));
-    
+
     console.log(`Jogging ${axis.toUpperCase()} by ${distance}mm at ${feedRate}mm/min`);
   };
 
@@ -83,7 +87,9 @@ const ControlsView: React.FC = () => {
   // Show loading spinner while configuration loads
   if (machineLoading || stateLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px' }}>
+      <div style={{
+        display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px',
+      }}>
         <Spin size="large" tip="Loading configuration..." />
       </div>
     );
@@ -104,7 +110,7 @@ const ControlsView: React.FC = () => {
   return (
     <div data-testid="controls-container">
       <Title level={2}>Jog Controls</Title>
-      
+
       {!isConnected && (
         <Alert
           message="Machine Not Connected"
@@ -143,7 +149,7 @@ const ControlsView: React.FC = () => {
           />
         </Col>
       </Row> */}
-      
+
       <Row gutter={[16, 16]}>
         <Col xs={24} md={12}>
           <Card title="Position Display">
@@ -157,7 +163,7 @@ const ControlsView: React.FC = () => {
             </Button>
           </Card>
         </Col>
-        
+
         <Col xs={24} md={12}>
           <Card title="Jog Settings">
             <Space direction="vertical" style={{ width: '100%' }}>
@@ -172,11 +178,11 @@ const ControlsView: React.FC = () => {
                   <Option value="imperial">Imperial (inches)</Option>
                 </Select>
               </div>
-              
+
               <div>
                 <label>Jog Distance ({isMetric ? 'mm' : 'in'}):</label>
-                <Select 
-                  value={jogDistance} 
+                <Select
+                  value={jogDistance}
                   onChange={setJogDistance}
                   style={{ width: '100%', marginTop: '8px' }}
                 >
@@ -187,7 +193,7 @@ const ControlsView: React.FC = () => {
                   ))}
                 </Select>
               </div>
-              
+
               <div>
                 <label>Feed Rate (mm/min):</label>
                 <InputNumber
@@ -203,11 +209,13 @@ const ControlsView: React.FC = () => {
           </Card>
         </Col>
       </Row>
-      
+
       <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
         <Col xs={24} md={8}>
           <Card title="X/Y Controls">
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center' }}>
+            <div style={{
+              display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center',
+            }}>
               <div></div>
               <Button
                 type="primary"
@@ -218,7 +226,7 @@ const ControlsView: React.FC = () => {
                 Y+
               </Button>
               <div></div>
-              
+
               <Button
                 type="primary"
                 icon={<ArrowLeftOutlined />}
@@ -238,7 +246,7 @@ const ControlsView: React.FC = () => {
               >
                 X+
               </Button>
-              
+
               <div></div>
               <Button
                 type="primary"
@@ -252,7 +260,7 @@ const ControlsView: React.FC = () => {
             </div>
           </Card>
         </Col>
-        
+
         <Col xs={24} md={8}>
           <Card title="Z Controls">
             <Space direction="vertical" style={{ width: '100%' }}>
@@ -277,7 +285,7 @@ const ControlsView: React.FC = () => {
             </Space>
           </Card>
         </Col>
-        
+
         <Col xs={24} md={8}>
           <Card title="Quick Actions">
             <Space direction="vertical" style={{ width: '100%' }}>

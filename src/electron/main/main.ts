@@ -16,9 +16,9 @@ function createWindow() {
       nodeIntegration: false,
       webSecurity: false, // Allow local file access for testing
       allowRunningInsecureContent: true,
-      experimentalFeatures: true
+      experimentalFeatures: true,
     },
-    show: false // Don't show until ready
+    show: false, // Don't show until ready
   });
 
   // Show window when ready to prevent white flash
@@ -35,7 +35,7 @@ function createWindow() {
     // Use development server for development
     mainWindow.loadURL('http://localhost:3001');
   }
-  
+
   // Only open DevTools in actual development (not test)
   if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools();
@@ -49,7 +49,7 @@ function createWindow() {
 app.whenReady().then(() => {
   // Set app name
   app.setName('jog-controls-playground');
-  
+
   createWindow();
 
   app.on('activate', () => {
@@ -66,6 +66,4 @@ app.on('window-all-closed', () => {
 });
 
 // Handle IPC communications
-ipcMain.handle('get-app-version', () => {
-  return app.getVersion();
-});
+ipcMain.handle('get-app-version', () => app.getVersion());

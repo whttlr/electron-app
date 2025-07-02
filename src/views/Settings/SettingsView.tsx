@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider, Spin, Alert, message } from 'antd';
+import {
+  Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider, Spin, Alert, message,
+} from 'antd';
 import { SettingOutlined, SaveOutlined } from '@ant-design/icons';
 import { PluginRenderer } from '../../components';
-import { useMachineConfig, useStateConfig, useUIConfig, useAPIConfig } from '../../services/config';
+import {
+  useMachineConfig, useStateConfig, useUIConfig, useAPIConfig,
+} from '../../services/config';
 import { AppSettings } from '../../services/settings';
 import { useSettings } from '../../contexts/SettingsContext';
 
@@ -11,42 +15,42 @@ const { Option } = Select;
 
 const SettingsView: React.FC = () => {
   const [form] = Form.useForm();
-  
+
   // Global settings context
-  const { 
-    settings, 
-    isLoading: isLoadingSettings, 
+  const {
+    settings,
+    isLoading: isLoadingSettings,
     error: settingsError,
-    updateSettings 
+    updateSettings,
   } = useSettings();
-  
+
   // Configuration hooks (for fallback defaults)
-  const { 
-    machineConfig, 
-    isLoading: machineLoading, 
+  const {
+    machineConfig,
+    isLoading: machineLoading,
     error: machineError,
     workingAreaDimensions,
     defaultPosition,
-    feedRateLimits
+    feedRateLimits,
   } = useMachineConfig();
-  
-  const { 
-    stateConfig, 
-    isLoading: stateLoading 
+
+  const {
+    stateConfig,
+    isLoading: stateLoading,
   } = useStateConfig();
-  
-  const { 
-    uiConfig, 
-    isLoading: uiLoading 
+
+  const {
+    uiConfig,
+    isLoading: uiLoading,
   } = useUIConfig();
-  
-  const { 
-    apiConfig, 
-    isLoading: apiLoading 
+
+  const {
+    apiConfig,
+    isLoading: apiLoading,
   } = useAPIConfig();
 
   const [isSaving, setIsSaving] = useState(false);
-  
+
   // Update form when settings change
   useEffect(() => {
     if (settings) {
@@ -57,10 +61,10 @@ const SettingsView: React.FC = () => {
   const handleSave = async (values: any) => {
     try {
       setIsSaving(true);
-      
+
       // Save settings via global context
       await updateSettings(values);
-      
+
       message.success('Settings saved successfully');
     } catch (error) {
       console.error('Error saving settings:', error);
@@ -115,7 +119,7 @@ const SettingsView: React.FC = () => {
   return (
     <div data-testid="settings-container">
       <Title level={2}>Settings</Title>
-      
+
       <Form
         form={form}
         layout="vertical"
@@ -127,16 +131,16 @@ const SettingsView: React.FC = () => {
               <Form.Item label="Machine Name" name={['machine', 'name']}>
                 <Input placeholder="Enter machine name" />
               </Form.Item>
-              
+
               <Form.Item label="Units" name={['machine', 'units']}>
                 <Select>
                   <Option value="metric">Metric (mm)</Option>
                   <Option value="imperial">Imperial (inches)</Option>
                 </Select>
               </Form.Item>
-              
+
               <Divider>Work Area (mm)</Divider>
-              
+
               <Row gutter={8}>
                 <Col span={8}>
                   <Form.Item label="X" name={['machine', 'workArea', 'x']}>
@@ -156,24 +160,24 @@ const SettingsView: React.FC = () => {
               </Row>
             </Card>
           </Col>
-          
+
           <Col xs={24} lg={12}>
             <Card title="Jog Settings">
               <Form.Item label="Default Speed (mm/min)" name={['jog', 'defaultSpeed']}>
                 <InputNumber min={1} max={10000} style={{ width: '100%' }} />
               </Form.Item>
-              
+
               <Form.Item label="Acceleration (mm/s²)" name={['jog', 'acceleration']}>
                 <InputNumber min={1} max={2000} style={{ width: '100%' }} />
               </Form.Item>
-              
+
               <Form.Item label="Maximum Speed (mm/min)" name={['jog', 'maxSpeed']}>
                 <InputNumber min={1} max={20000} style={{ width: '100%' }} />
               </Form.Item>
             </Card>
           </Col>
         </Row>
-        
+
         <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
           <Col xs={24} lg={12}>
             <Card title="Connection Settings">
@@ -185,7 +189,7 @@ const SettingsView: React.FC = () => {
                   <Option value="COM4">COM4</Option>
                 </Select>
               </Form.Item>
-              
+
               <Form.Item label="Baud Rate" name={['connection', 'baudRate']}>
                 <Select>
                   <Option value={9600}>9600</Option>
@@ -195,13 +199,13 @@ const SettingsView: React.FC = () => {
                   <Option value={115200}>115200</Option>
                 </Select>
               </Form.Item>
-              
+
               <Form.Item label="Connection Timeout (ms)" name={['connection', 'timeout']}>
                 <InputNumber min={1000} max={30000} style={{ width: '100%' }} />
               </Form.Item>
             </Card>
           </Col>
-          
+
           <Col xs={24} lg={12}>
             <Card title="User Interface">
               <Form.Item label="Theme" name={['ui', 'theme']}>
@@ -210,7 +214,7 @@ const SettingsView: React.FC = () => {
                   <Option value="dark">Dark</Option>
                 </Select>
               </Form.Item>
-              
+
               <Form.Item label="Language" name={['ui', 'language']}>
                 <Select>
                   <Option value="en">English</Option>
@@ -219,28 +223,28 @@ const SettingsView: React.FC = () => {
                   <Option value="de">German</Option>
                 </Select>
               </Form.Item>
-              
+
               <Form.Item name={['ui', 'showGrid']} valuePropName="checked">
                 <Switch /> Show Grid in Workspace
               </Form.Item>
-              
+
               <Form.Item name={['ui', 'showCoordinates']} valuePropName="checked">
                 <Switch /> Show Coordinates Display
               </Form.Item>
-              
+
               <Form.Item name={['ui', 'autoConnect']} valuePropName="checked">
                 <Switch /> Auto-connect on Startup
               </Form.Item>
             </Card>
           </Col>
         </Row>
-        
+
         <Row style={{ marginTop: '24px' }}>
           <Col span={24}>
-            <Button 
-              type="primary" 
-              htmlType="submit" 
-              icon={<SaveOutlined />} 
+            <Button
+              type="primary"
+              htmlType="submit"
+              icon={<SaveOutlined />}
               size="large"
               loading={isSaving}
               disabled={isSaving}

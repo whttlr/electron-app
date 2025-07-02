@@ -10,7 +10,7 @@ export interface PluginRecord {
   source: 'local' | 'marketplace' | 'registry';
   status: 'active' | 'inactive';
   installedAt: Date | string; // Can be string when loaded from localStorage
-  updatedAt: Date | string;   // Can be string when loaded from localStorage
+  updatedAt: Date | string; // Can be string when loaded from localStorage
   lastCheckedAt?: Date | string; // Can be string when loaded from localStorage
   updateAvailable: boolean;
   latestVersion?: string;
@@ -65,8 +65,8 @@ export interface AppStateRecord {
   theme: string;
   language: string;
   lastConnectedAt?: Date | string; // Can be string when loaded from localStorage
-  sessionStartedAt: Date | string;  // Can be string when loaded from localStorage
-  updatedAt: Date | string;         // Can be string when loaded from localStorage
+  sessionStartedAt: Date | string; // Can be string when loaded from localStorage
+  updatedAt: Date | string; // Can be string when loaded from localStorage
   // Additional settings fields
   showGrid?: boolean;
   showCoordinates?: boolean;

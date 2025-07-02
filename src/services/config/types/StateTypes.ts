@@ -1,4 +1,4 @@
-// State Configuration Types  
+// State Configuration Types
 // Type definitions for application state and polling configuration schemas
 
 import { Position, Dimensions, Bounds } from './CommonTypes';

@@ -1,7 +1,9 @@
 import { configService } from '../config/ConfigService';
 import { databaseService } from '../database/DatabaseService';
 import { PluginRecord, PluginStateRecord } from '../database/types';
-import { Plugin, PluginUpdate, RegistryConfig, PluginAPI } from './types';
+import {
+  Plugin, PluginUpdate, RegistryConfig, PluginAPI,
+} from './types';
 import { CompleteConfig } from '../config/types';
 
 export class PluginService {
@@ -9,7 +11,7 @@ export class PluginService {
   static async loadPlugins(): Promise<Plugin[]> {
     try {
       const pluginRecords = await databaseService.getPlugins();
-      const transformedPlugins: Plugin[] = pluginRecords.map(record => ({
+      const transformedPlugins: Plugin[] = pluginRecords.map((record) => ({
         id: record.pluginId,
         name: record.name,
         version: record.version,
@@ -28,7 +30,7 @@ export class PluginService {
           screen: record.state.screen,
           size: {
             width: record.state.width === 'auto' ? 'auto' : Number(record.state.width) || 'auto',
-            height: record.state.height === 'auto' ? 'auto' : Number(record.state.height) || 'auto'
+            height: record.state.height === 'auto' ? 'auto' : Number(record.state.height) || 'auto',
           },
           priority: record.state.priority,
           autoStart: record.state.autoStart,
@@ -36,9 +38,9 @@ export class PluginService {
           menuTitle: record.state.menuTitle,
           menuIcon: record.state.menuIcon,
           routePath: record.state.routePath,
-        } : undefined
+        } : undefined,
       }));
-      
+
       return transformedPlugins;
     } catch (err) {
       console.error('Failed to load plugins from database:', err);
@@ -46,7 +48,10 @@ export class PluginService {
     }
   }
 
-  static async savePlugin(plugin: Plugin, updatePluginStateFn: (pluginId: string, state: Partial<PluginStateRecord>) => Promise<void>): Promise<void> {
+  static async savePlugin(
+    plugin: Plugin,
+    updatePluginStateFn: (pluginId: string, state: Partial<PluginStateRecord>) => Promise<void>,
+  ): Promise<void> {
     try {
       await databaseService.upsertPlugin({
         pluginId: plugin.id,
@@ -60,7 +65,7 @@ export class PluginService {
         latestVersion: plugin.latestVersion,
         registryId: plugin.registryId,
         publisherId: plugin.publisherId,
-        lastCheckedAt: plugin.updatedAt ? new Date(plugin.updatedAt) : undefined
+        lastCheckedAt: plugin.updatedAt ? new Date(plugin.updatedAt) : undefined,
       });
 
       // Save plugin state if it exists
@@ -106,7 +111,7 @@ export class PluginService {
   // Version management
   static async checkForUpdates(plugins: Plugin[]): Promise<PluginUpdate[]> {
     const updates: PluginUpdate[] = [];
-    
+
     for (const plugin of plugins) {
       if (plugin.source === 'marketplace' || plugin.source === 'registry') {
         // Simulate finding an update for some plugins
@@ -117,18 +122,18 @@ export class PluginService {
             latestVersion: `${parseInt(plugin.version.split('.')[0]) + 1}.0.0`,
             changelog: 'Bug fixes and performance improvements',
             size: '2.1 MB',
-            releaseDate: new Date().toISOString()
+            releaseDate: new Date().toISOString(),
           });
         }
       }
     }
-    
+
     return updates;
   }
 
   static async updatePlugin(pluginId: string, version?: string): Promise<void> {
     // Simulate plugin update
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 
   static async updateAllPlugins(updates: PluginUpdate[]): Promise<void> {
@@ -144,9 +149,9 @@ export class PluginService {
       if (!response.ok) {
         throw new Error(`Registry fetch failed: ${response.status}`);
       }
-      
+
       const registryData = await response.json();
-      
+
       // Convert registry plugins to local plugin format
       const registryPlugins: Plugin[] = registryData.plugins.map((regPlugin: any) => ({
         id: regPlugin.id,
@@ -161,12 +166,12 @@ export class PluginService {
         installedAt: new Date().toISOString(),
         config: {
           placement: 'dashboard' as const,
-          priority: 50
-        }
+          priority: 50,
+        },
       }));
-      
+
       console.log('Registry sync completed:', registryPlugins.length, 'plugins found');
-      
+
       return registryPlugins;
     } catch (error) {
       console.error('Failed to sync with registry:', error);
@@ -180,22 +185,22 @@ export class PluginService {
       const apiConfig = configService.getConfigValue<any>('api.pluginRegistry');
       const registryUrl = apiConfig?.url || 'https://raw.githubusercontent.com/whttlr/plugin-registry/main/registry.json';
       const timeout = apiConfig?.timeout || 10000;
-      
+
       try {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), timeout);
-        
+
         const response = await fetch(registryUrl, {
-          signal: controller.signal
+          signal: controller.signal,
         });
-        
+
         clearTimeout(timeoutId);
         if (!response.ok) {
           throw new Error(`Registry fetch failed: ${response.status}`);
         }
-        
+
         const registryData = await response.json();
-        
+
         const mappedPlugins = registryData.plugins.map((regPlugin: any) => ({
           id: regPlugin.id,
           name: regPlugin.name,
@@ -207,9 +212,8 @@ export class PluginService {
           registryId: regPlugin.id,
           latestVersion: regPlugin.version,
         }));
-        
+
         return mappedPlugins;
-        
       } catch (error) {
         console.error('Failed to fetch marketplace plugins:', error);
         return [];
@@ -222,32 +226,32 @@ export class PluginService {
 
   static async publishToRegistry(pluginId: string, registryConfig: RegistryConfig): Promise<void> {
     if (!registryConfig) throw new Error('Registry not configured');
-    
+
     // Simulate publishing
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
   }
 
   // Dependency management
   static async checkDependencies(plugin: Plugin, plugins: Plugin[]): Promise<boolean> {
     if (!plugin.dependencies) return true;
-    
+
     for (const [depId, depVersion] of Object.entries(plugin.dependencies)) {
-      const installedDep = plugins.find(p => p.id === depId);
+      const installedDep = plugins.find((p) => p.id === depId);
       if (!installedDep) return false;
-      
+
       // Simple version check (in reality would use semver)
       if (installedDep.version < depVersion) return false;
     }
-    
+
     return true;
   }
 
   static async installDependencies(plugin: Plugin): Promise<void> {
     if (!plugin.dependencies) return;
-    
+
     for (const [depId, depVersion] of Object.entries(plugin.dependencies)) {
       // Simulate installing dependency
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       console.log(`Installing dependency: ${depId}@${depVersion}`);
     }
   }
@@ -257,35 +261,35 @@ export class PluginService {
     const exportData = {
       version: '1.0',
       exportDate: new Date().toISOString(),
-      plugins: plugins.map(p => ({
+      plugins: plugins.map((p) => ({
         ...p,
         // Exclude runtime state
         status: undefined,
-        updateAvailable: undefined
-      }))
+        updateAvailable: undefined,
+      })),
     };
-    
+
     return JSON.stringify(exportData, null, 2);
   }
 
   static async importPlugins(data: string): Promise<Plugin[]> {
     try {
       const importData = JSON.parse(data);
-      
+
       if (!importData.version || !importData.plugins) {
         throw new Error('Invalid import format');
       }
-      
+
       // Merge imported plugins with existing ones
       const importedPlugins = importData.plugins.map((p: any) => ({
         ...p,
         status: 'inactive', // Start imported plugins as inactive
-        importedAt: new Date().toISOString()
+        importedAt: new Date().toISOString(),
       }));
-      
+
       return importedPlugins;
     } catch (error) {
-      throw new Error('Failed to import plugins: ' + error);
+      throw new Error(`Failed to import plugins: ${error}`);
     }
   }
 
@@ -293,13 +297,12 @@ export class PluginService {
   static getPluginAPI(): PluginAPI {
     return {
       config: {
-        get: <T,>(path: string) => configService.getConfigValue<T>(path),
+        get: <T, >(path: string) => configService.getConfigValue<T>(path),
         getSection: (section: keyof CompleteConfig) => {
           const config = configService.getConfig();
           return config ? config[section] : null;
         },
-        getWithFallback: <T,>(path: string, fallback: T) => 
-          configService.getConfigValueWithFallback<T>(path, fallback),
+        getWithFallback: <T, >(path: string, fallback: T) => configService.getConfigValueWithFallback<T>(path, fallback),
         isLoaded: () => configService.isLoaded(),
         reload: () => configService.reload(),
       },
@@ -308,9 +311,7 @@ export class PluginService {
 
   // Utility functions
   static getStandalonePlugins(plugins: Plugin[]): Plugin[] {
-    return plugins.filter(plugin => 
-      plugin.status === 'active' && 
-      plugin.config?.placement === 'standalone'
-    );
+    return plugins.filter((plugin) => plugin.status === 'active'
+      && plugin.config?.placement === 'standalone');
   }
 }

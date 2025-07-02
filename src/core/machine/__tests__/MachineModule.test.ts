@@ -35,11 +35,11 @@ describe('Core Machine Module', () => {
       // - Machine state interfaces
       // - Connection management utilities
       // - Safety check functions
-      
+
       // For now, verify the module is importable and structured
       expect(MachineModule).toEqual({
         version: '1.0.0',
-        description: 'Core machine control and state management'
+        description: 'Core machine control and state management',
       });
     });
   });
@@ -59,7 +59,7 @@ describe('Core Machine Module', () => {
       // ✓ Tests directory exists
       // ✓ Mocks directory exists
       // ✓ README documentation exists
-      
+
       expect(MachineModule).toBeDefined();
     });
   });

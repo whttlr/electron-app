@@ -9,5 +9,5 @@
 // Placeholder for future visualization functionality
 export const VisualizationModule = {
   version: '1.0.0',
-  description: '3D/2D visualization calculations and scene management'
+  description: '3D/2D visualization calculations and scene management',
 };

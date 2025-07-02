@@ -14,8 +14,8 @@ export const mockPlugins: Plugin[] = [
       size: { width: 300, height: 200 },
       priority: 100,
       autoStart: true,
-      permissions: ['read']
-    }
+      permissions: ['read'],
+    },
   },
   {
     id: 'mock-standalone-plugin',
@@ -33,8 +33,8 @@ export const mockPlugins: Plugin[] = [
       permissions: ['read', 'write'],
       menuTitle: 'Mock Standalone',
       menuIcon: 'monitor',
-      routePath: '/mock-standalone'
-    }
+      routePath: '/mock-standalone',
+    },
   },
   {
     id: 'mock-modal-plugin',
@@ -49,8 +49,8 @@ export const mockPlugins: Plugin[] = [
       size: { width: 600, height: 400 },
       priority: 150,
       autoStart: false,
-      permissions: ['machine.control']
-    }
+      permissions: ['machine.control'],
+    },
   },
   {
     id: 'mock-inactive-plugin',
@@ -65,17 +65,17 @@ export const mockPlugins: Plugin[] = [
       size: { width: 250, height: 'auto' },
       priority: 50,
       autoStart: false,
-      permissions: []
-    }
-  }
+      permissions: [],
+    },
+  },
 ];
 
 export const mockStandalonePlugins = mockPlugins.filter(
-  plugin => plugin.status === 'active' && plugin.config?.placement === 'standalone'
+  (plugin) => plugin.status === 'active' && plugin.config?.placement === 'standalone',
 );
 
 export const mockActivePlugins = mockPlugins.filter(
-  plugin => plugin.status === 'active'
+  (plugin) => plugin.status === 'active',
 );
 
 export const createMockPlugin = (overrides: Partial<Plugin> = {}): Plugin => ({
@@ -91,7 +91,7 @@ export const createMockPlugin = (overrides: Partial<Plugin> = {}): Plugin => ({
     size: { width: 300, height: 200 },
     priority: 100,
     autoStart: false,
-    permissions: []
+    permissions: [],
   },
-  ...overrides
+  ...overrides,
 });

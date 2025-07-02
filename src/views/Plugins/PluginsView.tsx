@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Tabs, Space, Form, message, Modal, Tag } from 'antd';
+import {
+  Typography, Tabs, Space, Form, message, Modal, Tag,
+} from 'antd';
 import { AppstoreOutlined, GlobalOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { usePlugins, Plugin, PluginUpdate } from '../../services/plugin';
-import { LocalPluginsView, MarketplaceView, RegistryView, PluginConfigurationModal } from './components';
+import {
+  LocalPluginsView, MarketplaceView, RegistryView, PluginConfigurationModal,
+} from './components';
 
 const { Title } = Typography;
 
@@ -29,10 +33,10 @@ interface MarketplacePlugin {
 }
 
 const PluginsView: React.FC = () => {
-  const { 
-    plugins, 
-    checkForUpdates, 
-    updatePlugin, 
+  const {
+    plugins,
+    checkForUpdates,
+    updatePlugin,
     updateAllPlugins,
     registryConfig,
     fetchMarketplacePlugins,
@@ -42,7 +46,7 @@ const PluginsView: React.FC = () => {
     importPlugins,
     updatePluginState,
     savePlugin,
-    deletePlugin
+    deletePlugin,
   } = usePlugins();
 
   // Component state
@@ -72,9 +76,9 @@ const PluginsView: React.FC = () => {
           status: 'active',
           type: 'utility',
           source: 'local',
-          installedAt: new Date().toISOString()
+          installedAt: new Date().toISOString(),
         };
-        
+
         await savePlugin(newPlugin);
         message.success(`${file.name} plugin uploaded and saved successfully!`);
       } catch (error) {
@@ -87,7 +91,7 @@ const PluginsView: React.FC = () => {
   // Plugin management handlers
   const togglePlugin = async (id: string) => {
     try {
-      const plugin = plugins.find(p => p.id === id);
+      const plugin = plugins.find((p) => p.id === id);
       if (plugin) {
         const newStatus = plugin.status === 'active' ? 'inactive' : 'active';
         await updatePluginState(id, { enabled: newStatus === 'active' });
@@ -115,15 +119,15 @@ const PluginsView: React.FC = () => {
 
   const handleConfigSave = async (values: any) => {
     if (!selectedPlugin) return;
-    
+
     try {
       const updatedPlugin = {
         ...selectedPlugin,
-        config: { ...selectedPlugin.config, ...values }
+        config: { ...selectedPlugin.config, ...values },
       };
-      
+
       await savePlugin(updatedPlugin);
-      
+
       setConfigModalVisible(false);
       setSelectedPlugin(null);
       configForm.resetFields();
@@ -139,24 +143,22 @@ const PluginsView: React.FC = () => {
     configForm.resetFields();
   };
 
-  const generateRoutePath = (pluginName: string): string => {
-    return '/' + pluginName.toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .replace(/^-|-$/g, '');
-  };
+  const generateRoutePath = (pluginName: string): string => `/${pluginName.toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')}`;
 
   const handlePlacementChange = (placement: string) => {
     if (placement === 'standalone' && selectedPlugin) {
       const currentRoutePath = configForm.getFieldValue('routePath');
       const currentMenuTitle = configForm.getFieldValue('menuTitle');
-      
+
       if (!currentRoutePath) {
         const generatedPath = generateRoutePath(selectedPlugin.name);
         configForm.setFieldsValue({ routePath: generatedPath });
       }
-      
+
       if (!currentMenuTitle) {
         configForm.setFieldsValue({ menuTitle: selectedPlugin.name });
       }
@@ -182,7 +184,7 @@ const PluginsView: React.FC = () => {
 
   const installMarketplacePlugin = async (marketplacePlugin: MarketplacePlugin) => {
     setMarketplaceLoading(true);
-    
+
     try {
       const newPlugin: Plugin = {
         id: marketplacePlugin.id,
@@ -193,14 +195,12 @@ const PluginsView: React.FC = () => {
         type: marketplacePlugin.category as any,
         dependencies: marketplacePlugin.dependencies,
         installedAt: new Date().toISOString(),
-        source: 'marketplace'
+        source: 'marketplace',
       };
 
       if (marketplacePlugin.dependencies) {
         const depNames = Object.keys(marketplacePlugin.dependencies);
-        const missingDeps = depNames.filter(depId => 
-          !plugins.some(p => p.id === depId)
-        );
+        const missingDeps = depNames.filter((depId) => !plugins.some((p) => p.id === depId));
 
         if (missingDeps.length > 0) {
           Modal.confirm({
@@ -215,7 +215,7 @@ const PluginsView: React.FC = () => {
             onCancel: async () => {
               await savePlugin(newPlugin);
               message.warning(`${marketplacePlugin.name} installed but dependencies are missing`);
-            }
+            },
           });
         } else {
           const depsOk = await checkDependencies(newPlugin);
@@ -228,15 +228,10 @@ const PluginsView: React.FC = () => {
         await savePlugin(newPlugin);
         message.success(`${marketplacePlugin.name} installed successfully!`);
       }
-      
-      setMarketplacePlugins(prev => 
-        prev.map(p => 
-          p.id === marketplacePlugin.id 
-            ? { ...p, installed: true }
-            : p
-        )
-      );
-      
+
+      setMarketplacePlugins((prev) => prev.map((p) => (p.id === marketplacePlugin.id
+        ? { ...p, installed: true }
+        : p)));
     } catch (error) {
       message.error(`Failed to install ${marketplacePlugin.name}`);
     } finally {
@@ -244,18 +239,16 @@ const PluginsView: React.FC = () => {
     }
   };
 
-  const getFilteredMarketplacePlugins = () => {
-    return marketplacePlugins.filter(plugin => {
-      const matchesSearch = !searchQuery || 
-        plugin.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        plugin.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        plugin.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      const matchesCategory = selectedCategory === 'all' || plugin.category === selectedCategory;
-      
-      return matchesSearch && matchesCategory;
-    });
-  };
+  const getFilteredMarketplacePlugins = () => marketplacePlugins.filter((plugin) => {
+    const matchesSearch = !searchQuery
+        || plugin.name.toLowerCase().includes(searchQuery.toLowerCase())
+        || plugin.description.toLowerCase().includes(searchQuery.toLowerCase())
+        || plugin.tags.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+
+    const matchesCategory = selectedCategory === 'all' || plugin.category === selectedCategory;
+
+    return matchesSearch && matchesCategory;
+  });
 
   const formatDownloads = (downloads: number) => {
     if (downloads >= 1000000) return `${(downloads / 1000000).toFixed(1)}M`;
@@ -263,9 +256,8 @@ const PluginsView: React.FC = () => {
     return downloads.toString();
   };
 
-  const isPluginInstalled = (marketplacePlugin: MarketplacePlugin) => {
-    return plugins.some(p => p.id === marketplacePlugin.id) || marketplacePlugin.installed;
-  };
+  const isPluginInstalled = (marketplacePlugin: MarketplacePlugin) =>
+    plugins.some((p) => p.id === marketplacePlugin.id) || marketplacePlugin.installed;
 
   // Update handlers
   const handleCheckForUpdates = async () => {
@@ -273,7 +265,7 @@ const PluginsView: React.FC = () => {
     try {
       const foundUpdates = await checkForUpdates();
       setUpdates(foundUpdates);
-      
+
       if (foundUpdates.length > 0) {
         message.success(`Found ${foundUpdates.length} plugin update(s)`);
       } else {
@@ -291,7 +283,7 @@ const PluginsView: React.FC = () => {
     try {
       await updatePlugin(pluginId, version);
       message.success('Plugin updated successfully');
-      setUpdates(prev => prev.filter(u => u.pluginId !== pluginId));
+      setUpdates((prev) => prev.filter((u) => u.pluginId !== pluginId));
     } catch (error) {
       message.error('Failed to update plugin');
     } finally {
@@ -336,7 +328,7 @@ const PluginsView: React.FC = () => {
         await importPlugins(data);
         message.success('Plugins imported successfully');
       } catch (error) {
-        message.error('Failed to import plugins: ' + error);
+        message.error(`Failed to import plugins: ${error}`);
       }
     };
     reader.readAsText(file);
@@ -350,8 +342,8 @@ const PluginsView: React.FC = () => {
         setMarketplaceLoading(true);
         try {
           const registryPlugins = await fetchMarketplacePlugins();
-          
-          const marketplaceData: MarketplacePlugin[] = registryPlugins.map(plugin => ({
+
+          const marketplaceData: MarketplacePlugin[] = registryPlugins.map((plugin) => ({
             id: plugin.id,
             name: plugin.name,
             version: plugin.version,
@@ -363,10 +355,10 @@ const PluginsView: React.FC = () => {
             category: plugin.type,
             lastUpdated: plugin.installedAt || new Date().toISOString(),
             size: '1.2 MB',
-            installed: plugins.some(p => p.id === plugin.id),
-            verified: plugin.source === 'registry'
+            installed: plugins.some((p) => p.id === plugin.id),
+            verified: plugin.source === 'registry',
           }));
-          
+
           setMarketplacePlugins(marketplaceData);
         } catch (error) {
           message.error('Failed to load marketplace plugins');
@@ -375,7 +367,7 @@ const PluginsView: React.FC = () => {
         }
       }
     };
-    
+
     loadMarketplacePlugins();
   }, [activeTab, marketplacePlugins.length]);
 
@@ -389,7 +381,7 @@ const PluginsView: React.FC = () => {
   return (
     <div data-testid="plugins-container">
       <Title level={2}>Plugin Management</Title>
-      
+
       <Tabs
         activeKey={activeTab}
         onChange={setActiveTab}
@@ -398,7 +390,7 @@ const PluginsView: React.FC = () => {
             key: 'local',
             label: (
               <span>
-                <AppstoreOutlined style={{marginRight: '8px'}}/>
+                <AppstoreOutlined style={{ marginRight: '8px' }}/>
                 Local Plugins
               </span>
             ),
@@ -425,7 +417,7 @@ const PluginsView: React.FC = () => {
             key: 'marketplace',
             label: (
               <span>
-                <GlobalOutlined style={{marginRight: '8px'}} />
+                <GlobalOutlined style={{ marginRight: '8px' }} />
                 Marketplace
               </span>
             ),
@@ -451,7 +443,7 @@ const PluginsView: React.FC = () => {
             key: 'registry',
             label: (
               <Space>
-                <CloudUploadOutlined style={{marginRight: '8px'}} />
+                <CloudUploadOutlined style={{ marginRight: '8px' }} />
                 Registry
                 {registryConfig && <Tag color="green" size="small">Connected</Tag>}
               </Space>

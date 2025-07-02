@@ -1,8 +1,8 @@
 // Database Service Module - Public API
 export { DatabaseService, databaseService } from './DatabaseService';
-export type { 
+export type {
   PluginRecord,
   PluginStateRecord,
   CommandRecord,
-  AppStateRecord 
+  AppStateRecord,
 } from './types';

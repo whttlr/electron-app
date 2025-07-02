@@ -1,7 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { Card, Switch, Typography, Row, Col, Slider } from 'antd';
+import {
+  Card, Switch, Typography, Row, Col, Slider,
+} from 'antd';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Grid, Box, Text } from '@react-three/drei';
+import {
+  OrbitControls, Grid, Box, Text,
+} from '@react-three/drei';
 import * as THREE from 'three';
 
 const { Title, Text: AntText } = Typography;
@@ -22,7 +26,7 @@ interface WorkingAreaPreviewProps {
 // Moving tool component
 const Tool: React.FC<{ position: Position }> = ({ position }) => {
   const meshRef = useRef<THREE.Mesh>(null);
-  
+
   useFrame((state) => {
     if (meshRef.current) {
       // Add slight rotation animation
@@ -49,30 +53,28 @@ const Tool: React.FC<{ position: Position }> = ({ position }) => {
 };
 
 // Work area bounds
-const WorkArea: React.FC<{ dimensions: { x: number; y: number; z: number } }> = ({ dimensions }) => {
-  return (
+const WorkArea: React.FC<{ dimensions: { x: number; y: number; z: number } }> = ({ dimensions }) => (
     <group>
       {/* Work surface */}
       <Box args={[dimensions.x / 10, dimensions.y / 10, 0.1]} position={[0, 0, -dimensions.z / 20]}>
         <meshStandardMaterial color="#f0f0f0" transparent opacity={0.3} />
       </Box>
-      
+
       {/* Work area outline */}
       <lineSegments>
-        <edgesGeometry 
-          args={[new THREE.BoxGeometry(dimensions.x / 10, dimensions.y / 10, dimensions.z / 10)]} 
+        <edgesGeometry
+          args={[new THREE.BoxGeometry(dimensions.x / 10, dimensions.y / 10, dimensions.z / 10)]}
         />
         <lineBasicMaterial color="#1890ff" />
       </lineSegments>
     </group>
-  );
-};
+);
 
-const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({ 
+const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
   currentPosition = { x: 0, y: 0, z: 0 },
   workArea = { x: 300, y: 200, z: 50 },
   showGrid = true,
-  onGridToggle 
+  onGridToggle,
 }) => {
   const [zoom, setZoom] = useState(1);
 
@@ -82,8 +84,8 @@ const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
         <Row gutter={16} align="middle">
           <Col span={8}>
             <AntText strong>Show Grid:</AntText>
-            <Switch 
-              checked={showGrid} 
+            <Switch
+              checked={showGrid}
               onChange={onGridToggle}
               style={{ marginLeft: '8px' }}
             />
@@ -101,7 +103,7 @@ const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
           </Col>
         </Row>
       </div>
-      
+
       <div style={{ height: '300px', border: '1px solid #f0f0f0', borderRadius: '4px' }}>
         <Canvas
           camera={{ position: [20, 20, 20], fov: 50 }}
@@ -110,7 +112,7 @@ const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
           <ambientLight intensity={0.6} />
           <pointLight position={[10, 10, 10]} intensity={0.8} />
           <directionalLight position={[-10, -10, -5]} intensity={0.5} />
-          
+
           {/* Grid */}
           {showGrid && (
             <Grid
@@ -127,13 +129,13 @@ const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
               infiniteGrid={false}
             />
           )}
-          
+
           {/* Work area */}
           <WorkArea dimensions={workArea} />
-          
+
           {/* Current tool position */}
           <Tool position={currentPosition} />
-          
+
           {/* Coordinate system origin */}
           <group>
             {/* X axis - Red */}
@@ -149,7 +151,7 @@ const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
             >
               X
             </Text>
-            
+
             {/* Y axis - Green */}
             <Box args={[0.1, 5, 0.1]} position={[0, 2.5, 0]}>
               <meshStandardMaterial color="#00ff00" />
@@ -163,7 +165,7 @@ const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
             >
               Y
             </Text>
-            
+
             {/* Z axis - Blue */}
             <Box args={[0.1, 0.1, 3]} position={[0, 0, 1.5]}>
               <meshStandardMaterial color="#0000ff" />
@@ -178,7 +180,7 @@ const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
               Z
             </Text>
           </group>
-          
+
           <OrbitControls
             enablePan={true}
             enableZoom={true}
@@ -189,7 +191,7 @@ const WorkingAreaPreview: React.FC<WorkingAreaPreviewProps> = ({
           />
         </Canvas>
       </div>
-      
+
       <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
         <Row gutter={16}>
           <Col span={8}>X: {currentPosition.x.toFixed(2)}mm</Col>

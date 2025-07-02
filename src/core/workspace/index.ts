@@ -9,5 +9,5 @@
 // Placeholder for future workspace functionality
 export const WorkspaceModule = {
   version: '1.0.0',
-  description: 'Working area and boundary management'
+  description: 'Working area and boundary management',
 };

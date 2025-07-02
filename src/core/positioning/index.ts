@@ -10,5 +10,5 @@
 // Placeholder for future positioning functionality
 export const PositioningModule = {
   version: '1.0.0',
-  description: 'Position tracking and jog control logic'
+  description: 'Position tracking and jog control logic',
 };

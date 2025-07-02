@@ -10,7 +10,7 @@ export class ConfigEventEmitter {
 
   constructor() {
     // Initialize event listener arrays
-    Object.values(['loaded', 'error', 'updated', 'reset'] as ConfigEventType[]).forEach(type => {
+    Object.values(['loaded', 'error', 'updated', 'reset'] as ConfigEventType[]).forEach((type) => {
       this.eventListeners.set(type, []);
     });
   }
@@ -47,7 +47,7 @@ export class ConfigEventEmitter {
     };
 
     const listeners = this.eventListeners.get(type) || [];
-    listeners.forEach(listener => {
+    listeners.forEach((listener) => {
       try {
         listener(event);
       } catch (error) {
@@ -62,7 +62,7 @@ export class ConfigEventEmitter {
   public clearEventListeners(): void {
     this.eventListeners.clear();
     // Re-initialize event listener arrays
-    Object.values(['loaded', 'error', 'updated', 'reset'] as ConfigEventType[]).forEach(type => {
+    Object.values(['loaded', 'error', 'updated', 'reset'] as ConfigEventType[]).forEach((type) => {
       this.eventListeners.set(type, []);
     });
   }

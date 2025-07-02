@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, {
+  createContext, useContext, useState, useEffect, ReactNode,
+} from 'react';
 import { settingsService, AppSettings } from '../services/settings';
 
 interface SettingsContextType {
@@ -37,9 +39,9 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
   const updateSettings = async (newSettings: Partial<AppSettings>) => {
     try {
       await settingsService.saveSettings(newSettings);
-      
+
       // Update local state
-      setSettings(current => current ? { ...current, ...newSettings } : null);
+      setSettings((current) => (current ? { ...current, ...newSettings } : null));
     } catch (err) {
       console.error('Error updating settings:', err);
       throw err;
@@ -58,7 +60,7 @@ export const SettingsProvider: React.FC<SettingsProviderProps> = ({ children }) 
   useEffect(() => {
     if (settings?.ui?.theme) {
       document.body.setAttribute('data-theme', settings.ui.theme);
-      
+
       // Update antd theme by adding/removing CSS class
       if (settings.ui.theme === 'dark') {
         document.body.classList.add('dark-theme');

@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { HashRouter as Router, Routes, Route, Link, useLocation } from 'react-router-dom';
-import { Layout, Menu, Spin, Alert } from 'antd';
-import { DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined } from '@ant-design/icons';
+import {
+  HashRouter as Router, Routes, Route, Link, useLocation,
+} from 'react-router-dom';
+import {
+  Layout, Menu, Spin, Alert,
+} from 'antd';
+import {
+  DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined,
+} from '@ant-design/icons';
 import { PluginProvider, usePlugins } from './services/plugin';
 import { databaseService } from './services/database';
 import { SettingsProvider } from './contexts/SettingsContext';
@@ -32,48 +38,48 @@ const AppContent: React.FC = () => {
     {
       key: '/',
       icon: <DashboardOutlined />,
-      label: <Link to="/" data-testid="nav-dashboard">Dashboard</Link>
+      label: <Link to="/" data-testid="nav-dashboard">Dashboard</Link>,
     },
     {
       key: '/controls',
       icon: <ControlOutlined />,
-      label: <Link to="/controls" data-testid="nav-controls">Controls</Link>
+      label: <Link to="/controls" data-testid="nav-controls">Controls</Link>,
     },
     // Add standalone plugin menu items
-    ...standalonePlugins.map(plugin => ({
+    ...standalonePlugins.map((plugin) => ({
       key: plugin.config?.routePath || `/plugin/${plugin.id}`,
       icon: getIconComponent(plugin.config?.menuIcon),
       label: <Link to={plugin.config?.routePath || `/plugin/${plugin.id}`}>
         {plugin.config?.menuTitle || plugin.name}
-      </Link>
+      </Link>,
     })),
     {
       key: '/plugins',
       icon: <AppstoreOutlined />,
-      label: <Link to="/plugins" data-testid="nav-plugins">Plugins</Link>
+      label: <Link to="/plugins" data-testid="nav-plugins">Plugins</Link>,
     },
     {
       key: '/settings',
       icon: <SettingOutlined />,
-      label: <Link to="/settings" data-testid="nav-settings">Settings</Link>
-    }
+      label: <Link to="/settings" data-testid="nav-settings">Settings</Link>,
+    },
   ];
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Header style={{ 
-        display: 'flex', 
+      <Header style={{
+        display: 'flex',
         alignItems: 'center',
         background: '#001529',
         color: 'white',
-        padding: '0 24px'
+        padding: '0 24px',
       }}>
         <h1 style={{ color: 'white', margin: 0 }}>CNC Jog Controls</h1>
       </Header>
-      
+
       <Layout>
-        <Sider 
-          width={200} 
+        <Sider
+          width={200}
           style={{ background: '#fff' }}
           breakpoint="lg"
           collapsedWidth="0"
@@ -85,7 +91,7 @@ const AppContent: React.FC = () => {
             style={{ height: '100%', borderRight: 0, paddingTop: '16px' }}
           />
         </Sider>
-        
+
         <Layout style={{ padding: '0 24px 24px' }}>
           <Content style={{
             padding: 24,
@@ -93,7 +99,7 @@ const AppContent: React.FC = () => {
             minHeight: 280,
             background: '#fff',
             borderRadius: '8px',
-            marginTop: '24px'
+            marginTop: '24px',
           }}>
             <Routes>
               <Route path="/" element={<DashboardView />} />
@@ -101,11 +107,11 @@ const AppContent: React.FC = () => {
               <Route path="/plugins" element={<PluginsView />} />
               <Route path="/settings" element={<SettingsView />} />
               {/* Dynamic plugin routes */}
-              {standalonePlugins.map(plugin => (
-                <Route 
+              {standalonePlugins.map((plugin) => (
+                <Route
                   key={plugin.id}
                   path={plugin.config?.routePath || `/plugin/${plugin.id}`}
-                  element={<PluginView />} 
+                  element={<PluginView />}
                 />
               ))}
               {/* Generic plugin route for any plugin ID */}
@@ -138,12 +144,12 @@ function App() {
 
   if (dbError) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
         height: '100vh',
-        padding: '24px'
+        padding: '24px',
       }}>
         <Alert
           message="Database Initialization Failed"
@@ -157,11 +163,11 @@ function App() {
 
   if (!isDbInitialized) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh' 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100vh',
       }}>
         <Spin size="large" />
         <div style={{ marginLeft: '16px' }}>Initializing database...</div>

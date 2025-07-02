@@ -26,7 +26,7 @@ describe('Services State Module', () => {
     test('should maintain consistent interface for future exports', () => {
       expect(StateModule).toEqual({
         version: '1.0.0',
-        description: 'Application state management'
+        description: 'Application state management',
       });
     });
   });
@@ -45,7 +45,7 @@ describe('StateService', () => {
       removeItem: jest.fn(),
       clear: jest.fn()
     };
-    
+
     stateService = new StateService(mockStorage);
   });
 
@@ -62,9 +62,9 @@ describe('StateService', () => {
           sidebarCollapsed: false
         }
       };
-      
+
       stateService.initialize(defaultState);
-      
+
       expect(stateService.getState('machine')).toEqual(defaultState.machine);
       expect(stateService.getState('ui')).toEqual(defaultState.ui);
     });
@@ -77,17 +77,17 @@ describe('StateService', () => {
           status: 'running'
         }
       };
-      
+
       mockStorage.getItem.mockReturnValue(JSON.stringify(persistedState));
-      
+
       stateService.loadPersistedState();
-      
+
       expect(stateService.getState('machine')).toEqual(persistedState.machine);
     });
 
     test('should handle corrupted persisted state', () => {
       mockStorage.getItem.mockReturnValue('invalid json');
-      
+
       expect(() => stateService.loadPersistedState()).not.toThrow();
       expect(stateService.getState()).toEqual({});
     });
@@ -110,7 +110,7 @@ describe('StateService', () => {
     test('should get nested state values', () => {
       const position = stateService.getValue('machine.position');
       expect(position).toEqual({ x: 0, y: 0, z: 0 });
-      
+
       const x = stateService.getValue('machine.position.x');
       expect(x).toBe(0);
     });
@@ -118,7 +118,7 @@ describe('StateService', () => {
     test('should return undefined for missing state', () => {
       const missing = stateService.getState('missing');
       expect(missing).toBeUndefined();
-      
+
       const nested = stateService.getValue('missing.nested.key');
       expect(nested).toBeUndefined();
     });
@@ -142,14 +142,14 @@ describe('StateService', () => {
     test('should set state by key', () => {
       const newMachineState = { position: { x: 10, y: 20, z: 5 }, status: 'running' };
       stateService.setState('machine', newMachineState);
-      
+
       expect(stateService.getState('machine')).toEqual(newMachineState);
     });
 
     test('should set nested state values', () => {
       stateService.setValue('machine.position.x', 25);
       expect(stateService.getValue('machine.position.x')).toBe(25);
-      
+
       stateService.setValue('ui.sidebar.collapsed', true);
       expect(stateService.getValue('ui.sidebar.collapsed')).toBe(true);
     });
@@ -157,7 +157,7 @@ describe('StateService', () => {
     test('should merge state updates', () => {
       const updates = { status: 'running', speed: 1500 };
       stateService.mergeState('machine', updates);
-      
+
       const machineState = stateService.getState('machine');
       expect(machineState.position).toEqual({ x: 0, y: 0, z: 0 }); // Preserved
       expect(machineState.status).toBe('running'); // Updated
@@ -183,10 +183,10 @@ describe('StateService', () => {
 
     test('should subscribe to state changes', () => {
       stateService.subscribe('machine', mockCallback);
-      
+
       const newState = { position: { x: 10, y: 20, z: 5 } };
       stateService.setState('machine', newState);
-      
+
       expect(mockCallback).toHaveBeenCalledWith(
         newState,
         { position: { x: 0, y: 0, z: 0 } },
@@ -196,9 +196,9 @@ describe('StateService', () => {
 
     test('should subscribe to nested state changes', () => {
       stateService.subscribe('machine.position', mockCallback);
-      
+
       stateService.setValue('machine.position.x', 15);
-      
+
       expect(mockCallback).toHaveBeenCalledWith(
         { x: 15, y: 0, z: 0 },
         { x: 0, y: 0, z: 0 },
@@ -208,9 +208,9 @@ describe('StateService', () => {
 
     test('should subscribe to all state changes', () => {
       stateService.subscribe(mockCallback);
-      
+
       stateService.setState('ui', { theme: 'dark' });
-      
+
       expect(mockCallback).toHaveBeenCalledWith(
         expect.objectContaining({ ui: { theme: 'dark' } }),
         expect.objectContaining({ ui: { theme: 'light' } }),
@@ -220,18 +220,18 @@ describe('StateService', () => {
 
     test('should unsubscribe from state changes', () => {
       const unsubscribe = stateService.subscribe('machine', mockCallback);
-      
+
       unsubscribe();
       stateService.setState('machine', { position: { x: 10, y: 20, z: 5 } });
-      
+
       expect(mockCallback).not.toHaveBeenCalled();
     });
 
     test('should not trigger callback for same value', () => {
       stateService.subscribe('machine.position.x', mockCallback);
-      
+
       stateService.setValue('machine.position.x', 0); // Same value
-      
+
       expect(mockCallback).not.toHaveBeenCalled();
     });
   });
@@ -247,9 +247,9 @@ describe('StateService', () => {
 
     test('should persist state changes automatically', () => {
       stateService.enablePersistence(['machine', 'ui']);
-      
+
       stateService.setState('machine', { position: { x: 10, y: 20, z: 5 } });
-      
+
       expect(mockStorage.setItem).toHaveBeenCalledWith(
         'app-state',
         JSON.stringify({
@@ -261,9 +261,9 @@ describe('StateService', () => {
 
     test('should not persist excluded state domains', () => {
       stateService.enablePersistence(['machine']); // Only machine
-      
+
       stateService.setState('ui', { theme: 'dark' });
-      
+
       const persistedData = JSON.parse(mockStorage.setItem.mock.calls[0][1]);
       expect(persistedData).toHaveProperty('machine');
       expect(persistedData).not.toHaveProperty('ui');
@@ -271,7 +271,7 @@ describe('StateService', () => {
 
     test('should save state manually', () => {
       stateService.saveState();
-      
+
       expect(mockStorage.setItem).toHaveBeenCalledWith(
         'app-state',
         JSON.stringify({
@@ -284,7 +284,7 @@ describe('StateService', () => {
 
     test('should clear persisted state', () => {
       stateService.clearPersistedState();
-      
+
       expect(mockStorage.removeItem).toHaveBeenCalledWith('app-state');
     });
   });
@@ -300,7 +300,7 @@ describe('StateService', () => {
     test('should track state history', () => {
       stateService.setState('machine', { position: { x: 10, y: 0, z: 0 } });
       stateService.setState('machine', { position: { x: 20, y: 0, z: 0 } });
-      
+
       const history = stateService.getHistory('machine');
       expect(history).toHaveLength(3); // Initial + 2 updates
     });
@@ -308,19 +308,19 @@ describe('StateService', () => {
     test('should undo state changes', () => {
       stateService.setState('machine', { position: { x: 10, y: 0, z: 0 } });
       stateService.setState('machine', { position: { x: 20, y: 0, z: 0 } });
-      
+
       stateService.undo('machine');
-      
+
       expect(stateService.getValue('machine.position.x')).toBe(10);
     });
 
     test('should redo state changes', () => {
       stateService.setState('machine', { position: { x: 10, y: 0, z: 0 } });
       stateService.setState('machine', { position: { x: 20, y: 0, z: 0 } });
-      
+
       stateService.undo('machine');
       stateService.redo('machine');
-      
+
       expect(stateService.getValue('machine.position.x')).toBe(20);
     });
 
@@ -329,7 +329,7 @@ describe('StateService', () => {
       for (let i = 1; i <= 15; i++) {
         stateService.setState('machine', { position: { x: i, y: 0, z: 0 } });
       }
-      
+
       const history = stateService.getHistory('machine');
       expect(history).toHaveLength(10); // Should be limited to 10
     });
@@ -353,7 +353,7 @@ describe('StateService', () => {
           }
         }
       };
-      
+
       stateService.setValidationSchema(schema);
       stateService.initialize({
         machine: { position: { x: 0, y: 0, z: 0 } }
@@ -377,40 +377,40 @@ describe('StateService', () => {
       for (let i = 0; i < 10000; i++) {
         largeState[`item${i}`] = { value: i, data: `data${i}` };
       }
-      
+
       const start = performance.now();
       stateService.setState('large', largeState);
       const end = performance.now();
-      
+
       expect(end - start).toBeLessThan(100); // Should complete in < 100ms
       expect(stateService.getState('large')).toEqual(largeState);
     });
 
     test('should clean up subscriptions to prevent memory leaks', () => {
       const callbacks = [];
-      
+
       // Create many subscriptions
       for (let i = 0; i < 100; i++) {
         const callback = jest.fn();
         callbacks.push(callback);
         stateService.subscribe('machine', callback);
       }
-      
+
       // Trigger change
       stateService.setState('machine', { position: { x: 1, y: 2, z: 3 } });
-      
+
       // All callbacks should be called
       callbacks.forEach(callback => {
         expect(callback).toHaveBeenCalled();
       });
-      
+
       // Clean up
       stateService.clearAllSubscriptions();
-      
+
       // Reset mocks and trigger another change
       callbacks.forEach(callback => callback.mockClear());
       stateService.setState('machine', { position: { x: 4, y: 5, z: 6 } });
-      
+
       // No callbacks should be called after cleanup
       callbacks.forEach(callback => {
         expect(callback).not.toHaveBeenCalled();

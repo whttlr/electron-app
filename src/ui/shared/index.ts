@@ -10,5 +10,5 @@
 // Placeholder for shared components
 export const SharedModule = {
   version: '1.0.0',
-  description: 'Shared UI components and utilities'
+  description: 'Shared UI components and utilities',
 };

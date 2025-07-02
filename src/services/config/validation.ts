@@ -51,9 +51,9 @@ export class ConfigValidator {
         const sectionResult = validator(config[key]);
         if (!sectionResult.isValid) {
           result.isValid = false;
-          result.errors.push(...sectionResult.errors.map(error => `${key}: ${error}`));
+          result.errors.push(...sectionResult.errors.map((error) => `${key}: ${error}`));
         }
-        result.warnings.push(...sectionResult.warnings.map(warning => `${key}: ${warning}`));
+        result.warnings.push(...sectionResult.warnings.map((warning) => `${key}: ${warning}`));
       } else {
         result.warnings.push(`Missing ${key} configuration section`);
       }
@@ -80,7 +80,7 @@ export class ConfigValidator {
 
     // Validate required sections
     const requiredSections = ['defaultDimensions', 'defaultPosition', 'jogSettings'];
-    requiredSections.forEach(section => {
+    requiredSections.forEach((section) => {
       if (!config[section]) {
         result.isValid = false;
         result.errors.push(`Missing required section: ${section}`);
@@ -171,7 +171,7 @@ export class ConfigValidator {
 
     // Validate required sections
     const requiredSections = ['defaultState', 'polling'];
-    requiredSections.forEach(section => {
+    requiredSections.forEach((section) => {
       if (!config[section]) {
         result.isValid = false;
         result.errors.push(`Missing required section: ${section}`);
@@ -180,9 +180,9 @@ export class ConfigValidator {
 
     // Validate polling intervals
     if (config.polling) {
-      const polling = config.polling;
+      const { polling } = config;
       const intervals = ['positionUpdateInterval', 'statusUpdateInterval', 'connectionCheckInterval'];
-      intervals.forEach(interval => {
+      intervals.forEach((interval) => {
         if (typeof polling[interval] !== 'number' || polling[interval] <= 0) {
           result.errors.push(`polling.${interval} must be a positive number`);
           result.isValid = false;
@@ -265,7 +265,7 @@ export class ConfigValidator {
     if (config.theme && config.theme.axisColors) {
       const colors = config.theme.axisColors;
       const axes = ['x', 'y', 'z'];
-      axes.forEach(axis => {
+      axes.forEach((axis) => {
         if (typeof colors[axis] !== 'string' || !this.isValidColor(colors[axis])) {
           result.errors.push(`theme.axisColors.${axis} must be a valid color string`);
           result.isValid = false;
@@ -294,7 +294,7 @@ export class ConfigValidator {
 
     // Validate endpoints
     if (config.endpoints) {
-      const endpoints = config.endpoints;
+      const { endpoints } = config;
       if (typeof endpoints.base !== 'string' || !this.isValidURL(endpoints.base)) {
         result.errors.push('endpoints.base must be a valid URL');
         result.isValid = false;
@@ -303,8 +303,8 @@ export class ConfigValidator {
 
     // Validate timeouts
     if (config.timeouts) {
-      const timeouts = config.timeouts;
-      Object.keys(timeouts).forEach(key => {
+      const { timeouts } = config;
+      Object.keys(timeouts).forEach((key) => {
         if (typeof timeouts[key] !== 'number' || timeouts[key] <= 0) {
           result.errors.push(`timeouts.${key} must be a positive number`);
           result.isValid = false;
@@ -333,7 +333,7 @@ export class ConfigValidator {
 
     // Basic validation - in a real implementation, you'd validate all nested structures
     const requiredSections = ['machine', 'jog', 'visualization', 'ui'];
-    requiredSections.forEach(section => {
+    requiredSections.forEach((section) => {
       if (!config[section]) {
         result.warnings.push(`Missing section: ${section}`);
       }
@@ -360,7 +360,7 @@ export class ConfigValidator {
 
     // Validate 3D camera settings
     if (config.preview3D && config.preview3D.camera) {
-      const camera = config.preview3D.camera;
+      const { camera } = config.preview3D;
       if (typeof camera.fov !== 'number' || camera.fov <= 0 || camera.fov >= 180) {
         result.errors.push('preview3D.camera.fov must be between 0 and 180');
         result.isValid = false;
@@ -385,7 +385,7 @@ export class ConfigValidator {
     // Basic color validation - supports hex colors and named colors
     const hexPattern = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
     const namedColors = ['red', 'green', 'blue', 'white', 'black', 'yellow', 'cyan', 'magenta'];
-    
+
     return hexPattern.test(color) || namedColors.includes(color.toLowerCase());
   }
 

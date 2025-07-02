@@ -1,7 +1,9 @@
 // UI Configuration Types
 // Type definitions for UI theme, layout, and visualization configuration schemas
 
-import { AxisColors, CameraPosition, CanvasSize, Breakpoints } from './CommonTypes';
+import {
+  AxisColors, CameraPosition, CanvasSize, Breakpoints,
+} from './CommonTypes';
 
 // Theme Configuration Types
 export interface ThemeConfig {

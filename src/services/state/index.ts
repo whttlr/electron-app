@@ -9,5 +9,5 @@
 // Placeholder for state management
 export const StateModule = {
   version: '1.0.0',
-  description: 'Application state management'
+  description: 'Application state management',
 };

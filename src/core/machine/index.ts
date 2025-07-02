@@ -9,5 +9,5 @@
 // Placeholder for future machine control functionality
 export const MachineModule = {
   version: '1.0.0',
-  description: 'Core machine control and state management'
+  description: 'Core machine control and state management',
 };

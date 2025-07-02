@@ -69,19 +69,19 @@ export class SettingsService {
       }
 
       // Parse stored JSON settings or use defaults
-      const machineSettings = appState.machineSettings 
-        ? JSON.parse(appState.machineSettings) 
+      const machineSettings = appState.machineSettings
+        ? JSON.parse(appState.machineSettings)
         : this.getDefaultMachineSettings();
-      
+
       // Ensure units from direct field override JSON setting
       machineSettings.units = appState.machineUnits as 'metric' | 'imperial';
-      
-      const jogSettings = appState.jogSettings 
-        ? JSON.parse(appState.jogSettings) 
+
+      const jogSettings = appState.jogSettings
+        ? JSON.parse(appState.jogSettings)
         : this.getDefaultJogSettings();
-      
-      const connectionSettings = appState.connectionSettings 
-        ? JSON.parse(appState.connectionSettings) 
+
+      const connectionSettings = appState.connectionSettings
+        ? JSON.parse(appState.connectionSettings)
         : this.getDefaultConnectionSettings();
 
       return {
@@ -113,90 +113,90 @@ export class SettingsService {
       const updateData: any = {};
 
       if (settings.machine) {
-        const oldMachineSettings = currentAppState?.machineSettings 
-          ? JSON.parse(currentAppState.machineSettings) 
+        const oldMachineSettings = currentAppState?.machineSettings
+          ? JSON.parse(currentAppState.machineSettings)
           : this.getDefaultMachineSettings();
-        
+
         updateData.machineUnits = settings.machine.units;
         updateData.machineSettings = JSON.stringify(settings.machine);
-        
-        changes.push({ 
-          key: 'machine', 
-          oldValue: oldMachineSettings, 
-          newValue: settings.machine 
+
+        changes.push({
+          key: 'machine',
+          oldValue: oldMachineSettings,
+          newValue: settings.machine,
         });
       }
 
       if (settings.jog) {
-        const oldJogSettings = currentAppState?.jogSettings 
-          ? JSON.parse(currentAppState.jogSettings) 
+        const oldJogSettings = currentAppState?.jogSettings
+          ? JSON.parse(currentAppState.jogSettings)
           : this.getDefaultJogSettings();
-        
+
         updateData.jogSettings = JSON.stringify(settings.jog);
-        
-        changes.push({ 
-          key: 'jog', 
-          oldValue: oldJogSettings, 
-          newValue: settings.jog 
+
+        changes.push({
+          key: 'jog',
+          oldValue: oldJogSettings,
+          newValue: settings.jog,
         });
       }
 
       if (settings.connection) {
-        const oldConnectionSettings = currentAppState?.connectionSettings 
-          ? JSON.parse(currentAppState.connectionSettings) 
+        const oldConnectionSettings = currentAppState?.connectionSettings
+          ? JSON.parse(currentAppState.connectionSettings)
           : this.getDefaultConnectionSettings();
-        
+
         updateData.connectionSettings = JSON.stringify(settings.connection);
-        
-        changes.push({ 
-          key: 'connection', 
-          oldValue: oldConnectionSettings, 
-          newValue: settings.connection 
+
+        changes.push({
+          key: 'connection',
+          oldValue: oldConnectionSettings,
+          newValue: settings.connection,
         });
       }
 
       if (settings.ui) {
         if (settings.ui.theme !== undefined) {
-          changes.push({ 
-            key: 'ui.theme', 
-            oldValue: currentAppState?.theme, 
-            newValue: settings.ui.theme 
+          changes.push({
+            key: 'ui.theme',
+            oldValue: currentAppState?.theme,
+            newValue: settings.ui.theme,
           });
           updateData.theme = settings.ui.theme;
         }
-        
+
         if (settings.ui.language !== undefined) {
-          changes.push({ 
-            key: 'ui.language', 
-            oldValue: currentAppState?.language, 
-            newValue: settings.ui.language 
+          changes.push({
+            key: 'ui.language',
+            oldValue: currentAppState?.language,
+            newValue: settings.ui.language,
           });
           updateData.language = settings.ui.language;
         }
 
         if (settings.ui.showGrid !== undefined) {
-          changes.push({ 
-            key: 'ui.showGrid', 
-            oldValue: currentAppState?.showGrid ?? true, 
-            newValue: settings.ui.showGrid 
+          changes.push({
+            key: 'ui.showGrid',
+            oldValue: currentAppState?.showGrid ?? true,
+            newValue: settings.ui.showGrid,
           });
           updateData.showGrid = settings.ui.showGrid;
         }
 
         if (settings.ui.showCoordinates !== undefined) {
-          changes.push({ 
-            key: 'ui.showCoordinates', 
-            oldValue: currentAppState?.showCoordinates ?? true, 
-            newValue: settings.ui.showCoordinates 
+          changes.push({
+            key: 'ui.showCoordinates',
+            oldValue: currentAppState?.showCoordinates ?? true,
+            newValue: settings.ui.showCoordinates,
           });
           updateData.showCoordinates = settings.ui.showCoordinates;
         }
 
         if (settings.ui.autoConnect !== undefined) {
-          changes.push({ 
-            key: 'ui.autoConnect', 
-            oldValue: currentAppState?.autoConnect ?? false, 
-            newValue: settings.ui.autoConnect 
+          changes.push({
+            key: 'ui.autoConnect',
+            oldValue: currentAppState?.autoConnect ?? false,
+            newValue: settings.ui.autoConnect,
           });
           updateData.autoConnect = settings.ui.autoConnect;
         }
@@ -213,10 +213,9 @@ export class SettingsService {
           change.key,
           change.oldValue,
           change.newValue,
-          changedBy as 'user' | 'system' | 'plugin'
+          changedBy as 'user' | 'system' | 'plugin',
         );
       }
-
     } catch (error) {
       console.error('Error saving settings:', error);
       throw new Error(`Failed to save settings: ${error instanceof Error ? error.message : 'Unknown error'}`);

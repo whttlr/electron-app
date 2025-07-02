@@ -1,5 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, act } from '@testing-library/react';
+import {
+  render, screen, fireEvent, act,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PluginRenderer from '../PluginRenderer';
 import { PluginProvider } from '../../../services/plugin';
@@ -10,35 +12,31 @@ const mockModalInfo = jest.fn();
 jest.mock('antd', () => ({
   ...jest.requireActual('antd'),
   Modal: {
-    info: mockModalInfo
-  }
+    info: mockModalInfo,
+  },
 }));
 
 // Helper component to provide plugin context
-const TestWrapper: React.FC<{ 
+const TestWrapper: React.FC<{
   children: React.ReactNode;
   plugins?: any[];
 }> = ({ children, plugins = [] }) => {
   const MockPluginProvider = ({ children }: { children: React.ReactNode }) => {
     const [mockPlugins, setMockPlugins] = React.useState(plugins);
-    
-    const getStandalonePlugins = () => {
-      return mockPlugins.filter(plugin => 
-        plugin.status === 'active' && 
-        plugin.config?.placement === 'standalone'
-      );
-    };
+
+    const getStandalonePlugins = () => mockPlugins.filter((plugin) => plugin.status === 'active'
+        && plugin.config?.placement === 'standalone');
 
     const contextValue = {
       plugins: mockPlugins,
       setPlugins: setMockPlugins,
-      getStandalonePlugins
+      getStandalonePlugins,
     };
 
     return React.createElement(
       React.createContext(contextValue).Provider,
       { value: contextValue },
-      children
+      children,
     );
   };
 
@@ -55,9 +53,9 @@ describe('PluginRenderer', () => {
       const { container } = render(
         <TestWrapper plugins={[]}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(container.firstChild).toBeNull();
     });
 
@@ -65,16 +63,16 @@ describe('PluginRenderer', () => {
       const plugins = [
         createMockPlugin({
           id: 'plugin1',
-          config: { screen: 'controls', placement: 'dashboard' }
-        })
+          config: { screen: 'controls', placement: 'dashboard' },
+        }),
       ];
 
       const { container } = render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(container.firstChild).toBeNull();
     });
 
@@ -83,16 +81,16 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'plugin1',
           status: 'inactive',
-          config: { screen: 'main', placement: 'dashboard' }
-        })
+          config: { screen: 'main', placement: 'dashboard' },
+        }),
       ];
 
       const { container } = render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(container.firstChild).toBeNull();
     });
   });
@@ -104,20 +102,20 @@ describe('PluginRenderer', () => {
           id: 'dashboard-plugin',
           name: 'Dashboard Plugin',
           description: 'A dashboard plugin',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'dashboard',
-            priority: 100
-          }
-        })
+            priority: 100,
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Dashboard Plugin')).toBeInTheDocument();
       expect(screen.getByText('A dashboard plugin')).toBeInTheDocument();
       expect(screen.getByText('🔌')).toBeInTheDocument();
@@ -128,32 +126,32 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'low-priority',
           name: 'Low Priority Plugin',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'dashboard',
-            priority: 50
-          }
+            priority: 50,
+          },
         }),
         createMockPlugin({
           id: 'high-priority',
           name: 'High Priority Plugin',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'dashboard',
-            priority: 200
-          }
-        })
+            priority: 200,
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       const pluginCards = screen.getAllByText(/Priority Plugin/);
       const firstCard = pluginCards[0].closest('.ant-card');
-      
+
       expect(firstCard).toHaveTextContent('High Priority Plugin');
     });
 
@@ -162,29 +160,29 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'auto-width',
           name: 'Auto Width Plugin',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'dashboard',
-            size: { width: 'auto', height: 'auto' }
-          }
+            size: { width: 'auto', height: 'auto' },
+          },
         }),
         createMockPlugin({
           id: 'large-width',
           name: 'Large Width Plugin',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'dashboard',
-            size: { width: 500, height: 300 }
-          }
-        })
+            size: { width: 500, height: 300 },
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Auto Width Plugin')).toBeInTheDocument();
       expect(screen.getByText('Large Width Plugin')).toBeInTheDocument();
     });
@@ -195,20 +193,20 @@ describe('PluginRenderer', () => {
           id: 'config-plugin',
           name: 'Config Plugin',
           type: 'visualization',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'dashboard',
-            priority: 150
-          }
-        })
+            priority: 150,
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Type: visualization')).toBeInTheDocument();
       expect(screen.getByText('Placement: dashboard')).toBeInTheDocument();
       expect(screen.getByText('Priority: 150')).toBeInTheDocument();
@@ -222,20 +220,20 @@ describe('PluginRenderer', () => {
           id: 'sidebar-plugin',
           name: 'Sidebar Plugin',
           description: 'A sidebar plugin',
-          config: { 
-            screen: 'controls', 
+          config: {
+            screen: 'controls',
             placement: 'sidebar',
-            priority: 100
-          }
-        })
+            priority: 100,
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="controls" placement="sidebar" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Sidebar Plugin')).toBeInTheDocument();
       expect(screen.getByText('A sidebar plugin')).toBeInTheDocument();
     });
@@ -245,32 +243,32 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'sidebar-low',
           name: 'Low Sidebar',
-          config: { 
-            screen: 'settings', 
+          config: {
+            screen: 'settings',
             placement: 'sidebar',
-            priority: 25
-          }
+            priority: 25,
+          },
         }),
         createMockPlugin({
           id: 'sidebar-high',
           name: 'High Sidebar',
-          config: { 
-            screen: 'settings', 
+          config: {
+            screen: 'settings',
             placement: 'sidebar',
-            priority: 75
-          }
-        })
+            priority: 75,
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="settings" placement="sidebar" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       const pluginCards = screen.getAllByText(/Sidebar/);
       const firstCard = pluginCards[0].closest('.ant-card');
-      
+
       expect(firstCard).toHaveTextContent('High Sidebar');
     });
   });
@@ -282,19 +280,19 @@ describe('PluginRenderer', () => {
           id: 'modal-plugin',
           name: 'Modal Plugin',
           description: 'A modal plugin',
-          config: { 
-            screen: 'main', 
-            placement: 'modal'
-          }
-        })
+          config: {
+            screen: 'main',
+            placement: 'modal',
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="modal" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Available Modal Plugins')).toBeInTheDocument();
       expect(screen.getByText('Modal Plugin')).toBeInTheDocument();
       expect(screen.getByText('Click to open')).toBeInTheDocument();
@@ -306,27 +304,27 @@ describe('PluginRenderer', () => {
           id: 'modal-plugin',
           name: 'Modal Plugin',
           description: 'A modal plugin',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'modal',
-            size: { width: 800, height: 600 }
-          }
-        })
+            size: { width: 800, height: 600 },
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="modal" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       const modalCard = screen.getByText('Modal Plugin').closest('.ant-card');
       fireEvent.click(modalCard!);
-      
+
       expect(mockModalInfo).toHaveBeenCalledWith({
         title: 'Modal Plugin',
         content: expect.anything(),
-        width: 800
+        width: 800,
       });
     });
 
@@ -335,27 +333,27 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'auto-modal',
           name: 'Auto Modal',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'modal',
-            size: { width: 'auto', height: 'auto' }
-          }
-        })
+            size: { width: 'auto', height: 'auto' },
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="modal" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       const modalCard = screen.getByText('Auto Modal').closest('.ant-card');
       fireEvent.click(modalCard!);
-      
+
       expect(mockModalInfo).toHaveBeenCalledWith({
         title: 'Auto Modal',
         content: expect.anything(),
-        width: 600 // default width
+        width: 600, // default width
       });
     });
   });
@@ -366,26 +364,26 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'dashboard-plugin',
           name: 'Dashboard Plugin',
-          config: { screen: 'main', placement: 'dashboard' }
+          config: { screen: 'main', placement: 'dashboard' },
         }),
         createMockPlugin({
           id: 'sidebar-plugin',
           name: 'Sidebar Plugin',
-          config: { screen: 'main', placement: 'sidebar' }
+          config: { screen: 'main', placement: 'sidebar' },
         }),
         createMockPlugin({
           id: 'modal-plugin',
           name: 'Modal Plugin',
-          config: { screen: 'main', placement: 'modal' }
-        })
+          config: { screen: 'main', placement: 'modal' },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Dashboard Plugin')).toBeInTheDocument();
       expect(screen.getByText('Sidebar Plugin')).toBeInTheDocument();
       expect(screen.getByText('Available Modal Plugins')).toBeInTheDocument();
@@ -397,16 +395,16 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'dashboard-only',
           name: 'Dashboard Only',
-          config: { screen: 'controls', placement: 'dashboard' }
-        })
+          config: { screen: 'controls', placement: 'dashboard' },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="controls" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Dashboard Only')).toBeInTheDocument();
       expect(screen.queryByText('Available Modal Plugins')).not.toBeInTheDocument();
     });
@@ -418,26 +416,26 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'main-plugin',
           name: 'Main Plugin',
-          config: { screen: 'main', placement: 'dashboard' }
+          config: { screen: 'main', placement: 'dashboard' },
         }),
         createMockPlugin({
           id: 'controls-plugin',
           name: 'Controls Plugin',
-          config: { screen: 'controls', placement: 'dashboard' }
+          config: { screen: 'controls', placement: 'dashboard' },
         }),
         createMockPlugin({
           id: 'settings-plugin',
           name: 'Settings Plugin',
-          config: { screen: 'settings', placement: 'dashboard' }
-        })
+          config: { screen: 'settings', placement: 'dashboard' },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="controls" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Controls Plugin')).toBeInTheDocument();
       expect(screen.queryByText('Main Plugin')).not.toBeInTheDocument();
       expect(screen.queryByText('Settings Plugin')).not.toBeInTheDocument();
@@ -449,22 +447,22 @@ describe('PluginRenderer', () => {
           id: 'active-plugin',
           name: 'Active Plugin',
           status: 'active',
-          config: { screen: 'main', placement: 'dashboard' }
+          config: { screen: 'main', placement: 'dashboard' },
         }),
         createMockPlugin({
           id: 'inactive-plugin',
           name: 'Inactive Plugin',
           status: 'inactive',
-          config: { screen: 'main', placement: 'dashboard' }
-        })
+          config: { screen: 'main', placement: 'dashboard' },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Active Plugin')).toBeInTheDocument();
       expect(screen.queryByText('Inactive Plugin')).not.toBeInTheDocument();
     });
@@ -474,26 +472,26 @@ describe('PluginRenderer', () => {
         createMockPlugin({
           id: 'match-both',
           name: 'Match Both',
-          config: { screen: 'main', placement: 'dashboard' }
+          config: { screen: 'main', placement: 'dashboard' },
         }),
         createMockPlugin({
           id: 'match-screen-only',
           name: 'Match Screen Only',
-          config: { screen: 'main', placement: 'sidebar' }
+          config: { screen: 'main', placement: 'sidebar' },
         }),
         createMockPlugin({
           id: 'match-placement-only',
           name: 'Match Placement Only',
-          config: { screen: 'controls', placement: 'dashboard' }
-        })
+          config: { screen: 'controls', placement: 'dashboard' },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Match Both')).toBeInTheDocument();
       expect(screen.queryByText('Match Screen Only')).not.toBeInTheDocument();
       expect(screen.queryByText('Match Placement Only')).not.toBeInTheDocument();
@@ -508,20 +506,20 @@ describe('PluginRenderer', () => {
           name: 'Content Plugin',
           description: 'Plugin description',
           type: 'control',
-          config: { 
-            screen: 'main', 
+          config: {
+            screen: 'main',
             placement: 'dashboard',
-            priority: 75
-          }
-        })
+            priority: 75,
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('🔌')).toBeInTheDocument();
       expect(screen.getByText('Content Plugin')).toBeInTheDocument();
       expect(screen.getByText('Plugin description')).toBeInTheDocument();
@@ -538,20 +536,20 @@ describe('PluginRenderer', () => {
           name: 'Minimal Plugin',
           description: 'Minimal description',
           type: 'utility',
-          config: { 
-            screen: 'main', 
-            placement: 'dashboard'
+          config: {
+            screen: 'main',
+            placement: 'dashboard',
             // No priority specified
-          }
-        })
+          },
+        }),
       ];
 
       render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(screen.getByText('Minimal Plugin')).toBeInTheDocument();
       expect(screen.getByText('Priority:')).toBeInTheDocument();
     });
@@ -566,17 +564,17 @@ describe('PluginRenderer', () => {
           version: '1.0.0',
           description: 'Plugin without config',
           status: 'active' as const,
-          type: 'utility' as const
+          type: 'utility' as const,
           // No config property
-        }
+        },
       ];
 
       const { container } = render(
         <TestWrapper plugins={plugins}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       // Should render nothing since screen doesn't match
       expect(container.firstChild).toBeNull();
     });
@@ -585,9 +583,9 @@ describe('PluginRenderer', () => {
       const { container } = render(
         <TestWrapper plugins={[]}>
           <PluginRenderer screen="main" placement="dashboard" />
-        </TestWrapper>
+        </TestWrapper>,
       );
-      
+
       expect(container.firstChild).toBeNull();
     });
   });

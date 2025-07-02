@@ -12,13 +12,11 @@ jest.mock('../../../components', () => ({
   ),
 }));
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(
+const renderWithRouter = (component: React.ReactElement) => render(
     <BrowserRouter>
       {component}
-    </BrowserRouter>
-  );
-};
+    </BrowserRouter>,
+);
 
 describe('DashboardView', () => {
   beforeEach(() => {
@@ -37,7 +35,7 @@ describe('DashboardView', () => {
 
   it('renders all dashboard cards', () => {
     renderWithRouter(<DashboardView />);
-    
+
     expect(screen.getByText('Jog Controls')).toBeInTheDocument();
     expect(screen.getByText('Machine Status')).toBeInTheDocument();
     expect(screen.getByText('Plugins')).toBeInTheDocument();
@@ -46,7 +44,7 @@ describe('DashboardView', () => {
 
   it('renders card descriptions', () => {
     renderWithRouter(<DashboardView />);
-    
+
     expect(screen.getByText('Manual machine control and positioning')).toBeInTheDocument();
     expect(screen.getByText('Real-time machine monitoring and diagnostics')).toBeInTheDocument();
     expect(screen.getByText('Install and configure CNC plugins')).toBeInTheDocument();
@@ -55,13 +53,13 @@ describe('DashboardView', () => {
 
   it('renders navigation buttons with correct hrefs', () => {
     renderWithRouter(<DashboardView />);
-    
+
     const controlsLink = screen.getByRole('link', { name: /open controls/i });
     expect(controlsLink).toHaveAttribute('href', '/controls');
-    
+
     const pluginsLink = screen.getByRole('link', { name: /manage plugins/i });
     expect(pluginsLink).toHaveAttribute('href', '/plugins');
-    
+
     const settingsLink = screen.getByRole('link', { name: /configure/i });
     expect(settingsLink).toHaveAttribute('href', '/settings');
   });
@@ -73,7 +71,7 @@ describe('DashboardView', () => {
 
   it('renders card icons', () => {
     renderWithRouter(<DashboardView />);
-    
+
     // Check for icon elements (Ant Design icons render as spans with specific roles)
     expect(screen.getByRole('img', { name: 'control' })).toBeInTheDocument();
     expect(screen.getByRole('img', { name: 'tool' })).toBeInTheDocument();
@@ -83,7 +81,7 @@ describe('DashboardView', () => {
 
   it('renders plugin renderers for main screen', () => {
     renderWithRouter(<DashboardView />);
-    
+
     expect(screen.getByTestId('plugin-renderer-main')).toBeInTheDocument();
     expect(screen.getByTestId('plugin-renderer-main-modal')).toBeInTheDocument();
   });
@@ -95,33 +93,33 @@ describe('DashboardView', () => {
 
   it('has proper responsive grid layout', () => {
     renderWithRouter(<DashboardView />);
-    
+
     // Check for Ant Design Row and Col components
     const row = document.querySelector('.ant-row');
     expect(row).toBeInTheDocument();
-    
+
     const cols = document.querySelectorAll('.ant-col');
     expect(cols).toHaveLength(4); // One for each dashboard card
   });
 
   it('applies dashboard-card className to cards', () => {
     renderWithRouter(<DashboardView />);
-    
+
     const cards = document.querySelectorAll('.dashboard-card');
     expect(cards).toHaveLength(4);
   });
 
   it('renders buttons with correct types', () => {
     renderWithRouter(<DashboardView />);
-    
+
     const primaryLink = screen.getByRole('link', { name: /open controls/i });
     expect(primaryLink).toHaveClass('ant-btn-primary');
-    
+
     const defaultLinks = [
       screen.getByRole('link', { name: /manage plugins/i }),
-      screen.getByRole('link', { name: /configure/i })
+      screen.getByRole('link', { name: /configure/i }),
     ];
-    defaultLinks.forEach(link => {
+    defaultLinks.forEach((link) => {
       expect(link).toHaveClass('ant-btn-default');
     });
 

@@ -11,7 +11,7 @@ import {
   DefaultsConfig,
   VisualizationConfig,
   ConfigLoadingState,
-  ConfigEventType
+  ConfigEventType,
 } from './types/index';
 import { ConfigLoader } from './ConfigLoader';
 import { ConfigEventEmitter } from './ConfigEventEmitter';
@@ -21,14 +21,18 @@ type ConfigEventListener = (event: any) => void;
 
 export class ConfigService {
   private static instance: ConfigService | null = null;
+
   private config: CompleteConfig | null = null;
+
   private loadingState: ConfigLoadingState = {
     isLoading: false,
     isLoaded: false,
     error: null,
     lastUpdated: null,
   };
+
   private configLoader: ConfigLoader;
+
   private eventEmitter: ConfigEventEmitter;
 
   private constructor() {
@@ -84,7 +88,6 @@ export class ConfigService {
       throw error;
     }
   }
-
 
   /**
    * Get the complete configuration
@@ -255,7 +258,7 @@ export class ConfigService {
     position: number;
     status: number;
     connection: number;
-  } {
+    } {
     return ConfigUtils.getPollingIntervals(this.getStateConfig());
   }
 

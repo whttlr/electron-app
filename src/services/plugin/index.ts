@@ -3,10 +3,10 @@ export { PluginProvider, usePlugins } from './PluginContext';
 export { PluginService } from './PluginService';
 
 // Re-export types
-export type { 
-  Plugin, 
+export type {
+  Plugin,
   PluginAPI,
   PluginUpdate,
   RegistryConfig,
-  PluginContextType
+  PluginContextType,
 } from './types';

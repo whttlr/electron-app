@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
-import { Card, Typography, Row, Col, Switch, Button } from 'antd';
+import {
+  Card, Typography, Row, Col, Switch, Button,
+} from 'antd';
 import { AimOutlined, HomeOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
@@ -29,7 +31,7 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
   onGridToggle,
   onTrailToggle,
   onSetOrigin,
-  onGoHome
+  onGoHome,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [trail, setTrail] = useState<Position[]>([]);
@@ -38,7 +40,7 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
   // Add current position to trail
   useEffect(() => {
     if (showTrail) {
-      setTrail(prev => {
+      setTrail((prev) => {
         const newTrail = [...prev, currentPosition];
         // Keep only last 100 points
         return newTrail.slice(-100);
@@ -56,10 +58,10 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
     const padding = 40;
     const availableWidth = canvas.width - padding * 2;
     const availableHeight = canvas.height - padding * 2;
-    
+
     const scaleX = availableWidth / workArea.x;
     const scaleY = availableHeight / workArea.y;
-    
+
     setScale(Math.min(scaleX, scaleY));
   }, [workArea]);
 
@@ -73,10 +75,10 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
 
     // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
+
     const centerX = canvas.width / 2;
     const centerY = canvas.height / 2;
-    
+
     // Transform coordinates (Y is inverted for screen coordinates)
     const toScreenX = (x: number) => centerX + (x * scale);
     const toScreenY = (y: number) => centerY - (y * scale);
@@ -85,13 +87,13 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
     if (showGrid) {
       ctx.strokeStyle = '#e0e0e0';
       ctx.lineWidth = 0.5;
-      
+
       const gridSize = 10; // 10mm grid
       const workAreaLeft = -workArea.x / 2;
       const workAreaRight = workArea.x / 2;
       const workAreaTop = workArea.y / 2;
       const workAreaBottom = -workArea.y / 2;
-      
+
       // Vertical grid lines
       for (let x = workAreaLeft; x <= workAreaRight; x += gridSize) {
         ctx.beginPath();
@@ -99,7 +101,7 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
         ctx.lineTo(toScreenX(x), toScreenY(workAreaBottom));
         ctx.stroke();
       }
-      
+
       // Horizontal grid lines
       for (let y = workAreaBottom; y <= workAreaTop; y += gridSize) {
         ctx.beginPath();
@@ -107,11 +109,11 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
         ctx.lineTo(toScreenX(workAreaRight), toScreenY(y));
         ctx.stroke();
       }
-      
+
       // Major grid lines (every 50mm)
       ctx.strokeStyle = '#cccccc';
       ctx.lineWidth = 1;
-      
+
       const majorGridSize = 50;
       for (let x = workAreaLeft; x <= workAreaRight; x += majorGridSize) {
         if (x !== 0) {
@@ -121,7 +123,7 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
           ctx.stroke();
         }
       }
-      
+
       for (let y = workAreaBottom; y <= workAreaTop; y += majorGridSize) {
         if (y !== 0) {
           ctx.beginPath();
@@ -139,19 +141,19 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
       toScreenX(-workArea.x / 2),
       toScreenY(workArea.y / 2),
       workArea.x * scale,
-      workArea.y * scale
+      workArea.y * scale,
     );
 
     // Draw coordinate axes
     ctx.strokeStyle = '#666666';
     ctx.lineWidth = 1;
-    
+
     // X axis
     ctx.beginPath();
     ctx.moveTo(toScreenX(-workArea.x / 2), toScreenY(0));
     ctx.lineTo(toScreenX(workArea.x / 2), toScreenY(0));
     ctx.stroke();
-    
+
     // Y axis
     ctx.beginPath();
     ctx.moveTo(toScreenX(0), toScreenY(-workArea.y / 2));
@@ -170,7 +172,7 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
       ctx.lineWidth = 1;
       ctx.beginPath();
       ctx.moveTo(toScreenX(trail[0].x), toScreenY(trail[0].y));
-      
+
       for (let i = 1; i < trail.length; i++) {
         ctx.lineTo(toScreenX(trail[i].x), toScreenY(trail[i].y));
       }
@@ -180,13 +182,13 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
     // Draw current position
     const currentX = toScreenX(currentPosition.x);
     const currentY = toScreenY(currentPosition.y);
-    
+
     // Tool position circle
     ctx.fillStyle = '#1890ff';
     ctx.beginPath();
     ctx.arc(currentX, currentY, 6, 0, 2 * Math.PI);
     ctx.fill();
-    
+
     // Tool crosshairs
     ctx.strokeStyle = '#1890ff';
     ctx.lineWidth = 1;
@@ -201,15 +203,15 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
     ctx.fillStyle = '#333';
     ctx.font = '12px Arial';
     ctx.textAlign = 'center';
-    
+
     // Origin label
     ctx.fillText('(0,0)', toScreenX(0) + 15, toScreenY(0) - 10);
-    
+
     // Current position label
     ctx.fillText(
       `(${currentPosition.x.toFixed(1)}, ${currentPosition.y.toFixed(1)})`,
       currentX,
-      currentY - 15
+      currentY - 15,
     );
 
     // Draw axis labels
@@ -217,7 +219,6 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
     ctx.font = '14px Arial';
     ctx.fillText('X', toScreenX(workArea.x / 2) - 10, toScreenY(0) + 20);
     ctx.fillText('Y', toScreenX(0) + 15, toScreenY(workArea.y / 2) + 5);
-
   }, [currentPosition, workArea, scale, showGrid, showTrail, trail]);
 
   return (
@@ -226,25 +227,25 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
         <Row gutter={[8, 8]} align="middle">
           <Col span={6}>
             <Text strong>Grid:</Text>
-            <Switch 
+            <Switch
               size="small"
-              checked={showGrid} 
+              checked={showGrid}
               onChange={onGridToggle}
               style={{ marginLeft: '4px' }}
             />
           </Col>
           <Col span={6}>
             <Text strong>Trail:</Text>
-            <Switch 
+            <Switch
               size="small"
-              checked={showTrail} 
+              checked={showTrail}
               onChange={onTrailToggle}
               style={{ marginLeft: '4px' }}
             />
           </Col>
           <Col span={6}>
-            <Button 
-              size="small" 
+            <Button
+              size="small"
               icon={<AimOutlined />}
               onClick={onSetOrigin}
             >
@@ -252,8 +253,8 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
             </Button>
           </Col>
           <Col span={6}>
-            <Button 
-              size="small" 
+            <Button
+              size="small"
               icon={<HomeOutlined />}
               onClick={onGoHome}
             >
@@ -262,20 +263,20 @@ const MachineDisplay2D: React.FC<MachineDisplay2DProps> = ({
           </Col>
         </Row>
       </div>
-      
+
       <div style={{ border: '1px solid #f0f0f0', borderRadius: '4px' }}>
         <canvas
           ref={canvasRef}
           width={400}
           height={300}
-          style={{ 
-            width: '100%', 
+          style={{
+            width: '100%',
             height: '300px',
-            background: '#fafafa'
+            background: '#fafafa',
           }}
         />
       </div>
-      
+
       <div style={{ marginTop: '8px', fontSize: '12px', color: '#666' }}>
         <Row gutter={16}>
           <Col span={6}>X: {currentPosition.x.toFixed(2)}mm</Col>

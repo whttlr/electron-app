@@ -7,11 +7,12 @@ import {
   CommandRecord,
   AppStateRecord,
   SettingHistoryRecord,
-  PluginDependencyRecord
+  PluginDependencyRecord,
 } from './types';
 
 export class DatabaseService {
   private static instance: DatabaseService | null = null;
+
   private initialized = false;
 
   private constructor() {
@@ -45,7 +46,7 @@ export class DatabaseService {
       if (!localStorage.getItem('cnc_command_history')) {
         localStorage.setItem('cnc_command_history', JSON.stringify([]));
       }
-      
+
       // Initialize or migrate app state
       const existingAppState = localStorage.getItem('cnc_app_state');
       if (!existingAppState) {
@@ -59,13 +60,13 @@ export class DatabaseService {
           showCoordinates: true,
           autoConnect: false,
           sessionStartedAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         }));
       } else {
         // Migrate existing state to include missing UI fields
         const currentState = JSON.parse(existingAppState);
         let needsUpdate = false;
-        
+
         if (currentState.showGrid === undefined) {
           currentState.showGrid = true;
           needsUpdate = true;
@@ -78,18 +79,18 @@ export class DatabaseService {
           currentState.autoConnect = false;
           needsUpdate = true;
         }
-        
+
         if (needsUpdate) {
           currentState.updatedAt = new Date().toISOString();
           localStorage.setItem('cnc_app_state', JSON.stringify(currentState));
           console.log('Migrated app state to include UI settings');
         }
       }
-      
+
       if (!localStorage.getItem('cnc_setting_history')) {
         localStorage.setItem('cnc_setting_history', JSON.stringify([]));
       }
-      
+
       this.initialized = true;
       console.log('Database service initialized (localStorage)');
     } catch (error) {
@@ -113,16 +114,16 @@ export class DatabaseService {
   public async getPlugins(): Promise<PluginRecord[]> {
     const pluginsData = localStorage.getItem('cnc_plugins');
     const statesData = localStorage.getItem('cnc_plugin_states');
-    
+
     const plugins = pluginsData ? JSON.parse(pluginsData) : [];
     const states = statesData ? JSON.parse(statesData) : [];
-    
+
     // Merge plugins with their states
     return plugins.map((plugin: any) => {
       const state = states.find((s: any) => s.pluginId === plugin.pluginId);
       return {
         ...plugin,
-        state: state || undefined
+        state: state || undefined,
       };
     });
   }
@@ -133,17 +134,17 @@ export class DatabaseService {
   public async getPlugin(pluginId: string): Promise<PluginRecord | null> {
     const pluginsData = localStorage.getItem('cnc_plugins');
     const statesData = localStorage.getItem('cnc_plugin_states');
-    
+
     const plugins = pluginsData ? JSON.parse(pluginsData) : [];
     const states = statesData ? JSON.parse(statesData) : [];
-    
+
     const plugin = plugins.find((p: any) => p.pluginId === pluginId);
     if (!plugin) return null;
-    
+
     const state = states.find((s: any) => s.pluginId === pluginId);
     return {
       ...plugin,
-      state: state || undefined
+      state: state || undefined,
     };
   }
 
@@ -153,23 +154,23 @@ export class DatabaseService {
   public async upsertPlugin(plugin: Omit<PluginRecord, 'id' | 'installedAt' | 'updatedAt'>): Promise<PluginRecord> {
     const pluginsData = localStorage.getItem('cnc_plugins');
     const plugins = pluginsData ? JSON.parse(pluginsData) : [];
-    
+
     const existingIndex = plugins.findIndex((p: any) => p.pluginId === plugin.pluginId);
     const now = new Date().toISOString();
-    
+
     const pluginRecord = {
       id: existingIndex >= 0 ? plugins[existingIndex].id : Date.now().toString(),
       ...plugin,
       installedAt: existingIndex >= 0 ? plugins[existingIndex].installedAt : now,
-      updatedAt: now
+      updatedAt: now,
     };
-    
+
     if (existingIndex >= 0) {
       plugins[existingIndex] = pluginRecord;
     } else {
       plugins.push(pluginRecord);
     }
-    
+
     localStorage.setItem('cnc_plugins', JSON.stringify(plugins));
     return pluginRecord;
   }
@@ -180,10 +181,10 @@ export class DatabaseService {
   public async deletePlugin(pluginId: string): Promise<void> {
     const pluginsData = localStorage.getItem('cnc_plugins');
     const plugins = pluginsData ? JSON.parse(pluginsData) : [];
-    
+
     const filteredPlugins = plugins.filter((p: any) => p.pluginId !== pluginId);
     localStorage.setItem('cnc_plugins', JSON.stringify(filteredPlugins));
-    
+
     // Also remove plugin state
     const statesData = localStorage.getItem('cnc_plugin_states');
     const states = statesData ? JSON.parse(statesData) : [];
@@ -197,7 +198,7 @@ export class DatabaseService {
   public async getPluginState(pluginId: string): Promise<PluginStateRecord | null> {
     const statesData = localStorage.getItem('cnc_plugin_states');
     const states = statesData ? JSON.parse(statesData) : [];
-    
+
     const state = states.find((s: any) => s.pluginId === pluginId);
     return state || null;
   }
@@ -206,15 +207,15 @@ export class DatabaseService {
    * Update plugin state
    */
   public async updatePluginState(
-    pluginId: string, 
-    updates: Partial<Omit<PluginStateRecord, 'id' | 'pluginId' | 'createdAt' | 'updatedAt'>>
+    pluginId: string,
+    updates: Partial<Omit<PluginStateRecord, 'id' | 'pluginId' | 'createdAt' | 'updatedAt'>>,
   ): Promise<PluginStateRecord> {
     const statesData = localStorage.getItem('cnc_plugin_states');
     const states = statesData ? JSON.parse(statesData) : [];
-    
+
     const existingIndex = states.findIndex((s: any) => s.pluginId === pluginId);
     const now = new Date().toISOString();
-    
+
     const stateRecord = {
       id: existingIndex >= 0 ? states[existingIndex].id : Date.now().toString(),
       pluginId,
@@ -223,15 +224,15 @@ export class DatabaseService {
       autoStart: false,
       createdAt: existingIndex >= 0 ? states[existingIndex].createdAt : now,
       updatedAt: now,
-      ...updates
+      ...updates,
     };
-    
+
     if (existingIndex >= 0) {
       states[existingIndex] = stateRecord;
     } else {
       states.push(stateRecord);
     }
-    
+
     localStorage.setItem('cnc_plugin_states', JSON.stringify(states));
     return stateRecord;
   }
@@ -244,20 +245,20 @@ export class DatabaseService {
   public async addCommandHistory(command: Omit<CommandRecord, 'id' | 'executedAt'>): Promise<CommandRecord> {
     const historyData = localStorage.getItem('cnc_command_history');
     const history = historyData ? JSON.parse(historyData) : [];
-    
+
     const commandRecord = {
       id: Date.now().toString(),
       ...command,
-      executedAt: new Date().toISOString()
+      executedAt: new Date().toISOString(),
     };
-    
+
     history.push(commandRecord);
-    
+
     // Keep only last 1000 commands to prevent localStorage from growing too large
     if (history.length > 1000) {
       history.splice(0, history.length - 1000);
     }
-    
+
     localStorage.setItem('cnc_command_history', JSON.stringify(history));
     return commandRecord;
   }
@@ -275,11 +276,11 @@ export class DatabaseService {
       status?: string;
       from?: Date;
       to?: Date;
-    }
+    },
   ): Promise<CommandRecord[]> {
     const historyData = localStorage.getItem('cnc_command_history');
     let history = historyData ? JSON.parse(historyData) : [];
-    
+
     // Apply filters
     if (filters) {
       history = history.filter((cmd: any) => {
@@ -292,10 +293,10 @@ export class DatabaseService {
         return true;
       });
     }
-    
+
     // Sort by executedAt desc
     history.sort((a: any, b: any) => new Date(b.executedAt).getTime() - new Date(a.executedAt).getTime());
-    
+
     // Apply pagination
     return history.slice(offset, offset + limit);
   }
@@ -306,16 +307,16 @@ export class DatabaseService {
   public async clearCommandHistory(olderThan?: Date): Promise<number> {
     const historyData = localStorage.getItem('cnc_command_history');
     const history = historyData ? JSON.parse(historyData) : [];
-    
+
     const initialCount = history.length;
-    
+
     let filteredHistory;
     if (olderThan) {
       filteredHistory = history.filter((cmd: any) => new Date(cmd.executedAt) >= olderThan);
     } else {
       filteredHistory = [];
     }
-    
+
     localStorage.setItem('cnc_command_history', JSON.stringify(filteredHistory));
     return initialCount - filteredHistory.length;
   }
@@ -344,15 +345,15 @@ export class DatabaseService {
       showGrid: true,
       showCoordinates: true,
       autoConnect: false,
-      sessionStartedAt: new Date().toISOString()
+      sessionStartedAt: new Date().toISOString(),
     };
-    
+
     const updatedState = {
       ...currentState,
       ...updates,
-      updatedAt: new Date().toISOString()
+      updatedAt: new Date().toISOString(),
     };
-    
+
     localStorage.setItem('cnc_app_state', JSON.stringify(updatedState));
     return updatedState;
   }
@@ -367,11 +368,11 @@ export class DatabaseService {
     oldValue: any,
     newValue: any,
     changedBy: 'user' | 'system' | 'plugin',
-    pluginId?: string
+    pluginId?: string,
   ): Promise<SettingHistoryRecord> {
     const historyData = localStorage.getItem('cnc_setting_history');
     const history = historyData ? JSON.parse(historyData) : [];
-    
+
     const record = {
       id: Date.now().toString(),
       key,
@@ -379,16 +380,16 @@ export class DatabaseService {
       newValue,
       changedBy,
       pluginId,
-      changedAt: new Date().toISOString()
+      changedAt: new Date().toISOString(),
     };
-    
+
     history.push(record);
-    
+
     // Keep only last 500 settings changes
     if (history.length > 500) {
       history.splice(0, history.length - 500);
     }
-    
+
     localStorage.setItem('cnc_setting_history', JSON.stringify(history));
     return record;
   }
@@ -406,7 +407,7 @@ export class DatabaseService {
   }): Promise<SettingHistoryRecord[]> {
     const historyData = localStorage.getItem('cnc_setting_history');
     let history = historyData ? JSON.parse(historyData) : [];
-    
+
     // Apply filters
     if (filters) {
       history = history.filter((record: any) => {
@@ -417,16 +418,15 @@ export class DatabaseService {
         return true;
       });
     }
-    
+
     // Sort by changedAt desc
     history.sort((a: any, b: any) => new Date(b.changedAt).getTime() - new Date(a.changedAt).getTime());
-    
+
     // Apply pagination
     const limit = filters?.limit || 50;
     const offset = filters?.offset || 0;
     return history.slice(offset, offset + limit);
   }
-
 }
 
 // Export singleton instance

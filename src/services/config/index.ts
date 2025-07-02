@@ -47,5 +47,5 @@ export {
 // Configuration module metadata
 export const ConfigModule = {
   version: '1.0.0',
-  description: 'Centralized configuration management with validation and caching'
+  description: 'Centralized configuration management with validation and caching',
 };

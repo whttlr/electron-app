@@ -5,17 +5,15 @@ export const MockPluginRenderer: React.FC<{
   screen: string;
   placement?: string;
   testId?: string;
-}> = ({ screen, placement, testId = 'plugin-renderer' }) => {
-  return (
-    <div 
-      data-testid={testId} 
-      data-screen={screen} 
+}> = ({ screen, placement, testId = 'plugin-renderer' }) => (
+    <div
+      data-testid={testId}
+      data-screen={screen}
       data-placement={placement}
     >
       Mock Plugin Renderer - Screen: {screen}, Placement: {placement || 'all'}
     </div>
-  );
-};
+);
 
 // Mock plugin render content for different placements
 export const mockDashboardContent = (
@@ -43,20 +41,20 @@ export const mockModalContent = (
 export const mockPluginRendererProps = {
   mainDashboard: {
     screen: 'main' as const,
-    placement: 'dashboard' as const
+    placement: 'dashboard' as const,
   },
   controlsSidebar: {
     screen: 'controls' as const,
-    placement: 'sidebar' as const
+    placement: 'sidebar' as const,
   },
   settingsModal: {
     screen: 'settings' as const,
-    placement: 'modal' as const
+    placement: 'modal' as const,
   },
   allPlacements: {
-    screen: 'main' as const
+    screen: 'main' as const,
     // No placement specified = all placements
-  }
+  },
 };
 
 export default MockPluginRenderer;

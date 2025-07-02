@@ -26,7 +26,7 @@ describe('Utils Helpers Module', () => {
     test('should maintain consistent interface for future exports', () => {
       expect(HelpersModule).toEqual({
         version: '1.0.0',
-        description: 'General utility functions and helpers'
+        description: 'General utility functions and helpers',
       });
     });
   });
@@ -127,28 +127,28 @@ describe('Array Helpers', () => {
   test('should chunk arrays', () => {
     const array = [1, 2, 3, 4, 5, 6, 7, 8, 9];
     const chunked = chunk(array, 3);
-    
+
     expect(chunked).toEqual([[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
   });
 
   test('should handle remainder in chunking', () => {
     const array = [1, 2, 3, 4, 5];
     const chunked = chunk(array, 2);
-    
+
     expect(chunked).toEqual([[1, 2], [3, 4], [5]]);
   });
 
   test('should remove duplicates', () => {
     const array = [1, 2, 2, 3, 3, 3, 4];
     const unique = removeDuplicates(array);
-    
+
     expect(unique).toEqual([1, 2, 3, 4]);
   });
 
   test('should flatten nested arrays', () => {
     const nested = [[1, 2], [3, 4], [5, [6, 7]]];
     const flattened = flattenArray(nested);
-    
+
     expect(flattened).toEqual([1, 2, 3, 4, 5, 6, 7]);
   });
 
@@ -156,14 +156,14 @@ describe('Array Helpers', () => {
     const arr1 = [1, 2, 3, 4];
     const arr2 = [3, 4, 5, 6];
     const intersection = arrayIntersection(arr1, arr2);
-    
+
     expect(intersection).toEqual([3, 4]);
   });
 
   test('should shuffle arrays', () => {
     const array = [1, 2, 3, 4, 5];
     const shuffled = shuffleArray([...array]);
-    
+
     expect(shuffled).toHaveLength(array.length);
     expect(shuffled.sort()).toEqual(array.sort());
   });
@@ -173,7 +173,7 @@ describe('Object Helpers', () => {
   test('should deep clone objects', () => {
     const original = { a: 1, b: { c: 2, d: [3, 4] } };
     const cloned = deepClone(original);
-    
+
     expect(cloned).toEqual(original);
     expect(cloned).not.toBe(original);
     expect(cloned.b).not.toBe(original.b);
@@ -184,13 +184,13 @@ describe('Object Helpers', () => {
     const obj1 = { a: 1, b: { c: 2 } };
     const obj2 = { b: { d: 3 }, e: 4 };
     const merged = deepMerge(obj1, obj2);
-    
+
     expect(merged).toEqual({ a: 1, b: { c: 2, d: 3 }, e: 4 });
   });
 
   test('should get nested object values', () => {
     const obj = { a: { b: { c: 42 } } };
-    
+
     expect(getNestedValue(obj, 'a.b.c')).toBe(42);
     expect(getNestedValue(obj, 'a.b.x', 'default')).toBe('default');
     expect(getNestedValue(obj, 'invalid.path')).toBeUndefined();
@@ -199,7 +199,7 @@ describe('Object Helpers', () => {
   test('should set nested object values', () => {
     const obj = {};
     setNestedValue(obj, 'a.b.c', 42);
-    
+
     expect(obj).toEqual({ a: { b: { c: 42 } } });
   });
 
@@ -241,7 +241,7 @@ describe('String Helpers', () => {
   test('should generate random strings', () => {
     const str1 = generateRandomString(10);
     const str2 = generateRandomString(10);
-    
+
     expect(str1).toHaveLength(10);
     expect(str2).toHaveLength(10);
     expect(str1).not.toBe(str2);
@@ -251,7 +251,7 @@ describe('String Helpers', () => {
 describe('Date Helpers', () => {
   test('should format dates', () => {
     const date = new Date('2023-01-15T10:30:00Z');
-    
+
     expect(formatDate(date, 'YYYY-MM-DD')).toBe('2023-01-15');
     expect(formatDate(date, 'MM/DD/YYYY')).toBe('01/15/2023');
   });
@@ -259,17 +259,17 @@ describe('Date Helpers', () => {
   test('should calculate date differences', () => {
     const date1 = new Date('2023-01-01');
     const date2 = new Date('2023-01-02');
-    
+
     expect(dateDifferenceInDays(date2, date1)).toBe(1);
     expect(dateDifferenceInHours(date2, date1)).toBe(24);
   });
 
   test('should add/subtract days', () => {
     const date = new Date('2023-01-15');
-    
+
     const tomorrow = addDays(date, 1);
     expect(tomorrow.getDate()).toBe(16);
-    
+
     const yesterday = subtractDays(date, 1);
     expect(yesterday.getDate()).toBe(14);
   });
@@ -278,7 +278,7 @@ describe('Date Helpers', () => {
 describe('URL and Path Helpers', () => {
   test('should parse query strings', () => {
     const params = parseQueryString('?name=John&age=30&active=true');
-    
+
     expect(params).toEqual({
       name: 'John',
       age: '30',
@@ -289,7 +289,7 @@ describe('URL and Path Helpers', () => {
   test('should build query strings', () => {
     const params = { name: 'John', age: 30, active: true };
     const queryString = buildQueryString(params);
-    
+
     expect(queryString).toBe('name=John&age=30&active=true');
   });
 
@@ -315,7 +315,7 @@ describe('Performance Helpers', () => {
       }
       return sum;
     });
-    
+
     expect(result.value).toBe(499500);
     expect(result.time).toBeGreaterThan(0);
   });
@@ -326,11 +326,11 @@ describe('Performance Helpers', () => {
       callCount++;
       return x * x;
     });
-    
+
     expect(expensiveFunction(5)).toBe(25);
     expect(expensiveFunction(5)).toBe(25);
     expect(callCount).toBe(1); // Should only be called once
-    
+
     expect(expensiveFunction(10)).toBe(100);
     expect(callCount).toBe(2); // Should be called again for new input
   });
@@ -341,7 +341,7 @@ describe('Error Handling Helpers', () => {
     const safeFn = safeExecute(() => {
       throw new Error('Test error');
     }, 'default');
-    
+
     expect(safeFn).toBe('default');
   });
 
@@ -354,7 +354,7 @@ describe('Error Handling Helpers', () => {
       }
       return 'success';
     };
-    
+
     const result = await retry(failingFn, 3, 100);
     expect(result).toBe('success');
     expect(attempts).toBe(3);

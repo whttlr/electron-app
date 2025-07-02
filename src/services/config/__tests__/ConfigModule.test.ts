@@ -26,7 +26,7 @@ describe('Services Config Module', () => {
     test('should maintain consistent interface for future exports', () => {
       expect(ConfigModule).toEqual({
         version: '1.0.0',
-        description: 'Centralized configuration management'
+        description: 'Centralized configuration management',
       });
     });
   });
@@ -44,7 +44,7 @@ describe('ConfigService', () => {
       writeFile: jest.fn(),
       exists: jest.fn()
     };
-    
+
     configService = new ConfigService(mockFileSystem);
   });
 
@@ -57,29 +57,29 @@ describe('ConfigService', () => {
           maxSpeed: 5000
         }
       };
-      
+
       mockFileSystem.readFile.mockResolvedValue(JSON.stringify(mockConfig));
       mockFileSystem.exists.mockResolvedValue(true);
-      
+
       await configService.loadConfig('machine');
       const config = configService.get('machine');
-      
+
       expect(config).toEqual(mockConfig.machine);
     });
 
     test('should handle missing configuration files', async () => {
       mockFileSystem.exists.mockResolvedValue(false);
-      
+
       await configService.loadConfig('missing');
       const config = configService.get('missing');
-      
+
       expect(config).toBeUndefined();
     });
 
     test('should handle invalid JSON files', async () => {
       mockFileSystem.readFile.mockResolvedValue('invalid json');
       mockFileSystem.exists.mockResolvedValue(true);
-      
+
       await expect(configService.loadConfig('invalid')).rejects.toThrow();
     });
   });
@@ -91,7 +91,7 @@ describe('ConfigService', () => {
         machine: { workArea: { x: 300, y: 200, z: 50 } },
         ui: { theme: 'light', language: 'en' }
       };
-      
+
       for (const [key, value] of Object.entries(mockConfigs)) {
         mockFileSystem.readFile.mockResolvedValueOnce(JSON.stringify(value));
         mockFileSystem.exists.mockResolvedValue(true);
@@ -107,7 +107,7 @@ describe('ConfigService', () => {
     test('should get nested configuration values', () => {
       const workAreaX = configService.getValue('machine.workArea.x');
       expect(workAreaX).toBe(300);
-      
+
       const theme = configService.getValue('ui.theme');
       expect(theme).toBe('light');
     });
@@ -126,14 +126,14 @@ describe('ConfigService', () => {
   describe('Configuration Updates', () => {
     test('should update configuration values', () => {
       configService.set('machine', { workArea: { x: 400, y: 300, z: 100 } });
-      
+
       const config = configService.get('machine');
       expect(config.workArea.x).toBe(400);
     });
 
     test('should update nested values', () => {
       configService.setValue('ui.theme', 'dark');
-      
+
       const theme = configService.getValue('ui.theme');
       expect(theme).toBe('dark');
     });
@@ -141,7 +141,7 @@ describe('ConfigService', () => {
     test('should merge configuration updates', () => {
       const originalConfig = configService.get('machine');
       configService.merge('machine', { maxSpeed: 6000 });
-      
+
       const updatedConfig = configService.get('machine');
       expect(updatedConfig).toEqual({ ...originalConfig, maxSpeed: 6000 });
     });
@@ -151,7 +151,7 @@ describe('ConfigService', () => {
     test('should save configuration to file', async () => {
       configService.set('test', { value: 42 });
       await configService.saveConfig('test');
-      
+
       expect(mockFileSystem.writeFile).toHaveBeenCalledWith(
         expect.stringContaining('test.json'),
         JSON.stringify({ value: 42 }, null, 2)
@@ -160,7 +160,7 @@ describe('ConfigService', () => {
 
     test('should save all configurations', async () => {
       await configService.saveAll();
-      
+
       expect(mockFileSystem.writeFile).toHaveBeenCalledTimes(3); // app, machine, ui
     });
   });
@@ -168,19 +168,19 @@ describe('ConfigService', () => {
   describe('Environment Variable Overrides', () => {
     test('should override configuration with environment variables', () => {
       process.env.CNC_MACHINE_MAX_SPEED = '7000';
-      
+
       const config = configService.getWithEnvOverrides('machine');
       expect(config.maxSpeed).toBe('7000');
-      
+
       delete process.env.CNC_MACHINE_MAX_SPEED;
     });
 
     test('should handle nested environment variable overrides', () => {
       process.env.CNC_MACHINE_WORK_AREA_X = '500';
-      
+
       const config = configService.getWithEnvOverrides('machine');
       expect(config.workArea.x).toBe('500');
-      
+
       delete process.env.CNC_MACHINE_WORK_AREA_X;
     });
   });
@@ -202,15 +202,15 @@ describe('ConfigService', () => {
         },
         required: ['workArea']
       };
-      
+
       const validConfig = {
         workArea: { x: 300, y: 200, z: 50 }
       };
-      
+
       const invalidConfig = {
         workArea: { x: -100, y: 200 } // Missing z, negative x
       };
-      
+
       expect(() => configService.validate('machine', validConfig, schema)).not.toThrow();
       expect(() => configService.validate('machine', invalidConfig, schema)).toThrow();
     });
@@ -220,7 +220,7 @@ describe('ConfigService', () => {
         machine: { type: 'object', properties: { workArea: { type: 'object' } } },
         ui: { type: 'object', properties: { theme: { type: 'string' } } }
       };
-      
+
       const results = configService.validateAll(schemas);
       expect(results.machine.valid).toBe(true);
       expect(results.ui.valid).toBe(true);
@@ -231,10 +231,10 @@ describe('ConfigService', () => {
     test('should watch for configuration file changes', () => {
       const callback = jest.fn();
       configService.watch('machine', callback);
-      
+
       // Simulate file change
       configService.set('machine', { workArea: { x: 400, y: 300, z: 100 } });
-      
+
       expect(callback).toHaveBeenCalledWith(
         { workArea: { x: 400, y: 300, z: 100 } },
         { workArea: { x: 300, y: 200, z: 50 } }
@@ -244,10 +244,10 @@ describe('ConfigService', () => {
     test('should unwatch configuration files', () => {
       const callback = jest.fn();
       const unwatch = configService.watch('machine', callback);
-      
+
       unwatch();
       configService.set('machine', { workArea: { x: 400, y: 300, z: 100 } });
-      
+
       expect(callback).not.toHaveBeenCalled();
     });
   });
@@ -255,7 +255,7 @@ describe('ConfigService', () => {
   describe('Configuration Backup and Restore', () => {
     test('should create configuration backup', async () => {
       const backup = await configService.createBackup();
-      
+
       expect(backup).toHaveProperty('timestamp');
       expect(backup).toHaveProperty('configurations');
       expect(backup.configurations).toHaveProperty('app');
@@ -270,9 +270,9 @@ describe('ConfigService', () => {
           machine: { workArea: { x: 500, y: 400, z: 75 } }
         }
       };
-      
+
       await configService.restoreFromBackup(backup);
-      
+
       const config = configService.get('machine');
       expect(config.workArea.x).toBe(500);
     });
@@ -281,13 +281,13 @@ describe('ConfigService', () => {
   describe('Error Handling', () => {
     test('should handle file system errors gracefully', async () => {
       mockFileSystem.readFile.mockRejectedValue(new Error('File not found'));
-      
+
       await expect(configService.loadConfig('missing')).rejects.toThrow('File not found');
     });
 
     test('should handle write errors gracefully', async () => {
       mockFileSystem.writeFile.mockRejectedValue(new Error('Permission denied'));
-      
+
       await expect(configService.saveConfig('test')).rejects.toThrow('Permission denied');
     });
   });
@@ -300,29 +300,29 @@ describe('Configuration Types', () => {
       units: 'metric' | 'imperial';
       maxSpeed: number;
     }
-    
+
     interface UIConfig {
       theme: 'light' | 'dark';
       language: string;
       autoSave: boolean;
     }
-    
+
     const configService = new ConfigService<{
       machine: MachineConfig;
       ui: UIConfig;
     }>();
-    
+
     // TypeScript should enforce correct types
     expect(() => {
       const machine: MachineConfig = configService.get('machine');
       const ui: UIConfig = configService.get('ui');
-      
+
       configService.set('machine', {
         workArea: { x: 300, y: 200, z: 50 },
         units: 'metric',
         maxSpeed: 5000
       });
-      
+
       configService.set('ui', {
         theme: 'dark',
         language: 'en',

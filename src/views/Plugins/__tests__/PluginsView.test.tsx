@@ -1,5 +1,7 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+  render, screen, fireEvent, waitFor,
+} from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import PluginsView from '../PluginsView';
 
@@ -25,9 +27,9 @@ const mockUsePlugins = {
       type: 'visualization' as const,
       updateAvailable: true,
       latestVersion: '2.1.0',
-      dependencies: { 'dep1': '1.0.0' },
+      dependencies: { dep1: '1.0.0' },
       source: 'marketplace' as const,
-    }
+    },
   ],
   setPlugins: jest.fn(),
   checkForUpdates: jest.fn().mockResolvedValue([]),
@@ -78,24 +80,22 @@ jest.mock('antd', () => {
   };
 });
 
-const renderWithRouter = (component: React.ReactElement) => {
-  return render(
+const renderWithRouter = (component: React.ReactElement) => render(
     <BrowserRouter>
       {component}
-    </BrowserRouter>
-  );
-};
+    </BrowserRouter>,
+);
 
 describe('PluginsView', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     // Mock console methods to avoid noise in tests
     jest.spyOn(console, 'log').mockImplementation(() => {});
-    
+
     // Mock URL.createObjectURL and related methods
     global.URL.createObjectURL = jest.fn(() => 'mock-url');
     global.URL.revokeObjectURL = jest.fn();
-    
+
     // Mock createElement and related DOM methods
     const mockAnchorElement = {
       href: '',
@@ -118,7 +118,7 @@ describe('PluginsView', () => {
 
   it('renders all three tabs', () => {
     renderWithRouter(<PluginsView />);
-    
+
     expect(screen.getByText('Local Plugins')).toBeInTheDocument();
     expect(screen.getByText('Marketplace')).toBeInTheDocument();
     expect(screen.getByText('Registry')).toBeInTheDocument();
@@ -126,7 +126,7 @@ describe('PluginsView', () => {
 
   it('shows local plugins by default', () => {
     renderWithRouter(<PluginsView />);
-    
+
     expect(screen.getByText('Upload Plugin')).toBeInTheDocument();
     expect(screen.getByText('Plugin Statistics')).toBeInTheDocument();
     expect(screen.getByText('Installed Plugins')).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe('PluginsView', () => {
 
   it('displays plugin statistics correctly', () => {
     renderWithRouter(<PluginsView />);
-    
+
     expect(screen.getByText('2')).toBeInTheDocument(); // Total plugins count
     expect(screen.getByText('Total Plugins')).toBeInTheDocument();
     expect(screen.getByText('Active')).toBeInTheDocument();
@@ -143,7 +143,7 @@ describe('PluginsView', () => {
 
   it('renders installed plugins list', () => {
     renderWithRouter(<PluginsView />);
-    
+
     expect(screen.getByText('Test Plugin 1')).toBeInTheDocument();
     expect(screen.getByText('Test Plugin 2')).toBeInTheDocument();
     expect(screen.getByText('A test plugin')).toBeInTheDocument();
@@ -152,43 +152,43 @@ describe('PluginsView', () => {
 
   it('shows plugin status tags correctly', () => {
     renderWithRouter(<PluginsView />);
-    
+
     // Check for status tags
     const activeTags = screen.getAllByText('active');
     const inactiveTags = screen.getAllByText('inactive');
-    
+
     expect(activeTags.length).toBeGreaterThan(0);
     expect(inactiveTags.length).toBeGreaterThan(0);
   });
 
   it('shows plugin type tags', () => {
     renderWithRouter(<PluginsView />);
-    
+
     expect(screen.getByText('utility')).toBeInTheDocument();
     expect(screen.getByText('visualization')).toBeInTheDocument();
   });
 
   it('shows update available indicators', () => {
     renderWithRouter(<PluginsView />);
-    
+
     expect(screen.getByText('Update Available')).toBeInTheDocument();
   });
 
   it('handles plugin enable/disable toggle', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const disableButton = screen.getByRole('button', { name: /disable/i });
     fireEvent.click(disableButton);
-    
+
     expect(mockUsePlugins.setPlugins).toHaveBeenCalled();
   });
 
   it('opens configure modal when configure button is clicked', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const configureButtons = screen.getAllByRole('button', { name: /configure/i });
     fireEvent.click(configureButtons[0]);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Configure Test Plugin 1')).toBeInTheDocument();
     });
@@ -196,26 +196,26 @@ describe('PluginsView', () => {
 
   it('handles plugin removal', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     // Click the more options button to reveal the dropdown
     const moreButtons = screen.getAllByLabelText(/more/i);
     fireEvent.click(moreButtons[0]);
-    
+
     // Wait for dropdown to appear and click remove
     await waitFor(() => {
       const removeButton = screen.getByText('Remove');
       fireEvent.click(removeButton);
     });
-    
+
     expect(mockUsePlugins.setPlugins).toHaveBeenCalled();
   });
 
   it('handles file upload', () => {
     renderWithRouter(<PluginsView />);
-    
+
     const file = new File(['test'], 'test-plugin.zip', { type: 'application/zip' });
     const input = document.querySelector('input[type="file"]') as HTMLInputElement;
-    
+
     if (input) {
       Object.defineProperty(input, 'files', {
         value: [file],
@@ -223,16 +223,16 @@ describe('PluginsView', () => {
       });
       fireEvent.change(input);
     }
-    
+
     expect(mockUsePlugins.setPlugins).toHaveBeenCalled();
   });
 
   it('switches to marketplace tab', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const marketplaceTab = screen.getByText('Marketplace');
     fireEvent.click(marketplaceTab);
-    
+
     await waitFor(() => {
       expect(screen.getByPlaceholderText(/search plugins/i)).toBeInTheDocument();
       expect(screen.getByText('Available Plugins')).toBeInTheDocument();
@@ -241,14 +241,14 @@ describe('PluginsView', () => {
 
   it('shows marketplace search functionality', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const marketplaceTab = screen.getByText('Marketplace');
     fireEvent.click(marketplaceTab);
-    
+
     await waitFor(() => {
       const searchInput = screen.getByPlaceholderText(/search plugins/i);
       expect(searchInput).toBeInTheDocument();
-      
+
       const categoryFilter = screen.getByDisplayValue('All Categories');
       expect(categoryFilter).toBeInTheDocument();
     });
@@ -256,10 +256,10 @@ describe('PluginsView', () => {
 
   it('displays marketplace plugins', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const marketplaceTab = screen.getByText('Marketplace');
     fireEvent.click(marketplaceTab);
-    
+
     await waitFor(() => {
       expect(screen.getByText('CNC Visualizer Pro')).toBeInTheDocument();
       expect(screen.getByText('Machine Health Monitor')).toBeInTheDocument();
@@ -269,10 +269,10 @@ describe('PluginsView', () => {
 
   it('handles marketplace plugin installation', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const marketplaceTab = screen.getByText('Marketplace');
     fireEvent.click(marketplaceTab);
-    
+
     await waitFor(() => {
       const installButtons = screen.getAllByRole('button', { name: /install/i });
       if (installButtons.length > 0) {
@@ -284,10 +284,10 @@ describe('PluginsView', () => {
 
   it('switches to registry tab', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const registryTab = screen.getByText('Registry');
     fireEvent.click(registryTab);
-    
+
     await waitFor(() => {
       expect(screen.getByText('No Registry Connected')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /connect to registry/i })).toBeInTheDocument();
@@ -296,15 +296,15 @@ describe('PluginsView', () => {
 
   it('opens registry configuration modal', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const registryTab = screen.getByText('Registry');
     fireEvent.click(registryTab);
-    
+
     await waitFor(() => {
       const connectButton = screen.getByRole('button', { name: /connect to registry/i });
       fireEvent.click(connectButton);
     });
-    
+
     await waitFor(() => {
       expect(screen.getByText('Registry Configuration')).toBeInTheDocument();
       expect(screen.getByLabelText('Registry URL')).toBeInTheDocument();
@@ -313,19 +313,19 @@ describe('PluginsView', () => {
 
   it('handles check for updates', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const checkUpdatesButton = screen.getByRole('button', { name: /check updates/i });
     fireEvent.click(checkUpdatesButton);
-    
+
     expect(mockUsePlugins.checkForUpdates).toHaveBeenCalled();
   });
 
   it('handles export plugins', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const exportButton = screen.getByRole('button', { name: /export plugins/i });
     fireEvent.click(exportButton);
-    
+
     await waitFor(() => {
       expect(mockUsePlugins.exportPlugins).toHaveBeenCalled();
       expect(mockMessage.success).toHaveBeenCalledWith('Plugins exported successfully');
@@ -334,19 +334,19 @@ describe('PluginsView', () => {
 
   it('handles import plugins', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const importButton = screen.getByRole('button', { name: /import plugins/i });
     const file = new File(['{"plugins":[]}'], 'plugins.json', { type: 'application/json' });
-    
+
     // Mock FileReader
     const mockFileReader = {
       readAsText: jest.fn(),
       onload: null as any,
       result: '{"plugins":[]}',
     };
-    
+
     (global as any).FileReader = jest.fn(() => mockFileReader);
-    
+
     const input = document.querySelector('input[accept=".json"]') as HTMLInputElement;
     if (input) {
       Object.defineProperty(input, 'files', {
@@ -354,13 +354,13 @@ describe('PluginsView', () => {
         writable: false,
       });
       fireEvent.change(input);
-      
+
       // Simulate FileReader.onload
       if (mockFileReader.onload) {
         mockFileReader.onload({ target: { result: '{"plugins":[]}' } } as any);
       }
     }
-    
+
     await waitFor(() => {
       expect(mockUsePlugins.importPlugins).toHaveBeenCalled();
     });
@@ -371,38 +371,38 @@ describe('PluginsView', () => {
       ...mockUsePlugins,
       plugins: [],
     };
-    
+
     jest.doMock('../../../services/plugin', () => ({
       usePlugins: () => emptyMockUsePlugins,
     }));
-    
+
     renderWithRouter(<PluginsView />);
-    
+
     expect(screen.getByText('No plugins installed')).toBeInTheDocument();
     expect(screen.getByText('Upload a plugin ZIP file to get started')).toBeInTheDocument();
   });
 
   it('applies correct styling for different plugin types', () => {
     renderWithRouter(<PluginsView />);
-    
+
     // Check that type tags are rendered with appropriate colors
     const utilityTag = screen.getByText('utility');
     const visualizationTag = screen.getByText('visualization');
-    
+
     expect(utilityTag).toBeInTheDocument();
     expect(visualizationTag).toBeInTheDocument();
   });
 
   it('handles marketplace search', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const marketplaceTab = screen.getByText('Marketplace');
     fireEvent.click(marketplaceTab);
-    
+
     await waitFor(() => {
       const searchInput = screen.getByPlaceholderText(/search plugins/i);
       fireEvent.change(searchInput, { target: { value: 'visualizer' } });
-      
+
       // Should filter the displayed plugins
       expect(searchInput).toHaveValue('visualizer');
     });
@@ -410,15 +410,15 @@ describe('PluginsView', () => {
 
   it('handles category filter', async () => {
     renderWithRouter(<PluginsView />);
-    
+
     const marketplaceTab = screen.getByText('Marketplace');
     fireEvent.click(marketplaceTab);
-    
+
     await waitFor(() => {
       const categorySelect = screen.getByDisplayValue('All Categories');
       fireEvent.mouseDown(categorySelect);
     });
-    
+
     // Should show category options
     await waitFor(() => {
       expect(screen.getByText('Visualization')).toBeInTheDocument();

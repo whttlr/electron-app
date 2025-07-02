@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Modal, Typography } from 'antd';
+import {
+  Card, Row, Col, Modal, Typography,
+} from 'antd';
 import { usePlugins, Plugin } from '../../services/plugin';
 
 const { Title, Paragraph } = Typography;
@@ -22,39 +24,37 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
       setConfigExample({
         machineConfig,
         jogDefaults,
-        workArea: pluginAPI.config.getWithFallback('machine.defaultDimensions', { width: 100, height: 100 })
+        workArea: pluginAPI.config.getWithFallback('machine.defaultDimensions', { width: 100, height: 100 }),
       });
     }
   }, [pluginAPI]);
 
   // Filter plugins for this screen and placement
-  const relevantPlugins = plugins.filter(plugin => 
-    plugin.status === 'active' &&
-    plugin.config?.screen === screen &&
-    (placement ? plugin.config?.placement === placement : true)
-  );
+  const relevantPlugins = plugins.filter((plugin) => plugin.status === 'active'
+    && plugin.config?.screen === screen
+    && (placement ? plugin.config?.placement === placement : true));
 
   if (relevantPlugins.length === 0) {
     return null;
   }
 
-  const renderPluginContent = (plugin: Plugin) => {
+  const renderPluginContent = (plugin: Plugin) =>
     // This is a placeholder for actual plugin content
     // In a real implementation, this would load and render the plugin's React components
     // and pass the pluginAPI to them for configuration access
-    return (
+    (
       <div style={{ padding: '16px', textAlign: 'center' }}>
         <div style={{ fontSize: '32px', marginBottom: '8px' }}>🔌</div>
         <Title level={5}>{plugin.name}</Title>
         <Paragraph type="secondary" style={{ fontSize: '12px' }}>
           {plugin.description}
         </Paragraph>
-        <div style={{ 
-          background: '#f5f5f5', 
-          padding: '8px', 
-          borderRadius: '4px', 
+        <div style={{
+          background: '#f5f5f5',
+          padding: '8px',
+          borderRadius: '4px',
           fontSize: '10px',
-          textAlign: 'left'
+          textAlign: 'left',
         }}>
           <strong>Plugin Config:</strong><br/>
           Type: {plugin.type}<br/>
@@ -71,18 +71,15 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
         </div>
       </div>
     );
-  };
-
-  const renderDashboardPlugins = () => {
-    return (
+  const renderDashboardPlugins = () => (
       <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
         {relevantPlugins
           .sort((a, b) => (b.config?.priority || 0) - (a.config?.priority || 0))
-          .map(plugin => {
+          .map((plugin) => {
             const width = plugin.config?.size?.width;
-            const colSpan = width === 'auto' ? 6 : 
-                          typeof width === 'number' && width > 400 ? 12 : 6;
-            
+            const colSpan = width === 'auto' ? 6
+              : typeof width === 'number' && width > 400 ? 12 : 6;
+
             return (
               <Col key={plugin.id} xs={24} sm={12} md={colSpan}>
                 <Card
@@ -90,7 +87,7 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
                   title={plugin.name}
                   size="small"
                   style={{
-                    height: plugin.config?.size?.height === 'auto' ? 'auto' : plugin.config?.size?.height
+                    height: plugin.config?.size?.height === 'auto' ? 'auto' : plugin.config?.size?.height,
                   }}
                 >
                   {renderPluginContent(plugin)}
@@ -99,18 +96,16 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
             );
           })}
       </Row>
-    );
-  };
+  );
 
-  const renderSidebarPlugins = () => {
-    return (
+  const renderSidebarPlugins = () => (
       <div style={{ marginTop: '16px' }}>
         {relevantPlugins
           .sort((a, b) => (b.config?.priority || 0) - (a.config?.priority || 0))
-          .map(plugin => (
-            <Card 
+          .map((plugin) => (
+            <Card
               key={plugin.id}
-              size="small" 
+              size="small"
               title={plugin.name}
               style={{ marginBottom: '8px' }}
             >
@@ -118,8 +113,7 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
             </Card>
           ))}
       </div>
-    );
-  };
+  );
 
   // Render based on placement type
   switch (placement) {
@@ -134,10 +128,10 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
         <div style={{ marginTop: '16px' }}>
           <Title level={4}>Available Modal Plugins</Title>
           <Row gutter={[8, 8]}>
-            {relevantPlugins.map(plugin => (
+            {relevantPlugins.map((plugin) => (
               <Col key={plugin.id} span={8}>
-                <Card 
-                  size="small" 
+                <Card
+                  size="small"
                   title={plugin.name}
                   hoverable
                   onClick={() => {
@@ -162,11 +156,11 @@ const PluginRenderer: React.FC<PluginRendererProps> = ({ screen, placement }) =>
       // Show all plugins for this screen
       return (
         <>
-          {relevantPlugins.filter(p => p.config?.placement === 'dashboard').length > 0 && 
-            renderDashboardPlugins()}
-          {relevantPlugins.filter(p => p.config?.placement === 'sidebar').length > 0 && 
-            renderSidebarPlugins()}
-          {relevantPlugins.filter(p => p.config?.placement === 'modal').length > 0 && (
+          {relevantPlugins.filter((p) => p.config?.placement === 'dashboard').length > 0
+            && renderDashboardPlugins()}
+          {relevantPlugins.filter((p) => p.config?.placement === 'sidebar').length > 0
+            && renderSidebarPlugins()}
+          {relevantPlugins.filter((p) => p.config?.placement === 'modal').length > 0 && (
             <PluginRenderer screen={screen} placement="modal" />
           )}
         </>

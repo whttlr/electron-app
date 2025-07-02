@@ -7,5 +7,5 @@
 // Placeholder for formatting utilities
 export const FormattersModule = {
   version: '1.0.0',
-  description: 'Data formatting and display utilities'
+  description: 'Data formatting and display utilities',
 };

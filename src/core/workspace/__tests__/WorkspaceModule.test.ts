@@ -26,7 +26,7 @@ describe('Core Workspace Module', () => {
     test('should maintain consistent interface for future exports', () => {
       expect(WorkspaceModule).toEqual({
         version: '1.0.0',
-        description: 'Working area and boundary management'
+        description: 'Working area and boundary management',
       });
     });
   });
@@ -82,7 +82,7 @@ describe('WorkspaceController', () => {
 
     test('should transform coordinates relative to work origin', () => {
       controller.setWorkOrigin({ x: 50, y: 25, z: 10 });
-      
+
       const machineCoords = { x: 100, y: 75, z: 35 };
       const workCoords = controller.machineToWorkCoords(machineCoords);
       expect(workCoords).toEqual({ x: 50, y: 50, z: 25 });
@@ -95,7 +95,7 @@ describe('WorkspaceController', () => {
         { x: 0, y: 0, z: 0 },
         { x: 200, y: 0, z: 0 } // Outside bounds
       ];
-      
+
       const collision = controller.checkPathCollision(path);
       expect(collision.hasCollision).toBe(true);
       expect(collision.collisionPoint).toEqual({ x: 150, y: 0, z: 0 });
@@ -107,7 +107,7 @@ describe('WorkspaceController', () => {
         { x: 50, y: 50, z: 25 },
         { x: 100, y: 75, z: 40 }
       ];
-      
+
       const collision = controller.checkPathCollision(path);
       expect(collision.hasCollision).toBe(false);
     });
@@ -121,7 +121,7 @@ describe('WorkspaceController', () => {
         dimensions: { x: 100, y: 50, z: 30 },
         keepoutZone: 10
       };
-      
+
       controller.addFixture(fixture);
       expect(controller.getFixtures()).toContain(fixture);
     });
@@ -133,13 +133,13 @@ describe('WorkspaceController', () => {
         dimensions: { x: 100, y: 50, z: 30 },
         keepoutZone: 10
       };
-      
+
       controller.addFixture(fixture);
-      
+
       // Position inside fixture keepout zone
       const dangerousPosition = { x: 45, y: 20, z: 15 };
       expect(controller.isPositionSafe(dangerousPosition)).toBe(false);
-      
+
       // Position outside keepout zone
       const safePosition = { x: 70, y: 40, z: 45 };
       expect(controller.isPositionSafe(safePosition)).toBe(true);

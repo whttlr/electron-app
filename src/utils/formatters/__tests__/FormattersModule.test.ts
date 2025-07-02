@@ -26,7 +26,7 @@ describe('Utils Formatters Module', () => {
     test('should maintain consistent interface for future exports', () => {
       expect(FormattersModule).toEqual({
         version: '1.0.0',
-        description: 'Data formatting and display utilities'
+        description: 'Data formatting and display utilities',
       });
     });
   });
@@ -72,7 +72,7 @@ describe('Unit Conversion and Formatting', () => {
 
   test('should format coordinates with units', () => {
     const position = { x: 12.345, y: 67.891, z: 23.456 };
-    
+
     expect(formatPosition(position, 'metric', 2)).toBe('X: 12.35mm, Y: 67.89mm, Z: 23.46mm');
     expect(formatPosition(position, 'imperial', 3)).toBe('X: 0.486in, Y: 2.673in, Z: 0.924in');
   });
@@ -104,7 +104,7 @@ describe('Time Formatting', () => {
     const now = new Date();
     const oneMinuteAgo = new Date(now.getTime() - 60000);
     const oneHourAgo = new Date(now.getTime() - 3600000);
-    
+
     expect(formatRelativeTime(oneMinuteAgo)).toBe('1 minute ago');
     expect(formatRelativeTime(oneHourAgo)).toBe('1 hour ago');
   });
