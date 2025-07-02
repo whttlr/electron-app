@@ -3,7 +3,8 @@ When working on task in the TODO section, once complete, move to the DONE sectio
 
 [] Add hooks to claude
 [] look for other claude features
-
+[] git actions perform build and update download link?
+[] add ducusaurces like did for plugign rgistry - or piggy back it
 
 
 TODO:

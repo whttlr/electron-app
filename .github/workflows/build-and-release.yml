@@ -1,0 +1,436 @@
+name: Build and Release Electron App
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - 'docs-site/**'
+      - '*.md'
+      - '.gitignore'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - 'docs/**'
+      - 'docs-site/**'
+      - '*.md'
+      - '.gitignore'
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'prerelease'
+        type: choice
+        options:
+        - prerelease
+        - release
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run tests
+        run: npm run test:ci
+
+      - name: Build React app
+        run: npm run build
+
+  build:
+    needs: test
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        include:
+          - os: macos-latest
+            platform: mac
+            arch: x64,arm64
+          - os: ubuntu-latest
+            platform: linux
+            arch: x64
+          - os: windows-latest
+            platform: win
+            arch: x64
+
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Electron app
+        run: npm run electron:build
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Upload build artifacts (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-app-mac
+          path: |
+            dist-electron/*.dmg
+            dist-electron/*.dmg.blockmap
+            dist-electron/latest-mac.yml
+          retention-days: 30
+
+      - name: Upload build artifacts (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-app-linux
+          path: |
+            dist-electron/*.AppImage
+            dist-electron/latest-linux.yml
+          retention-days: 30
+
+      - name: Upload build artifacts (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: electron-app-windows
+          path: |
+            dist-electron/*.exe
+            dist-electron/*.exe.blockmap
+            dist-electron/latest.yml
+          retention-days: 30
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display artifact structure
+        run: ls -la artifacts/
+
+      - name: Generate version number
+        id: version
+        run: |
+          if [ "${{ github.event.inputs.release_type }}" = "release" ]; then
+            # For official releases, use package.json version + build number
+            VERSION=$(node -p "require('./package.json').version")
+            RELEASE_TYPE="release"
+          else
+            # For prereleases, use version + commit sha
+            VERSION=$(node -p "require('./package.json').version")-beta.$(echo ${{ github.sha }} | cut -c1-7)
+            RELEASE_TYPE="prerelease"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
+          echo "tag_name=v$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Create release notes
+        id: release_notes
+        run: |
+          # Generate release notes from commits
+          if git tag --list | grep -q "v"; then
+            LAST_TAG=$(git describe --tags --abbrev=0)
+            COMMITS=$(git log --pretty=format:"- %s" $LAST_TAG..HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"- %s" --max-count=10)
+          fi
+          
+          cat << EOF > release_notes.md
+          ## What's Changed
+          
+          $COMMITS
+          
+          ## Downloads
+          
+          Choose the appropriate download for your platform:
+          
+          ### macOS
+          - **Universal Binary (Intel + Apple Silicon)**: Download the .dmg file
+          - Supports macOS 10.15 (Catalina) and later
+          
+          ### Windows  
+          - **Windows Installer**: Download the .exe file
+          - Supports Windows 10 and later
+          
+          ### Linux
+          - **AppImage**: Download the .AppImage file (portable, no installation required)
+          - Compatible with most Linux distributions
+          
+          ## Installation
+          
+          1. Download the appropriate file for your platform
+          2. **macOS**: Open the .dmg and drag the app to Applications
+          3. **Windows**: Run the .exe installer
+          4. **Linux**: Make the .AppImage executable and run it
+          
+          ## Verification
+          
+          All downloads are automatically built and signed by GitHub Actions.
+          
+          **Full Changelog**: https://github.com/${{ github.repository }}/compare/$LAST_TAG...v${{ steps.version.outputs.version }}
+          EOF
+
+      - name: Create GitHub release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ steps.version.outputs.tag_name }}
+          release_name: CNC Jog Controls ${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: false
+          prerelease: ${{ steps.version.outputs.release_type == 'prerelease' }}
+
+      - name: Upload macOS artifacts to release
+        if: always()
+        run: |
+          for file in artifacts/electron-app-mac/*.dmg; do
+            if [ -f "$file" ]; then
+              echo "Uploading $file"
+              gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
+            fi
+          done
+          for file in artifacts/electron-app-mac/*.dmg.blockmap; do
+            if [ -f "$file" ]; then
+              echo "Uploading $file"
+              gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows artifacts to release
+        if: always()
+        run: |
+          for file in artifacts/electron-app-windows/*.exe; do
+            if [ -f "$file" ]; then
+              echo "Uploading $file"
+              gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
+            fi
+          done
+          for file in artifacts/electron-app-windows/*.exe.blockmap; do
+            if [ -f "$file" ]; then
+              echo "Uploading $file"
+              gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Linux artifacts to release
+        if: always()
+        run: |
+          for file in artifacts/electron-app-linux/*.AppImage; do
+            if [ -f "$file" ]; then
+              echo "Uploading $file"
+              gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
+            fi
+          done
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update documentation with latest release
+        run: |
+          echo "Latest release: ${{ steps.version.outputs.version }}" > latest_release.txt
+          echo "Release URL: ${{ steps.create_release.outputs.html_url }}" >> latest_release.txt
+          
+          # This could be used to update documentation or a download page
+          cat latest_release.txt
+
+  update-docs:
+    needs: release
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get latest release info
+        id: latest_release
+        run: |
+          LATEST_RELEASE=$(gh release view --json tagName,url,assets --jq '{tag: .tagName, url: .url, assets: .assets}')
+          echo "release_info=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update download links in documentation
+        run: |
+          # Create or update a downloads page in docs-site
+          mkdir -p docs-site/src/pages
+          
+          # Get release info
+          RELEASE_TAG=$(echo '${{ steps.latest_release.outputs.release_info }}' | jq -r '.tag')
+          RELEASE_URL=$(echo '${{ steps.latest_release.outputs.release_info }}' | jq -r '.url')
+          
+          # Generate download page
+          cat << EOF > docs-site/src/pages/download.tsx
+          import React from 'react';
+          import Layout from '@theme/Layout';
+          import Link from '@docusaurus/Link';
+          import Heading from '@theme/Heading';
+
+          export default function DownloadPage(): JSX.Element {
+            return (
+              <Layout
+                title="Download CNC Jog Controls"
+                description="Download the latest version of CNC Jog Controls for your platform">
+                <div className="container margin-vert--lg">
+                  <div className="row">
+                    <div className="col col--8 col--offset-2">
+                      <Heading as="h1">Download CNC Jog Controls</Heading>
+                      <p>
+                        Get the latest version of CNC Jog Controls for your platform. 
+                        All downloads are automatically built and tested.
+                      </p>
+                      
+                      <div className="card-demo margin-vert--lg">
+                        <div className="card">
+                          <div className="card__header">
+                            <Heading as="h3">Latest Release: ${RELEASE_TAG}</Heading>
+                          </div>
+                          <div className="card__body">
+                            <div className="button-group button-group--block">
+                              <Link
+                                className="button button--primary button--lg"
+                                href="${RELEASE_URL}">
+                                View All Downloads
+                              </Link>
+                            </div>
+                            
+                            <div className="margin-top--md">
+                              <Heading as="h4">Quick Downloads</Heading>
+                              <ul>
+                                <li>
+                                  <strong>macOS</strong>: Download the .dmg file for universal compatibility (Intel + Apple Silicon)
+                                </li>
+                                <li>
+                                  <strong>Windows</strong>: Download the .exe installer for Windows 10+
+                                </li>
+                                <li>
+                                  <strong>Linux</strong>: Download the .AppImage for portable installation
+                                </li>
+                              </ul>
+                            </div>
+                            
+                            <div className="margin-top--md">
+                              <p>
+                                <strong>Need help?</strong> Check out our{' '}
+                                <Link to="/docs/getting-started/installation">installation guide</Link>.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="margin-top--lg">
+                        <Heading as="h2">System Requirements</Heading>
+                        <div className="row">
+                          <div className="col col--4">
+                            <div className="card">
+                              <div className="card__header">
+                                <Heading as="h4">macOS</Heading>
+                              </div>
+                              <div className="card__body">
+                                <ul>
+                                  <li>macOS 10.15 (Catalina) or later</li>
+                                  <li>Intel or Apple Silicon processor</li>
+                                  <li>4 GB RAM minimum</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col col--4">
+                            <div className="card">
+                              <div className="card__header">
+                                <Heading as="h4">Windows</Heading>
+                              </div>
+                              <div className="card__body">
+                                <ul>
+                                  <li>Windows 10 or later</li>
+                                  <li>64-bit processor</li>
+                                  <li>4 GB RAM minimum</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="col col--4">
+                            <div className="card">
+                              <div className="card__header">
+                                <Heading as="h4">Linux</Heading>
+                              </div>
+                              <div className="card__body">
+                                <ul>
+                                  <li>Modern Linux distribution</li>
+                                  <li>64-bit processor</li>
+                                  <li>4 GB RAM minimum</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Layout>
+            );
+          }
+          EOF
+
+      - name: Commit documentation updates
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add docs-site/src/pages/download.tsx
+          git diff --staged --quiet || git commit -m "Update download page with latest release"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
