@@ -64,21 +64,7 @@ jobs:
 
   build:
     needs: test
-    strategy:
-      matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
-        include:
-          - os: macos-latest
-            platform: mac
-            arch: x64,arm64
-          - os: ubuntu-latest
-            platform: linux
-            arch: x64
-          - os: windows-latest
-            platform: win
-            arch: x64
-
-    runs-on: ${{ matrix.os }}
+    runs-on: macos-latest
     
     steps:
       - name: Checkout code
@@ -118,7 +104,6 @@ jobs:
           ELECTRON_BUILDER_CACHE: ~/.cache/electron-builder
           
       - name: Upload build artifacts (macOS)
-        if: matrix.os == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
           name: electron-app-mac
@@ -126,27 +111,6 @@ jobs:
             dist-electron/*.dmg
             dist-electron/*.dmg.blockmap
             dist-electron/latest-mac.yml
-          retention-days: 30
-
-      - name: Upload build artifacts (Linux)
-        if: matrix.os == 'ubuntu-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: electron-app-linux
-          path: |
-            dist-electron/*.AppImage
-            dist-electron/latest-linux.yml
-          retention-days: 30
-
-      - name: Upload build artifacts (Windows)
-        if: matrix.os == 'windows-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: electron-app-windows
-          path: |
-            dist-electron/*.exe
-            dist-electron/*.exe.blockmap
-            dist-electron/latest.yml
           retention-days: 30
 
   release:
@@ -217,26 +181,15 @@ jobs:
           
           ## Downloads
           
-          Choose the appropriate download for your platform:
-          
           ### macOS
-          - **Universal Binary (Intel + Apple Silicon)**: Download the .dmg file
+          - **Intel (x64)**: Download the .dmg file
           - Supports macOS 10.15 (Catalina) and later
-          
-          ### Windows  
-          - **Windows Installer**: Download the .exe file
-          - Supports Windows 10 and later
-          
-          ### Linux
-          - **AppImage**: Download the .AppImage file (portable, no installation required)
-          - Compatible with most Linux distributions
           
           ## Installation
           
-          1. Download the appropriate file for your platform
-          2. **macOS**: Open the .dmg and drag the app to Applications
-          3. **Windows**: Run the .exe installer
-          4. **Linux**: Make the .AppImage executable and run it
+          1. Download the .dmg file
+          2. Open the .dmg and drag the app to Applications
+          3. Launch CNC Jog Controls from Applications folder
           
           ## Verification
           
@@ -267,36 +220,6 @@ jobs:
             fi
           done
           for file in artifacts/electron-app-mac/*.dmg.blockmap; do
-            if [ -f "$file" ]; then
-              echo "Uploading $file"
-              gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
-            fi
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Windows artifacts to release
-        if: always()
-        run: |
-          for file in artifacts/electron-app-windows/*.exe; do
-            if [ -f "$file" ]; then
-              echo "Uploading $file"
-              gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
-            fi
-          done
-          for file in artifacts/electron-app-windows/*.exe.blockmap; do
-            if [ -f "$file" ]; then
-              echo "Uploading $file"
-              gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
-            fi
-          done
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Linux artifacts to release
-        if: always()
-        run: |
-          for file in artifacts/electron-app-linux/*.AppImage; do
             if [ -f "$file" ]; then
               echo "Uploading $file"
               gh release upload ${{ steps.version.outputs.tag_name }} "$file" --clobber
