@@ -41,11 +41,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ ! -f package-lock.json ] || ! npm ci --dry-run > /dev/null 2>&1; then
+            echo "Lock file is out of sync, regenerating..."
+            rm -f package-lock.json
+            npm install
+          else
+            npm ci
+          fi
 
       - name: Run linting
         run: npm run lint
@@ -81,11 +88,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ ! -f package-lock.json ] || ! npm ci --dry-run > /dev/null 2>&1; then
+            echo "Lock file is out of sync, regenerating..."
+            rm -f package-lock.json
+            npm install
+          else
+            npm ci
+          fi
 
       - name: Build Electron app
         run: npm run electron:build
@@ -138,11 +152,18 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          if [ ! -f package-lock.json ] || ! npm ci --dry-run > /dev/null 2>&1; then
+            echo "Lock file is out of sync, regenerating..."
+            rm -f package-lock.json
+            npm install
+          else
+            npm ci
+          fi
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
