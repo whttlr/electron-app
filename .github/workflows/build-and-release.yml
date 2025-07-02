@@ -250,12 +250,20 @@ jobs:
       - name: Get latest release info
         id: latest_release
         run: |
-          LATEST_RELEASE=$(gh release view --json tagName,url,assets --jq '{tag: .tagName, url: .url, assets: .assets}')
-          echo "release_info=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+          # Check if any releases exist
+          if gh release list --limit 1 | grep -q .; then
+            LATEST_RELEASE=$(gh release view --json tagName,url,assets --jq '{tag: .tagName, url: .url, assets: .assets}')
+            echo "release_info=$LATEST_RELEASE" >> $GITHUB_OUTPUT
+            echo "has_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "No releases found, skipping release info"
+            echo "has_release=false" >> $GITHUB_OUTPUT
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Update download links in documentation
+        if: steps.latest_release.outputs.has_release == 'true'
         run: |
           # Create or update a downloads page in docs-site
           mkdir -p docs-site/src/pages
@@ -380,6 +388,7 @@ jobs:
           EOF
 
       - name: Commit documentation updates
+        if: steps.latest_release.outputs.has_release == 'true'
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
