@@ -1,8 +1,8 @@
 // Command History Service
 // Tracks and manages command execution history
 
-import { databaseService } from '../database/DatabaseService';
 import { CommandRecord } from '@whttlr/plugin-types';
+import { databaseService } from '../database/DatabaseService';
 
 export class CommandHistoryService {
   private static instance: CommandHistoryService | null = null;

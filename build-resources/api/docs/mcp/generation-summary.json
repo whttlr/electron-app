@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2025-06-30T11:54:22.076Z",
+  "statistics": {
+    "totalEndpoints": 13,
+    "totalTools": 13,
+    "features": [
+      "connection",
+      "files",
+      "gcode",
+      "health",
+      "machine",
+      "presets",
+      "main"
+    ],
+    "httpMethods": [
+      "GET",
+      "POST"
+    ],
+    "toolsByFeature": {
+      "connection": 1,
+      "files": 4,
+      "gcode": 1,
+      "health": 1,
+      "machine": 1,
+      "presets": 4,
+      "main": 1
+    }
+  },
+  "files": [
+    "server.js - Main MCP server implementation",
+    "package.json - NPM package configuration",
+    "README.md - Documentation and usage guide",
+    "tools.json - MCP tool definitions in JSON format"
+  ]
+}

@@ -1,0 +1,256 @@
+[
+  {
+    "name": "connection_ports",
+    "description": "[Connection] Get Status\n\nEndpoint: GET /ports\nTags: Connection",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "files_get_index",
+    "description": "[Files] files endpoint\n\nEndpoint: GET /\nTags: Files",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "files_get_index",
+    "description": "[Files] Get File Info\n\nEndpoint: GET /{filename}\nTags: Files",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        },
+        "filename": {
+          "type": "string",
+          "description": "Path parameter: filename"
+        }
+      },
+      "required": [
+        "filename"
+      ]
+    }
+  },
+  {
+    "name": "files_download",
+    "description": "[Files] files endpoint\n\nEndpoint: GET /{filename}/download\nTags: Files",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        },
+        "filename": {
+          "type": "string",
+          "description": "Path parameter: filename"
+        }
+      },
+      "required": [
+        "filename"
+      ]
+    }
+  },
+  {
+    "name": "files_post_validate",
+    "description": "[Files] files endpoint\n\nEndpoint: POST /{filename}/validate\nTags: Files",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body data",
+          "additionalProperties": true
+        },
+        "filename": {
+          "type": "string",
+          "description": "Path parameter: filename"
+        }
+      },
+      "required": [
+        "filename"
+      ]
+    }
+  },
+  {
+    "name": "gcode_post_execute",
+    "description": "[Gcode] Get Execution Queue\n\nEndpoint: POST /execute\nTags: Gcode",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body data",
+          "additionalProperties": true
+        }
+      },
+      "required": [
+        "body"
+      ]
+    }
+  },
+  {
+    "name": "health_help",
+    "description": "[Health] Get Help\n\nEndpoint: GET /help\nTags: Health",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "machine_status",
+    "description": "[Machine] Get Machine Status\n\nEndpoint: GET /status\nTags: Machine",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "presets_get_index",
+    "description": "[Presets] presets endpoint\n\nEndpoint: GET /\nTags: Presets",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        }
+      },
+      "required": []
+    }
+  },
+  {
+    "name": "presets_get_index",
+    "description": "[Presets] Get Preset Info\n\nEndpoint: GET /{presetName}\nTags: Presets",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        },
+        "presetName": {
+          "type": "string",
+          "description": "Path parameter: presetName"
+        }
+      },
+      "required": [
+        "presetName"
+      ]
+    }
+  },
+  {
+    "name": "presets_post_execute",
+    "description": "[Presets] presets endpoint\n\nEndpoint: POST /{presetName}/execute\nTags: Presets",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body data",
+          "additionalProperties": true
+        },
+        "presetName": {
+          "type": "string",
+          "description": "Path parameter: presetName"
+        }
+      },
+      "required": [
+        "body",
+        "presetName"
+      ]
+    }
+  },
+  {
+    "name": "presets_post_validate",
+    "description": "[Presets] presets endpoint\n\nEndpoint: POST /{presetName}/validate\nTags: Presets",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        },
+        "body": {
+          "type": "object",
+          "description": "Request body data",
+          "additionalProperties": true
+        },
+        "presetName": {
+          "type": "string",
+          "description": "Path parameter: presetName"
+        }
+      },
+      "required": [
+        "presetName"
+      ]
+    }
+  },
+  {
+    "name": "main_get_index",
+    "description": "[Main] Routes\n\nEndpoint: GET /\nTags: Main",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "description": "Base URL of the CNC API server",
+          "default": "http://localhost:3000"
+        }
+      },
+      "required": []
+    }
+  }
+]

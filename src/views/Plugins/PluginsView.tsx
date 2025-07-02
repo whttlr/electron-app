@@ -256,8 +256,7 @@ const PluginsView: React.FC = () => {
     return downloads.toString();
   };
 
-  const isPluginInstalled = (marketplacePlugin: MarketplacePlugin) =>
-    plugins.some((p) => p.id === marketplacePlugin.id) || marketplacePlugin.installed;
+  const isPluginInstalled = (marketplacePlugin: MarketplacePlugin) => plugins.some((p) => p.id === marketplacePlugin.id) || marketplacePlugin.installed;
 
   // Update handlers
   const handleCheckForUpdates = async () => {

@@ -28,7 +28,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "clsx": "^2.1.1",
-    "prism-react-renderer": "^2.4.1"
+    "prism-react-renderer": "^2.4.1",
+    "node-fetch": "^3.3.2",
+    "fs-extra": "^11.2.0"
   },
   "scripts": {
     "start": "vite",
@@ -38,12 +40,14 @@
     "build:all": "npm run build && npm run build:electron",
     "build:all-electron": "npm run build:electron-renderer && npm run build:electron",
     "preview": "vite preview",
-    "electron:dev": "npm run build:electron && concurrently \"npm run start\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
-    "electron:build": "npm run build:all && electron-builder",
-    "electron:build:mac": "npm run build:all && electron-builder --mac",
-    "electron:build:win": "npm run build:all && electron-builder --win",
-    "electron:build:linux": "npm run build:all && electron-builder --linux",
-    "electron:pack": "npm run build:all && electron-builder --dir",
+    "integrate-api": "node scripts/api-integration.js",
+    "build:with-api": "npm run integrate-api && npm run build:all",
+    "electron:dev": "npm run integrate-api && npm run build:electron && concurrently \"npm run start\" \"wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .\"",
+    "electron:build": "npm run build:with-api && electron-builder",
+    "electron:build:mac": "npm run build:with-api && electron-builder --mac",
+    "electron:build:win": "npm run build:with-api && electron-builder --win",
+    "electron:build:linux": "npm run build:with-api && electron-builder --linux",
+    "electron:pack": "npm run build:with-api && electron-builder --dir",
     "electron:test": "jest --config jest.electron.config.js",
     "postinstall": "electron-builder install-app-deps",
     "test": "jest",
@@ -130,7 +134,12 @@
     ],
     "extraResources": [
       "assets/**/*",
-      "docs/**/*"
+      "docs/**/*",
+      {
+        "from": "build-resources/api",
+        "to": "api",
+        "filter": ["**/*"]
+      }
     ],
     "extraMetadata": {
       "main": "dist-electron/main/main.js"

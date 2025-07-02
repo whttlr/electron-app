@@ -1,8 +1,8 @@
-import { 
-  CompleteConfig, 
-  PluginRecord, 
+import {
+  CompleteConfig,
+  PluginRecord,
   PluginAPI,
-  PluginManifest 
+  PluginManifest,
 } from '@whttlr/plugin-types';
 
 // Use the shared PluginRecord type as the base for Plugin

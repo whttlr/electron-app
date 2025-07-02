@@ -1,1 +1,1 @@
-"use strict";const e=require("electron");e.contextBridge.exposeInMainWorld("electronAPI",{getAppVersion:()=>e.ipcRenderer.invoke("get-app-version")});
+"use strict";const e=require("electron");e.contextBridge.exposeInMainWorld("electronAPI",{getAppVersion:()=>e.ipcRenderer.invoke("get-app-version"),getApiConfig:()=>e.ipcRenderer.invoke("get-api-config"),apiHealthCheck:()=>e.ipcRenderer.invoke("api-health-check"),onApiReady:i=>e.ipcRenderer.on("api-ready",(r,n)=>i(n))});
