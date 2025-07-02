@@ -11,9 +11,14 @@ export async function onFileChange(context: HookContext) {
 
       const result = await context.runCommand(`npx vitest run ${testFile}`);
 
-      if (result.exitCode !== 0) {
+      if (result.exitCode \!== 0) {
         await context.insertSystemMessage(
-          `❌ Test failed for \`${file.path}\`. Please fix the code before continuing.\n\n**Test Output:**\n\`\`\`\n${result.stdout}\n\`\`\``
+          `❌ Test failed for \`${file.path}\`. Please fix the code before continuing.
+
+**Test Output:**
+\`\`\`
+${result.stdout}
+\`\`\``
         );
         return; // Prevent continuing until fixed
       }
