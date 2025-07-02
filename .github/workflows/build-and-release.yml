@@ -45,7 +45,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set progress false
+          npm install --prefer-offline --no-audit --timeout=300000
+        timeout-minutes: 10
 
       - name: Run linting
         run: npm run lint
@@ -85,7 +89,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set progress false
+          npm install --prefer-offline --no-audit --timeout=300000
+        timeout-minutes: 10
 
       - name: Build Electron app
         run: npm run electron:build
@@ -142,7 +150,11 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          npm config set progress false
+          npm install --prefer-offline --no-audit --timeout=300000
+        timeout-minutes: 10
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
