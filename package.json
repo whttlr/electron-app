@@ -1,6 +1,8 @@
 {
   "name": "jog-controls-playground",
   "version": "0.1.0",
+  "description": "Professional CNC jog controls application with 3D visualization and plugin system",
+  "author": "CNC Controls Team",
   "private": true,
   "main": "dist-electron/main/main.js",
   "homepage": "./",
@@ -139,7 +141,8 @@
     },
     "mac": {
       "category": "public.app-category.developer-tools",
-      "hardenedRuntime": true,
+      "hardenedRuntime": false,
+      "identity": null,
       "target": [
         {
           "target": "dmg",
@@ -151,7 +154,9 @@
       ]
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "certificateFile": null,
+      "certificatePassword": null
     },
     "linux": {
       "target": "AppImage",
