@@ -2,7 +2,7 @@ import { spawn, ChildProcess } from 'child_process';
 import { app } from 'electron';
 import path from 'path';
 import net from 'net';
-import fetch from 'node-fetch';
+const fetch = require('node-fetch');
 
 export class EmbeddedApiServer {
   private process: ChildProcess | null = null;

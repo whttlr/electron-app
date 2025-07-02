@@ -3,7 +3,7 @@ import {
   HashRouter as Router, Routes, Route, Link, useLocation,
 } from 'react-router-dom';
 import {
-  Layout, Menu, Spin, Alert,
+  Layout, Menu, Spin, Alert, Space,
 } from 'antd';
 import {
   DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined,
@@ -11,6 +11,8 @@ import {
 import { PluginProvider, usePlugins } from './services/plugin';
 import { databaseService } from './services/database';
 import { SettingsProvider } from './contexts/SettingsContext';
+import { UpdateNotificationBadge, ReleaseNotesPopover } from './components/update';
+import { useUpdateService } from './hooks/useUpdateService';
 import DashboardView from './views/Dashboard/DashboardView';
 import PluginsView from './views/Plugins/PluginsView';
 import SettingsView from './views/Settings/SettingsView';
@@ -24,6 +26,15 @@ const AppContent: React.FC = () => {
   const location = useLocation();
   const { getStandalonePlugins } = usePlugins();
   const standalonePlugins = getStandalonePlugins();
+  const {
+    updateData,
+    downloadProgress,
+    isDownloading,
+    showReleaseNotes,
+    downloadUpdate,
+    showUpdateDialog,
+    hideUpdateDialog,
+  } = useUpdateService();
 
   const getIconComponent = (iconName?: string) => {
     switch (iconName) {
@@ -70,11 +81,18 @@ const AppContent: React.FC = () => {
       <Header style={{
         display: 'flex',
         alignItems: 'center',
+        justifyContent: 'space-between',
         background: '#001529',
         color: 'white',
         padding: '0 24px',
       }}>
         <h1 style={{ color: 'white', margin: 0 }}>CNC Jog Controls</h1>
+        <Space>
+          <UpdateNotificationBadge
+            updateAvailable={!!updateData?.updateAvailable}
+            onUpdateClick={showUpdateDialog}
+          />
+        </Space>
       </Header>
 
       <Layout>
@@ -120,6 +138,16 @@ const AppContent: React.FC = () => {
           </Content>
         </Layout>
       </Layout>
+
+      {/* Update Release Notes Modal */}
+      <ReleaseNotesPopover
+        visible={showReleaseNotes}
+        releaseData={updateData || undefined}
+        downloadProgress={downloadProgress}
+        isDownloading={isDownloading}
+        onUpdate={downloadUpdate}
+        onDismiss={hideUpdateDialog}
+      />
     </Layout>
   );
 };

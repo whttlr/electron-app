@@ -1,0 +1,24 @@
+{
+  "checking": {
+    "enabled": true,
+    "interval": 3600000,
+    "checkOnStartup": true,
+    "retryAttempts": 3,
+    "timeout": 30000
+  },
+  "notifications": {
+    "showBadge": true,
+    "autoShowPopover": false,
+    "dismissable": true
+  },
+  "releases": {
+    "includePreReleases": false,
+    "minimumVersion": "1.0.0"
+  },
+  "github": {
+    "apiBaseUrl": "https://api.github.com",
+    "owner": "whttlr",
+    "repo": "electron-app",
+    "rateLimitBuffer": 100
+  }
+}

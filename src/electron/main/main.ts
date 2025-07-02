@@ -2,11 +2,14 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 // import { pathToFileURL } from 'url'; // Currently unused
 import { EmbeddedApiServer } from './services/embedded-api-server';
+import { autoUpdater } from 'electron-updater';
+import { UpdateService } from '../../services/update';
 
 const __dirname = path.dirname(__filename);
 
 let mainWindow: BrowserWindow | null = null;
 let apiServer: EmbeddedApiServer | null = null;
+let updateService: UpdateService | null = null;
 
 async function createWindow() {
   // Start embedded API server
@@ -34,6 +37,9 @@ async function createWindow() {
 
     // Set up IPC handlers
     setupIpcHandlers();
+
+    // Initialize update service
+    setupUpdateService();
 
     // Show window when ready to prevent white flash
     mainWindow.once('ready-to-show', () => {
@@ -105,7 +111,7 @@ function setupIpcHandlers() {
     }
 
     try {
-      const fetch = (await import('node-fetch')).default;
+      const fetch = require('node-fetch');
       const response = await fetch(`${apiServer.getBaseUrl()}/health`);
       return { healthy: response.ok };
     } catch (error) {
@@ -115,6 +121,74 @@ function setupIpcHandlers() {
 
   // Handle IPC communications
   ipcMain.handle('get-app-version', () => app.getVersion());
+
+  // Update service IPC handlers
+  ipcMain.handle('update:check', async () => {
+    return await updateService?.checkForUpdates();
+  });
+
+  ipcMain.handle('update:download', async () => {
+    try {
+      return await autoUpdater.downloadUpdate();
+    } catch (error) {
+      console.error('Update download failed:', error);
+      throw error;
+    }
+  });
+
+  ipcMain.handle('update:install', () => {
+    autoUpdater.quitAndInstall();
+  });
+
+  ipcMain.handle('update:get-status', () => {
+    return updateService?.getUpdateStatus();
+  });
+}
+
+function setupUpdateService() {
+  try {
+    // Configure electron-updater
+    autoUpdater.setFeedURL({
+      provider: 'github',
+      owner: 'whttlr',
+      repo: 'electron-app'
+    });
+
+    // Create update service
+    updateService = new UpdateService();
+
+    // Set up event listeners
+    updateService.on('update-available', (updateData) => {
+      console.log('Update available:', updateData);
+      mainWindow?.webContents.send('update:available', updateData);
+    });
+
+    updateService.on('update-error', (error) => {
+      console.error('Update error:', error);
+      mainWindow?.webContents.send('update:error', error);
+    });
+
+    updateService.on('state-change', (state) => {
+      mainWindow?.webContents.send('update:state-change', state);
+    });
+
+    // electron-updater events
+    autoUpdater.on('update-downloaded', (info) => {
+      console.log('Update downloaded:', info);
+      mainWindow?.webContents.send('update:downloaded', info);
+    });
+
+    autoUpdater.on('download-progress', (progress) => {
+      mainWindow?.webContents.send('update:download-progress', progress);
+    });
+
+    // Initialize the service
+    updateService.initialize();
+
+    console.log('✅ Update service initialized');
+  } catch (error) {
+    console.error('❌ Failed to initialize update service:', error);
+  }
 }
 
 app.whenReady().then(() => {
@@ -133,6 +207,7 @@ app.whenReady().then(() => {
 app.on('before-quit', () => {
   console.log('🔄 Shutting down...');
   apiServer?.stop();
+  updateService?.destroy();
 });
 
 app.on('window-all-closed', () => {

@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import {
   Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider, Spin, Alert, message,
 } from 'antd';
-import { SettingOutlined, SaveOutlined } from '@ant-design/icons';
+import { SettingOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
 import { PluginRenderer } from '../../components';
+import { useUpdateService } from '../../hooks/useUpdateService';
 import {
   useMachineConfig, useStateConfig, useUIConfig, useAPIConfig,
 } from '../../services/config';
@@ -49,7 +50,15 @@ const SettingsView: React.FC = () => {
     isLoading: apiLoading,
   } = useAPIConfig();
 
+  const {
+    updateData,
+    updateStatus,
+    checkForUpdates,
+    showUpdateDialog,
+  } = useUpdateService();
+
   const [isSaving, setIsSaving] = useState(false);
+  const [checkingForUpdates, setCheckingForUpdates] = useState(false);
 
   // Update form when settings change
   useEffect(() => {
@@ -71,6 +80,23 @@ const SettingsView: React.FC = () => {
       message.error('Failed to save settings');
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleCheckForUpdates = async () => {
+    try {
+      setCheckingForUpdates(true);
+      await checkForUpdates();
+      if (updateData?.updateAvailable) {
+        message.success('Update available! Click the notification to view details.');
+      } else {
+        message.info('No updates available. You are running the latest version.');
+      }
+    } catch (error) {
+      console.error('Failed to check for updates:', error);
+      message.error('Failed to check for updates. Please try again later.');
+    } finally {
+      setCheckingForUpdates(false);
     }
   };
 
@@ -235,6 +261,64 @@ const SettingsView: React.FC = () => {
               <Form.Item name={['ui', 'autoConnect']} valuePropName="checked">
                 <Switch /> Auto-connect on Startup
               </Form.Item>
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
+          <Col xs={24} lg={12}>
+            <Card title="Update Settings" extra={<UploadOutlined />}>
+              <Form.Item name={['updates', 'autoCheck']} valuePropName="checked">
+                <Switch /> Check for updates automatically
+              </Form.Item>
+
+              <Form.Item label="Check Interval" name={['updates', 'checkInterval']}>
+                <Select>
+                  <Option value={1800000}>30 minutes</Option>
+                  <Option value={3600000}>1 hour</Option>
+                  <Option value={7200000}>2 hours</Option>
+                  <Option value={21600000}>6 hours</Option>
+                  <Option value={43200000}>12 hours</Option>
+                  <Option value={86400000}>24 hours</Option>
+                </Select>
+              </Form.Item>
+
+              <Form.Item name={['updates', 'includePreReleases']} valuePropName="checked">
+                <Switch /> Include pre-release versions
+              </Form.Item>
+
+              <Form.Item name={['updates', 'autoDownload']} valuePropName="checked">
+                <Switch /> Download updates automatically
+              </Form.Item>
+
+              <Divider />
+
+              <div style={{ textAlign: 'center' }}>
+                <Button
+                  type="default"
+                  icon={<UploadOutlined />}
+                  loading={checkingForUpdates}
+                  onClick={handleCheckForUpdates}
+                  style={{ marginBottom: '8px' }}
+                >
+                  Check for Updates Now
+                </Button>
+                {updateData?.updateAvailable && (
+                  <div style={{ marginTop: '8px' }}>
+                    <Alert
+                      message="Update Available"
+                      description={`Version ${updateData.latestVersion} is available`}
+                      type="success"
+                      showIcon
+                      action={
+                        <Button size="small" type="link" onClick={showUpdateDialog}>
+                          View Details
+                        </Button>
+                      }
+                    />
+                  </div>
+                )}
+              </div>
             </Card>
           </Col>
         </Row>
