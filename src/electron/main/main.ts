@@ -10,6 +10,7 @@ function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
+    title: 'CNC Jog Controls',
     webPreferences: {
       preload: path.join(__dirname, '../preload/preload.js'),
       contextIsolation: true,
@@ -26,15 +27,30 @@ function createWindow() {
     mainWindow?.show();
   });
 
-  // Load from built files for testing, dev server for development
-  if (process.env.NODE_ENV === 'test') {
-    // Load from built files during testing
-    const filePath = path.join(__dirname, '../../dist/index.html');
-    mainWindow.loadFile(filePath);
-  } else {
+  // Load from appropriate source based on environment
+  const isDev = process.env.NODE_ENV === 'development';
+  
+  if (isDev) {
     // Use development server for development
-    mainWindow.loadURL('http://localhost:3001');
+    mainWindow.loadURL('http://localhost:5173'); // Vite default port
+  } else {
+    // Load from built files in production
+    const indexPath = path.join(__dirname, '../../dist/index.html');
+    console.log(`Loading Electron app from: ${indexPath}`);
+    console.log(`Current __dirname: ${__dirname}`);
+    console.log(`File exists: ${require('fs').existsSync(indexPath)}`);
+    mainWindow.loadFile(indexPath);
   }
+
+  // Add error handling for failed loads
+  mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription, validatedURL) => {
+    console.error(`Failed to load ${validatedURL}: ${errorDescription} (${errorCode})`);
+  });
+
+  // Log when page finishes loading
+  mainWindow.webContents.on('did-finish-load', () => {
+    console.log('Page finished loading successfully');
+  });
 
   // Only open DevTools in actual development (not test)
   if (process.env.NODE_ENV === 'development') {
@@ -48,7 +64,7 @@ function createWindow() {
 
 app.whenReady().then(() => {
   // Set app name
-  app.setName('jog-controls-playground');
+  app.setName('CNC Jog Controls');
 
   createWindow();
 

@@ -21,13 +21,15 @@ A comprehensive CNC machine control application with an integrated UI-based plug
 
 ## 📥 Quick Download
 
-**[Download Latest Release](https://whttlr.github.io/electron-app/download)** | **[View Documentation](https://whttlr.github.io/electron-app/)**
+### Latest Release
+**[⬇️ Download for macOS](https://github.com/whttlr/electron-app/releases/latest/download/CNC-Jog-Controls-0.1.0.dmg)** | **[📖 View Documentation](https://whttlr.github.io/electron-app/)**
 
-- **macOS**: Universal Binary (Intel + Apple Silicon) - `.dmg`
-- **Windows**: Windows 10+ - `.exe` installer  
-- **Linux**: Portable AppImage - `.AppImage`
+- **macOS**: Intel (x64) - `CNC-Jog-Controls-0.1.0.dmg`
+- **Requirements**: macOS 10.15 (Catalina) or later
 
-*All downloads are automatically built and tested with every release.*
+**All Releases**: [github.com/whttlr/electron-app/releases](https://github.com/whttlr/electron-app/releases)
+
+*Downloads are automatically built and tested with every release.*
 
 ## 🎯 Features
 
