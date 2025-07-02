@@ -45,14 +45,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          if [ ! -f package-lock.json ] || ! npm ci --dry-run > /dev/null 2>&1; then
-            echo "Lock file is out of sync, regenerating..."
-            rm -f package-lock.json
-            npm install
-          else
-            npm ci
-          fi
+        run: npm ci --prefer-offline --no-audit
 
       - name: Run linting
         run: npm run lint
@@ -92,14 +85,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          if [ ! -f package-lock.json ] || ! npm ci --dry-run > /dev/null 2>&1; then
-            echo "Lock file is out of sync, regenerating..."
-            rm -f package-lock.json
-            npm install
-          else
-            npm ci
-          fi
+        run: npm ci --prefer-offline --no-audit
 
       - name: Build Electron app
         run: npm run electron:build
@@ -156,14 +142,7 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          if [ ! -f package-lock.json ] || ! npm ci --dry-run > /dev/null 2>&1; then
-            echo "Lock file is out of sync, regenerating..."
-            rm -f package-lock.json
-            npm install
-          else
-            npm ci
-          fi
+        run: npm ci --prefer-offline --no-audit
 
       - name: Download all artifacts
         uses: actions/download-artifact@v4
