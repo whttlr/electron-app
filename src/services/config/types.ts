@@ -1,4 +1,4 @@
 // Configuration Types - Main Export
-// Re-exports all configuration types for backward compatibility
+// Re-exports all configuration types from shared package for consistency
 
-export * from './types';
+export * from '@whttlr/plugin-types';

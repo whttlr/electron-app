@@ -2,7 +2,7 @@ import React, {
   createContext, useContext, useState, useEffect, ReactNode,
 } from 'react';
 import { databaseService } from '../database/DatabaseService';
-import { PluginStateRecord } from '../database/types';
+import { PluginStateRecord } from '@whttlr/plugin-types';
 import {
   Plugin, PluginUpdate, RegistryConfig, PluginContextType,
 } from './types';

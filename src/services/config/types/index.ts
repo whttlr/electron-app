@@ -1,16 +1,5 @@
 // Configuration Types Module - Public API
-// Re-exports all configuration type definitions organized by domain
+// Re-exports all configuration type definitions from shared package for consistency
 
-// Common types used across all configurations
-export * from './CommonTypes';
-
-// Domain-specific configuration types
-export * from './MachineTypes';
-export * from './StateTypes';
-export * from './AppTypes';
-export * from './UITypes';
-export * from './APITypes';
-export * from './DefaultsTypes';
-
-// Main configuration and service types
-export * from './ConfigTypes';
+// Import and re-export all types from the shared package
+export * from '@whttlr/plugin-types';

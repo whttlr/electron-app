@@ -1,10 +1,10 @@
 import { configService } from '../config/ConfigService';
 import { databaseService } from '../database/DatabaseService';
-import { PluginRecord, PluginStateRecord } from '../database/types';
+import { PluginRecord, PluginStateRecord } from '@whttlr/plugin-types';
 import {
   Plugin, PluginUpdate, RegistryConfig, PluginAPI,
 } from './types';
-import { CompleteConfig } from '../config/types';
+import { CompleteConfig } from '@whttlr/plugin-types';
 
 export class PluginService {
   // Database operations

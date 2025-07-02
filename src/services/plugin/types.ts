@@ -1,41 +1,12 @@
-import { CompleteConfig } from '../config/types';
+import { 
+  CompleteConfig, 
+  PluginRecord, 
+  PluginAPI,
+  PluginManifest 
+} from '@whttlr/plugin-types';
 
-export interface Plugin {
-  id: string;
-  name: string;
-  version: string;
-  description: string;
-  status: 'active' | 'inactive';
-  type: 'utility' | 'visualization' | 'control' | 'productivity';
-  // Version management
-  availableVersions?: string[];
-  latestVersion?: string;
-  updateAvailable?: boolean;
-  // Dependencies
-  dependencies?: {
-    [key: string]: string; // plugin-id: version-requirement
-  };
-  // Installation metadata
-  installedAt?: string;
-  updatedAt?: string;
-  source?: 'local' | 'marketplace' | 'registry';
-  checksum?: string;
-  // Registry sync
-  registryId?: string;
-  publisherId?: string;
-  // Configuration
-  config?: {
-    placement?: 'dashboard' | 'standalone' | 'modal' | 'sidebar';
-    screen?: 'main' | 'new' | 'controls' | 'settings';
-    size?: { width: number | 'auto', height: number | 'auto' };
-    priority?: number;
-    autoStart?: boolean;
-    permissions?: string[];
-    menuTitle?: string;
-    menuIcon?: string;
-    routePath?: string;
-  };
-}
+// Use the shared PluginRecord type as the base for Plugin
+export type Plugin = PluginRecord;
 
 // Registry configuration
 export interface RegistryConfig {
@@ -54,17 +25,8 @@ export interface PluginUpdate {
   releaseDate?: string;
 }
 
-// Plugin API interface for access to application resources
-export interface PluginAPI {
-  config: {
-    get: <T>(path: string) => T | null;
-    getSection: (section: keyof CompleteConfig) => any | null;
-    getWithFallback: <T>(path: string, fallback: T) => T;
-    isLoaded: () => boolean;
-    reload: () => Promise<void>;
-  };
-  // Future: add more APIs like state, machine control, etc.
-}
+// PluginAPI is now imported from shared types - no need to redefine
+// export { PluginAPI } from '@whttlr/plugin-types'; // Already imported above
 
 export interface PluginContextType {
   plugins: Plugin[];

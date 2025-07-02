@@ -2,7 +2,7 @@
 // Tracks and manages command execution history
 
 import { databaseService } from '../database/DatabaseService';
-import { CommandRecord } from '../database/types';
+import { CommandRecord } from '@whttlr/plugin-types';
 
 export class CommandHistoryService {
   private static instance: CommandHistoryService | null = null;
