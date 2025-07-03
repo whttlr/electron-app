@@ -7,6 +7,7 @@ import {
   Plugin, PluginUpdate, RegistryConfig, PluginContextType,
 } from './types';
 import { PluginService } from './PluginService';
+import { databasePluginService, PluginSettings, PluginAnalytics } from './DatabasePluginService';
 
 const PluginContext = createContext<PluginContextType | undefined>(undefined);
 
@@ -109,7 +110,7 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
 
   const savePlugin = async (plugin: Plugin): Promise<void> => {
     try {
-      await PluginService.savePlugin(plugin, updatePluginState);
+      await databasePluginService.installPlugin(plugin);
       await loadPlugins(); // Reload plugins to reflect changes
     } catch (err) {
       console.error('Failed to save plugin:', err);
@@ -257,6 +258,43 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
 
   const getPluginAPI = () => PluginService.getPluginAPI();
 
+  // Enhanced database functions
+  const getPluginSettings = async (pluginId: string): Promise<PluginSettings> => {
+    return databasePluginService.getPluginSettings(pluginId);
+  };
+
+  const savePluginSettings = async (pluginId: string, settings: PluginSettings): Promise<void> => {
+    return databasePluginService.savePluginSettings(pluginId, settings);
+  };
+
+  const getPluginAnalytics = async (pluginId: string): Promise<PluginAnalytics> => {
+    return databasePluginService.getPluginAnalytics(pluginId);
+  };
+
+  const incrementPluginDownload = async (pluginId: string): Promise<void> => {
+    return databasePluginService.downloadPlugin(pluginId);
+  };
+
+  const incrementPluginLike = async (pluginId: string): Promise<void> => {
+    return databasePluginService.incrementLike(pluginId);
+  };
+
+  const incrementPluginStar = async (pluginId: string): Promise<void> => {
+    return databasePluginService.incrementStar(pluginId);
+  };
+
+  const createPluginAPI = (pluginId: string) => {
+    return databasePluginService.createPluginAPI(pluginId);
+  };
+
+  const getAllPluginStats = async () => {
+    return databasePluginService.getAllPluginStats();
+  };
+
+  const exportPluginData = async (pluginId: string): Promise<string> => {
+    return databasePluginService.exportPluginData(pluginId);
+  };
+
   return (
     <PluginContext.Provider value={{
       plugins,
@@ -281,6 +319,16 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
       installDependencies,
       exportPlugins,
       importPlugins,
+      // Enhanced database methods
+      getPluginSettings,
+      savePluginSettings,
+      getPluginAnalytics,
+      incrementPluginDownload,
+      incrementPluginLike,
+      incrementPluginStar,
+      createPluginAPI,
+      getAllPluginStats,
+      exportPluginData,
     }}>
       {children}
     </PluginContext.Provider>

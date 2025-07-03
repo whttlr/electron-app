@@ -5,13 +5,24 @@ import {
 import {
   ControlOutlined, ToolOutlined, SettingOutlined, AppstoreOutlined,
 } from '@ant-design/icons';
-import { PluginRenderer } from '../../components';
+import { PluginRenderer, SupabaseTestComponent } from '../../components';
 
 const { Title, Paragraph } = Typography;
+
+
+// Add inside your dashboard layout:
+
+
+  import { DatabaseIntegrationDemo } from '../../components/DatabaseIntegrationDemo'
+
+  // In your component:
 
 const DashboardView: React.FC = () => (
     <div data-testid="dashboard-container">
       <Title level={2}>CNC Dashboard</Title>
+        <DatabaseIntegrationDemo />
+
+      <SupabaseTestComponent />
       <Paragraph>
         Welcome to the CNC Jog Controls dashboard. Select a section below to get started.
       </Paragraph>

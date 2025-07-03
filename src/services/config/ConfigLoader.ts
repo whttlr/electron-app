@@ -1,5 +1,5 @@
 // Configuration File Loader
-// Handles loading, fetching, and validation of configuration files
+// Handles loading, fetching, and validation of configuration files with database backing
 
 import {
   CompleteConfig,
@@ -14,9 +14,11 @@ import {
   ConfigFileName,
 } from './types/index';
 import { validateConfig, ValidationResult } from './validation';
+import { configManagementService } from '../bundled-api-supabase/config-management';
 
 export class ConfigLoader {
   private configPath: string = '';
+  private configCache: Map<string, any> = new Map();
 
   /**
    * Set the configuration path
@@ -45,7 +47,7 @@ export class ConfigLoader {
   }
 
   /**
-   * Load all configuration files
+   * Load all configuration files with database backing
    */
   public async loadAllConfigurations(): Promise<CompleteConfig> {
     const configs = await Promise.all([
@@ -70,38 +72,141 @@ export class ConfigLoader {
   }
 
   /**
-   * Load a specific configuration file
+   * Load a specific configuration file with database backing
    */
   public async loadConfigFile<T>(fileName: ConfigFileName): Promise<T> {
+    const configType = this.getConfigType(fileName);
+    const cacheKey = `${configType}_config`;
+
     try {
-      // In a real Electron app, you'd use fs.readFile or similar
-      // For now, we'll use fetch to load from the public directory
-      const response = await fetch(`${this.configPath}/${fileName}`);
-
-      if (!response.ok) {
-        throw new Error(`Failed to load ${fileName}: ${response.status} ${response.statusText}`);
+      // Check localStorage cache first
+      const cachedConfig = this.getCachedConfig<T>(cacheKey);
+      if (cachedConfig) {
+        return cachedConfig;
       }
 
-      const config = await response.json();
-
-      // Validate the configuration based on the file type
-      const validationResult = this.validateConfigFile(config, fileName);
-
-      // Log warnings but don't fail
-      if (validationResult.warnings.length > 0) {
-        console.warn(`Configuration warnings for ${fileName}:`, validationResult.warnings);
+      // Check database for configuration
+      const dbConfig = await configManagementService.getConfiguration(configType);
+      if (dbConfig) {
+        const config = dbConfig.config_data as T;
+        this.setCachedConfig(cacheKey, config);
+        return config;
       }
 
-      // Fail if there are validation errors
-      if (!validationResult.isValid) {
-        throw new Error(`Configuration validation failed for ${fileName}: ${validationResult.errors.join(', ')}`);
-      }
+      // Fall back to file system default
+      const defaultConfig = await this.loadDefaultConfigFile<T>(fileName);
+      
+      // Save default to database for future use
+      await configManagementService.saveConfiguration(configType, defaultConfig);
+      this.setCachedConfig(cacheKey, defaultConfig);
 
-      return config as T;
+      return defaultConfig;
     } catch (error) {
       console.error(`Error loading config file ${fileName}:`, error);
-      throw new Error(`Failed to load configuration file: ${fileName}`);
+      // If all else fails, try to load from file system
+      return this.loadDefaultConfigFile<T>(fileName);
     }
+  }
+
+  /**
+   * Load configuration from file system (fallback)
+   */
+  private async loadDefaultConfigFile<T>(fileName: ConfigFileName): Promise<T> {
+    const response = await fetch(`${this.configPath}/${fileName}`);
+
+    if (!response.ok) {
+      throw new Error(`Failed to load ${fileName}: ${response.status} ${response.statusText}`);
+    }
+
+    const config = await response.json();
+
+    // Validate the configuration based on the file type
+    const validationResult = this.validateConfigFile(config, fileName);
+
+    // Log warnings but don't fail
+    if (validationResult.warnings.length > 0) {
+      console.warn(`Configuration warnings for ${fileName}:`, validationResult.warnings);
+    }
+
+    // Fail if there are validation errors
+    if (!validationResult.isValid) {
+      throw new Error(`Configuration validation failed for ${fileName}: ${validationResult.errors.join(', ')}`);
+    }
+
+    return config as T;
+  }
+
+  /**
+   * Save configuration to database
+   */
+  public async saveConfiguration<T>(fileName: ConfigFileName, config: T): Promise<void> {
+    const configType = this.getConfigType(fileName);
+    const cacheKey = `${configType}_config`;
+
+    // Validate before saving
+    const validationResult = this.validateConfigFile(config, fileName);
+    if (!validationResult.isValid) {
+      throw new Error(`Configuration validation failed: ${validationResult.errors.join(', ')}`);
+    }
+
+    // Save to database
+    await configManagementService.saveConfiguration(configType, config);
+    
+    // Update cache
+    this.setCachedConfig(cacheKey, config);
+  }
+
+  /**
+   * Get configuration type from filename
+   */
+  private getConfigType(fileName: ConfigFileName): 'machine' | 'state' | 'app' | 'ui' | 'api' | 'defaults' | 'visualization' {
+    switch (fileName) {
+      case CONFIG_FILES.MACHINE: return 'machine';
+      case CONFIG_FILES.STATE: return 'state';
+      case CONFIG_FILES.APP: return 'app';
+      case CONFIG_FILES.UI: return 'ui';
+      case CONFIG_FILES.API: return 'api';
+      case CONFIG_FILES.DEFAULTS: return 'defaults';
+      case CONFIG_FILES.VISUALIZATION: return 'visualization';
+      default: throw new Error(`Unknown config file: ${fileName}`);
+    }
+  }
+
+  /**
+   * Get cached configuration
+   */
+  private getCachedConfig<T>(cacheKey: string): T | null {
+    try {
+      const cached = localStorage.getItem(cacheKey);
+      return cached ? JSON.parse(cached) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
+   * Set cached configuration
+   */
+  private setCachedConfig<T>(cacheKey: string, config: T): void {
+    try {
+      localStorage.setItem(cacheKey, JSON.stringify(config));
+    } catch (error) {
+      console.warn('Failed to cache configuration:', error);
+    }
+  }
+
+  /**
+   * Clear configuration cache
+   */
+  public clearCache(): void {
+    this.configCache.clear();
+    // Clear localStorage cache
+    const keys = Object.keys(localStorage);
+    keys.forEach(key => {
+      if (key.endsWith('_config')) {
+        localStorage.removeItem(key);
+      }
+    });
   }
 
   /**

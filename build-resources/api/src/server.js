@@ -9,12 +9,17 @@
 import express from 'express';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import dotenv from 'dotenv';
 import { info, error as logError } from '@cnc/core/services/logger';
 import { corsMiddleware } from './middleware/cors.js';
 import { responseFormatter } from './shared/responseFormatter.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
 import { setupSwagger } from './docs/swagger.js';
+import { testSupabaseConnection } from './config/supabase.js';
 import apiRoutes from './routes/index.js';
+
+// Load environment variables
+dotenv.config();
 
 // Create Express app
 const app = express();
@@ -107,7 +112,7 @@ function gracefulShutdown(signal) {
 }
 
 // Start server
-const server = app.listen(PORT, HOST, () => {
+const server = app.listen(PORT, HOST, async () => {
   info(`🚀 CNC API Server started successfully`);
   info(`📡 Server listening on http://${HOST}:${PORT}`);
   info(`🔍 Health check: http://${HOST}:${PORT}/api/v1/health`);
@@ -118,6 +123,10 @@ const server = app.listen(PORT, HOST, () => {
   info(`⚙️  G-code endpoints: http://${HOST}:${PORT}/api/v1/gcode`);
   info(`📁 File endpoints: http://${HOST}:${PORT}/api/v1/files`);
   info(`🎯 Preset endpoints: http://${HOST}:${PORT}/api/v1/presets`);
+  info(`🗄️  Database endpoints: http://${HOST}:${PORT}/api/v1/supabase`);
+  
+  // Test Supabase connection
+  await testSupabaseConnection();
   
   if (process.env.NODE_ENV !== 'production') {
     info('🛠️  Running in development mode');

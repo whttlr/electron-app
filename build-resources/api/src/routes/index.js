@@ -11,6 +11,7 @@ import { gcodeRoutes } from '../features/gcode/index.js';
 import { fileRoutes } from '../features/files/index.js';
 import { presetRoutes } from '../features/presets/index.js';
 import { healthRoutes } from '../features/health/index.js';
+import { routes as supabaseRoutes } from '../features/supabase/index.js';
 
 const router = express.Router();
 
@@ -131,6 +132,7 @@ router.get('/info', (req, res) => {
       gcode: '/api/v1/gcode/*',
       files: '/api/v1/files/*',
       presets: '/api/v1/presets/*',
+      supabase: '/api/v1/supabase/*',
       help: '/api/v1/help',
       commands: '/api/v1/commands',
       health: '/api/v1/health',
@@ -148,6 +150,7 @@ router.use('/machine', machineRoutes);
 router.use('/gcode', gcodeRoutes);
 router.use('/files', fileRoutes);
 router.use('/presets', presetRoutes);
+router.use('/supabase', supabaseRoutes);
 router.use('/', healthRoutes);
 
 export default router;

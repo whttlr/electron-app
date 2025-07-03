@@ -23,12 +23,16 @@ export class EmbeddedApiServer {
       // Get API server path
       const serverPath = this.getServerPath();
 
-      // Set up environment
+      // Set up environment with Supabase configuration
       const env = {
         ...process.env,
         PORT: this.port.toString(),
         NODE_ENV: 'production',
         EMBEDDED_MODE: 'true',
+        // Supabase configuration
+        SUPABASE_URL: process.env.SUPABASE_URL || 'https://osbwbvbswubqjyeqrxee.supabase.co',
+        SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zYndidmJzd3VicWp5ZXFyeGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTE0OTkzNTMsImV4cCI6MjA2NzA3NTM1M30.qT1YatxADWcer300ZpFmseYwW7P0lhdy-NgckV-m8lc',
+        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
       };
 
       // Start the server process
@@ -60,8 +64,16 @@ export class EmbeddedApiServer {
       // Production: API bundled in resources
       return path.join(process.resourcesPath, 'api', 'src', 'server.js');
     }
-    // Development: Use local API
-    return path.join(__dirname, '..', '..', '..', '..', '..', 'api', 'src', 'server.js');
+    // Development: Use API from build-resources (after integration)
+    const devPath = path.join(__dirname, '..', '..', '..', 'build-resources', 'api', 'src', 'server.js');
+    
+    // Fallback to direct API repo for development if build-resources doesn't exist
+    const fs = require('fs');
+    if (!fs.existsSync(devPath)) {
+      return path.join(__dirname, '..', '..', '..', '..', '..', 'api', 'src', 'server.js');
+    }
+    
+    return devPath;
   }
 
   private setupProcessHandlers(): void {
@@ -113,7 +125,7 @@ export class EmbeddedApiServer {
   private async waitForServer(maxAttempts: number = 30, interval: number = 1000): Promise<boolean> {
     for (let attempt = 1; attempt <= maxAttempts; attempt++) {
       try {
-        const response = await fetch(`http://localhost:${this.port}/health`, {
+        const response = await fetch(`http://localhost:${this.port}/api/v1/health`, {
           timeout: 2000,
         } as any);
 

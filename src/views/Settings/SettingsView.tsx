@@ -3,7 +3,7 @@ import {
   Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider, Spin, Alert, message,
 } from 'antd';
 import { SettingOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
-import { PluginRenderer } from '../../components';
+import { PluginRenderer } from '../../ui/plugin';
 import { useUpdateService } from '../../hooks/useUpdateService';
 import {
   useMachineConfig, useStateConfig, useUIConfig, useAPIConfig,

@@ -18,13 +18,88 @@ A React/TypeScript-based CNC jog controls application with comprehensive plugin 
 ```
 electron-app/
 ├── 📁 src/                          # Main application source code
-│   ├── 📁 components/               # Reusable UI components
-│   │   ├── MachineDisplay2D.tsx     # 2D working area visualization
-│   │   ├── PluginRenderer.tsx       # Plugin integration component
-│   │   ├── WorkingAreaPreview.tsx   # 3D working area visualization
-│   │   └── index.ts                 # Component exports
-│   ├── 📁 contexts/                 # React context providers
-│   │   └── PluginContext.tsx        # Plugin state management
+│   ├── 📁 core/                     # Core CNC functionality (self-contained modules)
+│   │   ├── machine/                 # Machine state and control
+│   │   │   ├── __tests__/           # Module-specific tests
+│   │   │   ├── __mocks__/           # Mock data for testing
+│   │   │   ├── README.md            # Module documentation
+│   │   │   ├── config.ts            # Module configuration
+│   │   │   └── index.ts             # Public API exports
+│   │   ├── positioning/             # Position tracking and jog controls
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   ├── config.ts
+│   │   │   └── index.ts
+│   │   ├── workspace/               # Working area and dimensions
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   ├── config.ts
+│   │   │   └── index.ts
+│   │   └── visualization/           # 3D/2D rendering logic
+│   │       ├── __tests__/
+│   │       ├── __mocks__/
+│   │       ├── README.md
+│   │       ├── config.ts
+│   │       └── index.ts
+│   ├── 📁 services/                 # Cross-module services
+│   │   ├── api/                     # API communication service
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   ├── config.ts
+│   │   │   ├── index.ts
+│   │   │   └── api-client.ts
+│   │   ├── config/                  # Configuration management
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   └── index.ts
+│   │   ├── plugin/                  # Plugin management service
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   ├── index.ts
+│   │   │   └── PluginService.ts
+│   │   ├── state/                   # Application state management
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   └── index.ts
+│   │   └── update/                  # Update management and UI
+│   │       ├── __tests__/
+│   │       ├── __mocks__/
+│   │       ├── README.md
+│   │       ├── config.ts
+│   │       ├── index.ts
+│   │       ├── UpdateService.ts
+│   │       ├── UpdateNotificationBadge.tsx
+│   │       └── ReleaseNotesPopover.tsx
+│   ├── 📁 ui/                       # User interface components
+│   │   ├── controls/                # Jog control components
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   └── index.ts
+│   │   ├── visualization/           # Visualization components
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   ├── index.ts
+│   │   │   ├── WorkingAreaPreview.tsx
+│   │   │   └── MachineDisplay2D.tsx
+│   │   ├── plugin/                  # Plugin UI components
+│   │   │   ├── __tests__/
+│   │   │   ├── __mocks__/
+│   │   │   ├── README.md
+│   │   │   ├── index.ts
+│   │   │   └── PluginRenderer.tsx
+│   │   └── shared/                  # Shared UI components
+│   │       ├── __tests__/
+│   │       ├── __mocks__/
+│   │       ├── README.md
+│   │       └── index.ts
 │   ├── 📁 views/                    # Application screens/pages
 │   │   ├── Controls/                # CNC jog controls interface
 │   │   │   └── ControlsView.tsx     # Main controls screen
@@ -36,6 +111,19 @@ electron-app/
 │   │   │   └── PluginsView.tsx      # Plugin management screen
 │   │   └── Settings/                # Application settings
 │   │       └── SettingsView.tsx     # Settings screen
+│   ├── 📁 electron/                 # Electron-specific code
+│   │   ├── main/                    # Main process code
+│   │   │   ├── main.ts              # Main process entry point
+│   │   │   └── services/            # Main process services
+│   │   │       └── embedded-api-server.ts
+│   │   └── preload/                 # Preload scripts
+│   │       └── preload.ts           # IPC bridge
+│   ├── 📁 utils/                    # Pure utility functions
+│   │   ├── calculations/
+│   │   ├── formatters/
+│   │   └── helpers/
+│   ├── 📁 components/               # Legacy components (to be reorganized)
+│   │   └── index.ts                 # Component exports
 │   ├── App.tsx                      # Main application component
 │   ├── App.css                      # Application styles
 │   ├── main.tsx                     # React application entry point

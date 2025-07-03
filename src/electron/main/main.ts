@@ -112,7 +112,7 @@ function setupIpcHandlers() {
 
     try {
       const fetch = require('node-fetch');
-      const response = await fetch(`${apiServer.getBaseUrl()}/health`);
+      const response = await fetch(`${apiServer.getBaseUrl()}/api/v1/health`);
       return { healthy: response.ok };
     } catch (error) {
       return { healthy: false, error: (error as Error).message };

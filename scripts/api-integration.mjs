@@ -54,6 +54,7 @@ class ApiIntegrator {
           return !excludes.some(exclude => src.includes(exclude));
         }
       });
+      
     }
     // Method 2: Git clone (for CI/CD)
     else if (process.env.API_REPO_URL) {
@@ -73,26 +74,55 @@ class ApiIntegrator {
     const apiPackageJson = path.join(this.tempDir, 'package.json');
     const originalPkg = await fs.readJson(apiPackageJson);
     
-    // Install production dependencies
-    execSync('npm ci --production', {
-      cwd: this.tempDir,
-      stdio: 'inherit'
-    });
-    
-    // Create production package.json
+    // Create production package.json (remove @cnc/core file dependency)
     const prodPkg = {
       name: originalPkg.name,
       version: originalPkg.version,
       description: originalPkg.description,
       main: originalPkg.main,
       type: originalPkg.type,
-      dependencies: originalPkg.dependencies,
+      dependencies: { ...originalPkg.dependencies },
       scripts: {
         start: originalPkg.scripts.start
       }
     };
     
+    // Remove the file: dependency for @cnc/core since we'll handle it manually
+    delete prodPkg.dependencies['@cnc/core'];
+    console.log('🔧 Removed @cnc/core file dependency from package.json');
+    
+    // Write the modified package.json before npm install
     await fs.writeJson(apiPackageJson, prodPkg, { spaces: 2 });
+    
+    // Install production dependencies (without @cnc/core)
+    execSync('npm ci --production', {
+      cwd: this.tempDir,
+      stdio: 'inherit'
+    });
+    
+    // Now manually copy cnc-core after npm install
+    const cncCorePath = path.resolve(this.apiRepoPath, '..', 'cnc-core');
+    if (fs.existsSync(cncCorePath)) {
+      console.log('📦 Manually copying cnc-core dependency...');
+      const cncCoreTarget = path.join(this.tempDir, 'node_modules', '@cnc', 'core');
+      await fs.ensureDir(path.dirname(cncCoreTarget));
+      await fs.copy(cncCorePath, cncCoreTarget, {
+        dereference: true,
+        filter: (src) => {
+          const excludes = ['node_modules', '.git', 'coverage', '*.log', '.DS_Store'];
+          return !excludes.some(exclude => src.includes(exclude));
+        }
+      });
+      
+      // Install cnc-core dependencies
+      console.log('📦 Installing cnc-core dependencies...');
+      execSync('npm ci --production', {
+        cwd: cncCoreTarget,
+        stdio: 'inherit'
+      });
+      
+      console.log('✅ Successfully copied cnc-core and installed its dependencies');
+    }
   }
 
   async copyToBuildResources() {

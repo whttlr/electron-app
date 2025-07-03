@@ -38,7 +38,7 @@ const corsOptions = {
   },
   
   // Allow these HTTP methods
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   
   // Allow these headers
   allowedHeaders: [
@@ -78,7 +78,7 @@ export function setupCORS(req, res, next) {
   if (process.env.NODE_ENV !== 'production' || !origin || isAllowedOrigin(origin)) {
     res.header('Access-Control-Allow-Origin', origin || '*');
     res.header('Access-Control-Allow-Credentials', 'true');
-    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization, X-API-Key');
     res.header('Access-Control-Expose-Headers', 'X-Total-Count, X-Execution-Time');
   }
@@ -112,6 +112,6 @@ function isAllowedOrigin(origin) {
 export const devCorsMiddleware = cors({
   origin: true,
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['*']
 });

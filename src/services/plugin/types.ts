@@ -57,4 +57,14 @@ export interface PluginContextType {
   // Export/Import
   exportPlugins: () => Promise<string>;
   importPlugins: (data: string) => Promise<void>;
+  // Enhanced database methods
+  getPluginSettings: (pluginId: string) => Promise<any>;
+  savePluginSettings: (pluginId: string, settings: any) => Promise<void>;
+  getPluginAnalytics: (pluginId: string) => Promise<any>;
+  incrementPluginDownload: (pluginId: string) => Promise<void>;
+  incrementPluginLike: (pluginId: string) => Promise<void>;
+  incrementPluginStar: (pluginId: string) => Promise<void>;
+  createPluginAPI: (pluginId: string) => any;
+  getAllPluginStats: () => Promise<any>;
+  exportPluginData: (pluginId: string) => Promise<string>;
 }

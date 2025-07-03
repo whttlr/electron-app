@@ -11,6 +11,7 @@ A comprehensive CNC machine control application with an integrated UI-based plug
 - [📥 Quick Download](#-quick-download)
 - [🎯 Features](#-features)
 - [🚀 Quick Start](#-quick-start)
+- [🗄️ Database Integration](#️-database-integration)
 - [🔧 Plugin Development](#-plugin-development)
 - [🏗️ Architecture](#️-architecture)
 - [🚀 Automated Build & Release System](#-automated-build--release-system)
@@ -97,6 +98,159 @@ The plugin system is now fully integrated into the main application UI:
 - **Connect to Registries**: Configure connections to public or private registries
 - **Publish Plugins**: Upload your local plugins to registries
 - **Sync**: Keep your plugin list synchronized with connected registries
+
+## 🗄️ Database Integration
+
+### Supabase Backend
+
+The application uses **Supabase** as its primary database backend for persistent storage, accessed through a secure bundled API server.
+
+#### Architecture Overview
+```
+Electron App (Renderer)
+    ↓ HTTP Requests
+Bundled API Server (Express.js) ← Embedded in Electron
+    ↓ Secure Connection
+Supabase Database ← PostgreSQL with Row Level Security
+```
+
+#### Key Features
+- **Secure Credentials**: Database keys never exposed to renderer process
+- **RESTful API**: Clean HTTP interface for all database operations
+- **Real-time Capable**: Built-in support for live updates via Supabase
+- **Type Safety**: Full TypeScript interfaces for all data models
+- **Production Ready**: Encrypted connections and proper error handling
+
+#### Available Services
+
+**Machine Configuration Management**
+```typescript
+import { bundledApiSupabaseService } from './services/bundled-api-supabase'
+
+// Get all machine configurations
+const configs = await bundledApiSupabaseService.getMachineConfigs()
+
+// Create new configuration
+const newConfig = await bundledApiSupabaseService.createMachineConfig({
+  name: 'CNC Router 3018',
+  work_area_x: 300,
+  work_area_y: 180,
+  work_area_z: 45,
+  units: 'mm'
+})
+```
+
+**Job History Tracking**
+```typescript
+// Create and track CNC jobs
+const job = await bundledApiSupabaseService.createJob({
+  job_name: 'Logo Engraving',
+  machine_config_id: config.id,
+  gcode_file: 'logo.gcode'
+})
+
+// Update job status in real-time
+await bundledApiSupabaseService.updateJobStatus(job.id, 'running')
+await bundledApiSupabaseService.updateJobStatus(job.id, 'completed', positionLog)
+```
+
+#### Database Schema
+
+**Machine Configurations** (`machine_configs`)
+- `id` - UUID primary key
+- `name` - Machine configuration name
+- `work_area_x/y/z` - Working area dimensions
+- `units` - Units (mm/in)
+- `connection_settings` - Serial port configuration (JSON)
+- `created_at/updated_at` - Timestamps
+
+**CNC Jobs** (`cnc_jobs`)
+- `id` - UUID primary key
+- `machine_config_id` - Reference to machine configuration
+- `job_name` - Human-readable job name
+- `gcode_file` - G-code file name (optional)
+- `status` - Job status (pending/running/completed/failed/etc.)
+- `start_time/end_time` - Job timing
+- `position_log` - Position tracking data (JSON)
+- `created_at` - Timestamp
+
+**Plugin Configurations** (`plugin_configs`)
+- Plugin settings persistence (ready for future use)
+
+**Machine State** (`machine_state`)
+- Real-time machine status tracking (ready for future use)
+
+#### API Endpoints
+
+All database operations are accessible via the bundled API server:
+
+```bash
+# Machine Configurations
+GET    /api/v1/supabase/machine-configs     # List all configs
+POST   /api/v1/supabase/machine-configs     # Create new config
+GET    /api/v1/supabase/machine-configs/:id # Get specific config
+PUT    /api/v1/supabase/machine-configs/:id # Update config
+DELETE /api/v1/supabase/machine-configs/:id # Delete config
+
+# Job History
+GET    /api/v1/supabase/jobs                # List jobs (with pagination)
+POST   /api/v1/supabase/jobs                # Create new job
+PATCH  /api/v1/supabase/jobs/:id/status     # Update job status
+```
+
+#### Development Setup
+
+1. **Database Setup** (One-time):
+   ```sql
+   -- Execute in Supabase SQL Editor (docs/supabase-schema.sql)
+   -- Creates all tables, indexes, and sample data
+   ```
+
+2. **API Server** (Automatic):
+   ```bash
+   # API server starts automatically with Electron app
+   # Runs on localhost:3000 by default
+   # Environment variables loaded from /api/.env
+   ```
+
+3. **Integration Testing**:
+   ```typescript
+   // Use SupabaseTestComponent for testing database operations
+   import { SupabaseTestComponent } from './components'
+   ```
+
+#### Configuration Files
+
+**API Environment** (`/api/.env`)
+```bash
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+# SUPABASE_SERVICE_ROLE_KEY=your-service-key (production)
+```
+
+**Connection Security**
+- Content Security Policy updated to allow localhost connections
+- Row Level Security enabled in Supabase
+- Credentials never exposed to renderer process
+- HTTPS connections to Supabase in production
+
+#### Migration from File-Based Storage
+
+Replace local configuration files with database-backed storage:
+
+```typescript
+// Before (file-based)
+import machineConfig from '../config/machine.json'
+
+// After (database-backed)
+const configs = await bundledApiSupabaseService.getMachineConfigs()
+const activeConfig = configs.find(c => c.name === 'default') || configs[0]
+```
+
+For detailed implementation guides, see:
+- [Bundled API Integration](docs/supabase-bundled-api.md)
+- [Database Schema](docs/supabase-schema.sql)
+- [Implementation Next Steps](SUPABASE_INTEGRATION_NEXT_STEPS.md)
 
 ### Plugin Development Workflow
 

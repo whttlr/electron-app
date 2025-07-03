@@ -11,7 +11,7 @@ import {
 import { PluginProvider, usePlugins } from './services/plugin';
 import { databaseService } from './services/database';
 import { SettingsProvider } from './contexts/SettingsContext';
-import { UpdateNotificationBadge, ReleaseNotesPopover } from './components/update';
+import { UpdateNotificationBadge, ReleaseNotesPopover } from './services/update';
 import { useUpdateService } from './hooks/useUpdateService';
 import DashboardView from './views/Dashboard/DashboardView';
 import PluginsView from './views/Plugins/PluginsView';
