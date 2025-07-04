@@ -1,29 +1,35 @@
 import { GitHubReleaseChecker } from './GitHubReleaseChecker';
-import { UpdateCheckResult, UpdateConfig, UpdateStatus, UpdateState } from './types';
+import {
+  UpdateCheckResult, UpdateConfig, UpdateStatus, UpdateState,
+} from './types';
 import { DEFAULT_UPDATE_CONFIG } from './config';
 
 export class UpdateService {
   private githubChecker: GitHubReleaseChecker;
+
   private config: UpdateConfig;
+
   private checkInterval?: NodeJS.Timeout;
+
   private state: UpdateState;
+
   private listeners: Map<string, Function[]> = new Map();
 
   constructor(config: Partial<UpdateConfig> = {}) {
     this.config = { ...DEFAULT_UPDATE_CONFIG, ...config };
     this.githubChecker = new GitHubReleaseChecker(this.config.github);
     this.state = {
-      status: UpdateStatus.IDLE
+      status: UpdateStatus.IDLE,
     };
   }
 
   async initialize(): Promise<void> {
     console.log('Initializing UpdateService...');
-    
+
     if (this.config.checking.checkOnStartup) {
       // Check for updates after a short delay to avoid blocking startup
       setTimeout(() => {
-        this.checkForUpdates().catch(error => {
+        this.checkForUpdates().catch((error) => {
           console.error('Startup update check failed:', error);
         });
       }, 5000);
@@ -41,7 +47,7 @@ export class UpdateService {
     try {
       const currentVersion = await this.getCurrentVersion();
       const latestRelease = await this.githubChecker.getLatestRelease(
-        this.config.releases.includePreReleases
+        this.config.releases.includePreReleases,
       );
 
       if (!latestRelease) {
@@ -58,13 +64,13 @@ export class UpdateService {
         releaseNotes: latestRelease.body,
         downloadUrl: this.getDownloadUrl(latestRelease),
         publishedAt: latestRelease.published_at,
-        releaseData: latestRelease
+        releaseData: latestRelease,
       };
 
       this.setState({
         status: updateAvailable ? UpdateStatus.UPDATE_AVAILABLE : UpdateStatus.IDLE,
         lastCheck: new Date(),
-        updateData: result
+        updateData: result,
       });
 
       if (updateAvailable) {
@@ -79,7 +85,7 @@ export class UpdateService {
       console.error('Update check failed:', error);
       this.setState({
         status: UpdateStatus.ERROR,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       });
       this.emit('update-error', error);
       throw error;
@@ -93,7 +99,7 @@ export class UpdateService {
 
     console.log(`Starting periodic update checks every ${this.config.checking.interval}ms`);
     this.checkInterval = setInterval(() => {
-      this.checkForUpdates().catch(error => {
+      this.checkForUpdates().catch((error) => {
         console.error('Periodic update check failed:', error);
       });
     }, this.config.checking.interval);
@@ -113,7 +119,7 @@ export class UpdateService {
     if (typeof window !== 'undefined' && window.electronAPI?.getAppVersion) {
       return await window.electronAPI.getAppVersion();
     }
-    
+
     // Fallback for development
     return process.env.npm_package_version || '1.0.0';
   }
@@ -124,13 +130,13 @@ export class UpdateService {
 
   private getDownloadUrl(release: any): string | undefined {
     // Look for the appropriate asset based on platform
-    const platform = process.platform;
-    const arch = process.arch;
-    
+    const { platform } = process;
+    const { arch } = process;
+
     const platformPatterns = {
       win32: /\.exe$/i,
       darwin: /\.dmg$/i,
-      linux: /\.AppImage$/i
+      linux: /\.AppImage$/i,
     };
 
     const pattern = platformPatterns[platform as keyof typeof platformPatterns];
@@ -166,7 +172,7 @@ export class UpdateService {
   private emit(event: string, data?: any): void {
     const listeners = this.listeners.get(event);
     if (listeners) {
-      listeners.forEach(listener => {
+      listeners.forEach((listener) => {
         try {
           listener(data);
         } catch (error) {

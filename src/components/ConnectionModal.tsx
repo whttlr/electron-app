@@ -3,7 +3,7 @@
  * Provides interface for managing CNC machine connections
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   Modal,
   Form,
@@ -19,8 +19,8 @@ import {
   message,
   Alert,
   Tag,
-  Tooltip
-} from 'antd'
+  Tooltip,
+} from 'antd';
 import {
   ReloadOutlined,
   WifiOutlined,
@@ -28,17 +28,17 @@ import {
   SettingOutlined,
   HistoryOutlined,
   StarOutlined,
-  StarFilled
-} from '@ant-design/icons'
+  StarFilled,
+} from '@ant-design/icons';
 import {
   connectionService,
   ConnectionStatus,
   ConnectionPreferences,
-  SerialPort
-} from '../services/connection'
+  SerialPort,
+} from '../services/connection';
 
-const { Title, Text } = Typography
-const { Option } = Select
+const { Title, Text } = Typography;
+const { Option } = Select;
 
 interface ConnectionModalProps {
   visible: boolean
@@ -47,157 +47,157 @@ interface ConnectionModalProps {
 
 export const ConnectionModal: React.FC<ConnectionModalProps> = ({
   visible,
-  onClose
+  onClose,
 }) => {
-  const [form] = Form.useForm()
-  const [loading, setLoading] = useState(false)
-  const [status, setStatus] = useState<ConnectionStatus>({ connected: false })
-  const [availablePorts, setAvailablePorts] = useState<SerialPort[]>([])
+  const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
+  const [status, setStatus] = useState<ConnectionStatus>({ connected: false });
+  const [availablePorts, setAvailablePorts] = useState<SerialPort[]>([]);
   const [preferences, setPreferences] = useState<ConnectionPreferences>({
     autoConnect: false,
     defaultBaudRate: 115200,
     connectionTimeout: 5000,
     retryAttempts: 3,
-    lastUsedPorts: []
-  })
-  const [selectedPort, setSelectedPort] = useState<string>('')
-  const [selectedBaudRate, setSelectedBaudRate] = useState<number>(115200)
+    lastUsedPorts: [],
+  });
+  const [selectedPort, setSelectedPort] = useState<string>('');
+  const [selectedBaudRate, setSelectedBaudRate] = useState<number>(115200);
 
   useEffect(() => {
     if (visible) {
-      loadData()
+      loadData();
     }
-  }, [visible])
+  }, [visible]);
 
   useEffect(() => {
     // Add status listener
-    connectionService.addStatusListener(handleStatusChange)
+    connectionService.addStatusListener(handleStatusChange);
     return () => {
-      connectionService.removeStatusListener(handleStatusChange)
-    }
-  }, [])
+      connectionService.removeStatusListener(handleStatusChange);
+    };
+  }, []);
 
   const loadData = async () => {
     try {
-      const currentStatus = connectionService.getConnectionStatus()
-      const ports = connectionService.getAvailablePorts()
-      const prefs = connectionService.getPreferences()
+      const currentStatus = connectionService.getConnectionStatus();
+      const ports = connectionService.getAvailablePorts();
+      const prefs = connectionService.getPreferences();
 
-      setStatus(currentStatus)
-      setAvailablePorts(ports)
-      setPreferences(prefs)
+      setStatus(currentStatus);
+      setAvailablePorts(ports);
+      setPreferences(prefs);
 
       // Set form values
-      setSelectedPort(currentStatus.port || prefs.defaultPort || '')
-      setSelectedBaudRate(currentStatus.baudRate || prefs.defaultBaudRate)
+      setSelectedPort(currentStatus.port || prefs.defaultPort || '');
+      setSelectedBaudRate(currentStatus.baudRate || prefs.defaultBaudRate);
 
       form.setFieldsValue({
         port: currentStatus.port || prefs.defaultPort || '',
         baudRate: currentStatus.baudRate || prefs.defaultBaudRate,
         autoConnect: prefs.autoConnect,
-        defaultPort: prefs.defaultPort
-      })
+        defaultPort: prefs.defaultPort,
+      });
     } catch (error) {
-      console.error('Failed to load connection data:', error)
-      message.error('Failed to load connection data')
+      console.error('Failed to load connection data:', error);
+      message.error('Failed to load connection data');
     }
-  }
+  };
 
   const handleStatusChange = (newStatus: ConnectionStatus) => {
-    setStatus(newStatus)
+    setStatus(newStatus);
     if (newStatus.connected && newStatus.port) {
-      setSelectedPort(newStatus.port)
-      form.setFieldValue('port', newStatus.port)
+      setSelectedPort(newStatus.port);
+      form.setFieldValue('port', newStatus.port);
     }
-  }
+  };
 
   const handleRefreshPorts = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const ports = await connectionService.refreshAvailablePorts()
-      setAvailablePorts(ports)
-      message.success(`Found ${ports.length} available ports`)
+      const ports = await connectionService.refreshAvailablePorts();
+      setAvailablePorts(ports);
+      message.success(`Found ${ports.length} available ports`);
     } catch (error) {
-      console.error('Failed to refresh ports:', error)
-      message.error('Failed to refresh ports')
+      console.error('Failed to refresh ports:', error);
+      message.error('Failed to refresh ports');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleConnect = async () => {
     if (!selectedPort) {
-      message.error('Please select a port')
-      return
+      message.error('Please select a port');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const success = await connectionService.connect(selectedPort, selectedBaudRate)
+      const success = await connectionService.connect(selectedPort, selectedBaudRate);
       if (success) {
-        message.success(`Connected to ${selectedPort}`)
+        message.success(`Connected to ${selectedPort}`);
       } else {
-        message.error('Connection failed')
+        message.error('Connection failed');
       }
     } catch (error) {
-      console.error('Connection failed:', error)
-      message.error('Connection failed')
+      console.error('Connection failed:', error);
+      message.error('Connection failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleDisconnect = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const success = await connectionService.disconnect()
+      const success = await connectionService.disconnect();
       if (success) {
-        message.success('Disconnected successfully')
+        message.success('Disconnected successfully');
       } else {
-        message.error('Disconnect failed')
+        message.error('Disconnect failed');
       }
     } catch (error) {
-      console.error('Disconnect failed:', error)
-      message.error('Disconnect failed')
+      console.error('Disconnect failed:', error);
+      message.error('Disconnect failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleSetAsDefault = async (port: string) => {
     try {
-      await connectionService.setDefaultPort(port)
-      const updatedPrefs = connectionService.getPreferences()
-      setPreferences(updatedPrefs)
-      form.setFieldValue('defaultPort', port)
-      message.success(`Set ${port} as default port`)
+      await connectionService.setDefaultPort(port);
+      const updatedPrefs = connectionService.getPreferences();
+      setPreferences(updatedPrefs);
+      form.setFieldValue('defaultPort', port);
+      message.success(`Set ${port} as default port`);
     } catch (error) {
-      console.error('Failed to set default port:', error)
-      message.error('Failed to set default port')
+      console.error('Failed to set default port:', error);
+      message.error('Failed to set default port');
     }
-  }
+  };
 
   const handleAutoConnectChange = async (enabled: boolean) => {
     try {
-      await connectionService.setAutoConnect(enabled)
-      const updatedPrefs = connectionService.getPreferences()
-      setPreferences(updatedPrefs)
-      message.success(`Auto-connect ${enabled ? 'enabled' : 'disabled'}`)
+      await connectionService.setAutoConnect(enabled);
+      const updatedPrefs = connectionService.getPreferences();
+      setPreferences(updatedPrefs);
+      message.success(`Auto-connect ${enabled ? 'enabled' : 'disabled'}`);
     } catch (error) {
-      console.error('Failed to update auto-connect:', error)
-      message.error('Failed to update auto-connect setting')
+      console.error('Failed to update auto-connect:', error);
+      message.error('Failed to update auto-connect setting');
     }
-  }
+  };
 
   const handlePortSelect = (port: string) => {
-    setSelectedPort(port)
-    form.setFieldValue('port', port)
-  }
+    setSelectedPort(port);
+    form.setFieldValue('port', port);
+  };
 
   const renderPortOption = (port: SerialPort) => {
-    const isDefault = port.path === preferences.defaultPort
-    const isLastUsed = preferences.lastUsedPorts.includes(port.path)
-    
+    const isDefault = port.path === preferences.defaultPort;
+    const isLastUsed = preferences.lastUsedPorts.includes(port.path);
+
     return (
       <Option key={port.path} value={port.path}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -215,12 +215,12 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
           </Space>
         </div>
       </Option>
-    )
-  }
+    );
+  };
 
   const renderPortCard = (port: SerialPort) => {
-    const isDefault = port.path === preferences.defaultPort
-    const isConnected = status.connected && status.port === port.path
+    const isDefault = port.path === preferences.defaultPort;
+    const isConnected = status.connected && status.port === port.path;
 
     return (
       <Card
@@ -260,9 +260,9 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
               icon={isConnected ? <DisconnectOutlined /> : <WifiOutlined />}
               onClick={() => {
                 if (isConnected) {
-                  handleDisconnect()
+                  handleDisconnect();
                 } else {
-                  handlePortSelect(port.path)
+                  handlePortSelect(port.path);
                 }
               }}
               loading={loading}
@@ -272,10 +272,10 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
           </Space>
         </div>
       </Card>
-    )
-  }
+    );
+  };
 
-  const baudRateOptions = [9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600]
+  const baudRateOptions = [9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600];
 
   return (
     <Modal
@@ -301,7 +301,9 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
 
         {/* Available Ports */}
         <div style={{ marginBottom: 16 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+          <div style={{
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12,
+          }}>
             <Title level={5} style={{ margin: 0 }}>Available Ports</Title>
             <Button
               icon={<ReloadOutlined />}
@@ -344,7 +346,7 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
               onChange={setSelectedBaudRate}
               style={{ width: '120px' }}
             >
-              {baudRateOptions.map(rate => (
+              {baudRateOptions.map((rate) => (
                 <Option key={rate} value={rate}>{rate}</Option>
               ))}
             </Select>
@@ -387,7 +389,7 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
                 onChange={handleAutoConnectChange}
               />
             </div>
-            
+
             {preferences.defaultPort && (
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <Text>Default port:</Text>
@@ -399,9 +401,9 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
               <div>
                 <Text type="secondary">Recent ports:</Text>
                 <div style={{ marginTop: 4 }}>
-                  {preferences.lastUsedPorts.map(port => (
-                    <Tag 
-                      key={port} 
+                  {preferences.lastUsedPorts.map((port) => (
+                    <Tag
+                      key={port}
                       style={{ marginBottom: 4, cursor: 'pointer' }}
                       onClick={() => handlePortSelect(port)}
                     >
@@ -415,7 +417,7 @@ export const ConnectionModal: React.FC<ConnectionModalProps> = ({
         </Form.Item>
       </Form>
     </Modal>
-  )
-}
+  );
+};
 
-export default ConnectionModal
+export default ConnectionModal;

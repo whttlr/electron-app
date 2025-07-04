@@ -1,14 +1,23 @@
 // UI Controls Module - Public API
 
-// Control components (to be implemented)
-// export { JogControls } from './JogControls';
-// export { AxisControls } from './AxisControls';
+// Jog Controls
+export * from './JogControls';
 
-// Control types and interfaces
-// export type { ControlsProps, JogSettings } from './types';
+// Coordinate Display
+export * from './CoordinateDisplay';
 
-// Placeholder for control components
-export const ControlsModule = {
-  version: '1.0.0',
-  description: 'CNC jog control UI components',
-};
+// Status Indicators
+export * from './StatusIndicators';
+
+// Emergency Stop
+export * from './EmergencyStop';
+
+// Re-export commonly used types
+export type { JogControlsProps, JogSpeedControlProps, JogDistanceControlProps } from './JogControls';
+export type {
+  CoordinateDisplayProps, Coordinate, CompactCoordinateDisplayProps, LiveCoordinateDisplayProps,
+} from './CoordinateDisplay';
+export type {
+  MachineStatus, StatusIndicatorProps, ConnectionStatusProps, StatusDashboardProps, AlertBannerProps,
+} from './StatusIndicators';
+export type { EmergencyStopProps, CompactEmergencyStopProps, SafetyControlPanelProps } from './EmergencyStop';

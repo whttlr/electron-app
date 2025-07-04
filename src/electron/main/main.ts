@@ -1,8 +1,8 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import * as path from 'path';
 // import { pathToFileURL } from 'url'; // Currently unused
-import { EmbeddedApiServer } from './services/embedded-api-server';
 import { autoUpdater } from 'electron-updater';
+import { EmbeddedApiServer } from './services/embedded-api-server';
 import { UpdateService } from '../../services/update';
 
 const __dirname = path.dirname(__filename);
@@ -123,9 +123,7 @@ function setupIpcHandlers() {
   ipcMain.handle('get-app-version', () => app.getVersion());
 
   // Update service IPC handlers
-  ipcMain.handle('update:check', async () => {
-    return await updateService?.checkForUpdates();
-  });
+  ipcMain.handle('update:check', async () => await updateService?.checkForUpdates());
 
   ipcMain.handle('update:download', async () => {
     try {
@@ -140,9 +138,7 @@ function setupIpcHandlers() {
     autoUpdater.quitAndInstall();
   });
 
-  ipcMain.handle('update:get-status', () => {
-    return updateService?.getUpdateStatus();
-  });
+  ipcMain.handle('update:get-status', () => updateService?.getUpdateStatus());
 }
 
 function setupUpdateService() {
@@ -151,7 +147,7 @@ function setupUpdateService() {
     autoUpdater.setFeedURL({
       provider: 'github',
       owner: 'whttlr',
-      repo: 'electron-app'
+      repo: 'electron-app',
     });
 
     // Create update service

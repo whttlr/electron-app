@@ -3,10 +3,10 @@
  * Combines connection status display and modal for complete connection management
  */
 
-import React, { useState } from 'react'
-import { Space } from 'antd'
-import ConnectionStatus from './ConnectionStatus'
-import ConnectionModal from './ConnectionModal'
+import React, { useState } from 'react';
+import { Space } from 'antd';
+import ConnectionStatus from './ConnectionStatus';
+import ConnectionModal from './ConnectionModal';
 
 interface ConnectionManagerProps {
   compact?: boolean
@@ -17,17 +17,17 @@ interface ConnectionManagerProps {
 export const ConnectionManager: React.FC<ConnectionManagerProps> = ({
   compact = false,
   showSettings = true,
-  placement = 'standalone'
+  placement = 'standalone',
 }) => {
-  const [modalVisible, setModalVisible] = useState(false)
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleOpenModal = () => {
-    setModalVisible(true)
-  }
+    setModalVisible(true);
+  };
 
   const handleCloseModal = () => {
-    setModalVisible(false)
-  }
+    setModalVisible(false);
+  };
 
   return (
     <>
@@ -36,13 +36,13 @@ export const ConnectionManager: React.FC<ConnectionManagerProps> = ({
         compact={compact}
         showSettings={showSettings}
       />
-      
+
       <ConnectionModal
         visible={modalVisible}
         onClose={handleCloseModal}
       />
     </>
-  )
-}
+  );
+};
 
-export default ConnectionManager
+export default ConnectionManager;

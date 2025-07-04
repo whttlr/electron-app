@@ -2,8 +2,11 @@ import { GitHubRelease, UpdateConfig } from './types';
 
 export class GitHubReleaseChecker {
   private config: UpdateConfig['github'];
+
   private lastETag?: string;
+
   private cachedReleases?: GitHubRelease[];
+
   private lastFetch?: Date;
 
   constructor(config: UpdateConfig['github']) {
@@ -13,22 +16,20 @@ export class GitHubReleaseChecker {
   async getLatestRelease(includePreReleases = false): Promise<GitHubRelease | null> {
     try {
       const releases = await this.getAllReleases();
-      
+
       if (!releases.length) {
         return null;
       }
 
       // Filter out drafts and optionally pre-releases
-      const validReleases = releases.filter(release => {
+      const validReleases = releases.filter((release) => {
         if (release.draft) return false;
         if (!includePreReleases && release.prerelease) return false;
         return true;
       });
 
       // Sort by publication date (newest first)
-      validReleases.sort((a, b) => 
-        new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
-      );
+      validReleases.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
 
       return validReleases[0] || null;
     } catch (error) {
@@ -40,17 +41,17 @@ export class GitHubReleaseChecker {
   async getAllReleases(): Promise<GitHubRelease[]> {
     // Use cache if available and fresh (within 5 minutes)
     const now = new Date();
-    if (this.cachedReleases && this.lastFetch && 
-        (now.getTime() - this.lastFetch.getTime()) < 300000) {
+    if (this.cachedReleases && this.lastFetch
+        && (now.getTime() - this.lastFetch.getTime()) < 300000) {
       return this.cachedReleases;
     }
 
     try {
       const url = `${this.config.apiBaseUrl}/repos/${this.config.owner}/${this.config.repo}/releases`;
-      
+
       const headers: Record<string, string> = {
-        'Accept': 'application/vnd.github.v3+json',
-        'User-Agent': `${this.config.repo}-app`
+        Accept: 'application/vnd.github.v3+json',
+        'User-Agent': `${this.config.repo}-app`,
       };
 
       // Use ETag for conditional requests
@@ -60,7 +61,7 @@ export class GitHubReleaseChecker {
 
       const response = await fetch(url, {
         headers,
-        signal: AbortSignal.timeout(this.config.rateLimitBuffer * 1000)
+        signal: AbortSignal.timeout(this.config.rateLimitBuffer * 1000),
       });
 
       // If not modified, return cached data
@@ -82,7 +83,7 @@ export class GitHubReleaseChecker {
       }
 
       const releases: GitHubRelease[] = await response.json();
-      
+
       // Update cache
       this.cachedReleases = releases;
       this.lastFetch = now;
@@ -115,7 +116,7 @@ export class GitHubReleaseChecker {
     for (let i = 0; i < maxLength; i++) {
       if (latestParts[i] > currentParts[i]) {
         return true;
-      } else if (latestParts[i] < currentParts[i]) {
+      } if (latestParts[i] < currentParts[i]) {
         return false;
       }
     }

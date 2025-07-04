@@ -168,6 +168,6 @@ export const useUpdateService = (): UpdateServiceHook => {
     installUpdate,
     showUpdateDialog,
     hideUpdateDialog,
-    error
+    error,
   };
 };

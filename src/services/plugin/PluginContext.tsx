@@ -259,41 +259,23 @@ export const PluginProvider: React.FC<PluginProviderProps> = ({ children }) => {
   const getPluginAPI = () => PluginService.getPluginAPI();
 
   // Enhanced database functions
-  const getPluginSettings = async (pluginId: string): Promise<PluginSettings> => {
-    return databasePluginService.getPluginSettings(pluginId);
-  };
+  const getPluginSettings = async (pluginId: string): Promise<PluginSettings> => databasePluginService.getPluginSettings(pluginId);
 
-  const savePluginSettings = async (pluginId: string, settings: PluginSettings): Promise<void> => {
-    return databasePluginService.savePluginSettings(pluginId, settings);
-  };
+  const savePluginSettings = async (pluginId: string, settings: PluginSettings): Promise<void> => databasePluginService.savePluginSettings(pluginId, settings);
 
-  const getPluginAnalytics = async (pluginId: string): Promise<PluginAnalytics> => {
-    return databasePluginService.getPluginAnalytics(pluginId);
-  };
+  const getPluginAnalytics = async (pluginId: string): Promise<PluginAnalytics> => databasePluginService.getPluginAnalytics(pluginId);
 
-  const incrementPluginDownload = async (pluginId: string): Promise<void> => {
-    return databasePluginService.downloadPlugin(pluginId);
-  };
+  const incrementPluginDownload = async (pluginId: string): Promise<void> => databasePluginService.downloadPlugin(pluginId);
 
-  const incrementPluginLike = async (pluginId: string): Promise<void> => {
-    return databasePluginService.incrementLike(pluginId);
-  };
+  const incrementPluginLike = async (pluginId: string): Promise<void> => databasePluginService.incrementLike(pluginId);
 
-  const incrementPluginStar = async (pluginId: string): Promise<void> => {
-    return databasePluginService.incrementStar(pluginId);
-  };
+  const incrementPluginStar = async (pluginId: string): Promise<void> => databasePluginService.incrementStar(pluginId);
 
-  const createPluginAPI = (pluginId: string) => {
-    return databasePluginService.createPluginAPI(pluginId);
-  };
+  const createPluginAPI = (pluginId: string) => databasePluginService.createPluginAPI(pluginId);
 
-  const getAllPluginStats = async () => {
-    return databasePluginService.getAllPluginStats();
-  };
+  const getAllPluginStats = async () => databasePluginService.getAllPluginStats();
 
-  const exportPluginData = async (pluginId: string): Promise<string> => {
-    return databasePluginService.exportPluginData(pluginId);
-  };
+  const exportPluginData = async (pluginId: string): Promise<string> => databasePluginService.exportPluginData(pluginId);
 
   return (
     <PluginContext.Provider value={{

@@ -1,35 +1,35 @@
-import React, { useState } from 'react'
-import { 
-  Card, 
-  Button, 
-  List, 
-  message, 
-  Space, 
-  Form, 
-  Input, 
-  Select, 
-  Modal, 
-  Spin, 
+import React, { useState } from 'react';
+import {
+  Card,
+  Button,
+  List,
+  message,
+  Space,
+  Form,
+  Input,
+  Select,
+  Modal,
+  Spin,
   Alert,
   Badge,
   Tooltip,
   Popconfirm,
   Divider,
-  Typography
-} from 'antd'
-import { 
-  PlusOutlined, 
-  EditOutlined, 
-  DeleteOutlined, 
-  CheckCircleOutlined, 
+  Typography,
+} from 'antd';
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
+  CheckCircleOutlined,
   ReloadOutlined,
   SettingOutlined,
-  DatabaseOutlined
-} from '@ant-design/icons'
-import { useMachineConfig } from '../services/machine-config/useMachineConfig'
+  DatabaseOutlined,
+} from '@ant-design/icons';
+import { useMachineConfig } from '../services/machine-config/useMachineConfig';
 
-const { Option } = Select
-const { Text, Title } = Typography
+const { Option } = Select;
+const { Text, Title } = Typography;
 
 interface MachineConfigFormData {
   name: string
@@ -57,12 +57,12 @@ export const MachineConfigManager: React.FC = () => {
     setActive,
     createConfiguration,
     updateConfiguration,
-    deleteConfiguration
-  } = useMachineConfig()
+    deleteConfiguration,
+  } = useMachineConfig();
 
-  const [showCreateModal, setShowCreateModal] = useState(false)
-  const [editingConfig, setEditingConfig] = useState<string | null>(null)
-  const [form] = Form.useForm()
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [editingConfig, setEditingConfig] = useState<string | null>(null);
+  const [form] = Form.useForm();
 
   const handleCreateConfig = async (values: MachineConfigFormData) => {
     try {
@@ -72,19 +72,19 @@ export const MachineConfigManager: React.FC = () => {
         work_area_y: values.work_area_y,
         work_area_z: values.work_area_z,
         units: values.units,
-        connection_settings: values.connection_settings
-      })
-      
-      setShowCreateModal(false)
-      form.resetFields()
-      message.success('Machine configuration created successfully')
+        connection_settings: values.connection_settings,
+      });
+
+      setShowCreateModal(false);
+      form.resetFields();
+      message.success('Machine configuration created successfully');
     } catch (error) {
-      message.error('Failed to create machine configuration')
+      message.error('Failed to create machine configuration');
     }
-  }
+  };
 
   const handleUpdateConfig = async (values: MachineConfigFormData) => {
-    if (!editingConfig) return
+    if (!editingConfig) return;
 
     try {
       await updateConfiguration(editingConfig, {
@@ -93,56 +93,56 @@ export const MachineConfigManager: React.FC = () => {
         work_area_y: values.work_area_y,
         work_area_z: values.work_area_z,
         units: values.units,
-        connection_settings: values.connection_settings
-      })
-      
-      setEditingConfig(null)
-      form.resetFields()
-      message.success('Machine configuration updated successfully')
+        connection_settings: values.connection_settings,
+      });
+
+      setEditingConfig(null);
+      form.resetFields();
+      message.success('Machine configuration updated successfully');
     } catch (error) {
-      message.error('Failed to update machine configuration')
+      message.error('Failed to update machine configuration');
     }
-  }
+  };
 
   const handleSetActive = async (configId: string) => {
     try {
-      await setActive(configId)
-      message.success('Active machine configuration updated')
+      await setActive(configId);
+      message.success('Active machine configuration updated');
     } catch (error) {
-      message.error('Failed to set active configuration')
+      message.error('Failed to set active configuration');
     }
-  }
+  };
 
   const handleDelete = async (configId: string) => {
     try {
-      await deleteConfiguration(configId)
-      message.success('Machine configuration deleted')
+      await deleteConfiguration(configId);
+      message.success('Machine configuration deleted');
     } catch (error) {
-      message.error('Failed to delete configuration')
+      message.error('Failed to delete configuration');
     }
-  }
+  };
 
   const openEditModal = (config: any) => {
-    setEditingConfig(config.id)
+    setEditingConfig(config.id);
     form.setFieldsValue({
       name: config.name,
       work_area_x: config.work_area_x,
       work_area_y: config.work_area_y,
       work_area_z: config.work_area_z,
       units: config.units,
-      connection_settings: config.connection_settings
-    })
-  }
+      connection_settings: config.connection_settings,
+    });
+  };
 
   const closeModal = () => {
-    setShowCreateModal(false)
-    setEditingConfig(null)
-    form.resetFields()
-  }
+    setShowCreateModal(false);
+    setEditingConfig(null);
+    form.resetFields();
+  };
 
   if (!isConnected) {
     return (
-      <Card 
+      <Card
         title={
           <Space>
             <DatabaseOutlined />
@@ -163,12 +163,12 @@ export const MachineConfigManager: React.FC = () => {
           }
         />
       </Card>
-    )
+    );
   }
 
   return (
     <div>
-      <Card 
+      <Card
         title={
           <Space>
             <DatabaseOutlined />
@@ -179,14 +179,14 @@ export const MachineConfigManager: React.FC = () => {
         extra={
           <Space>
             <Tooltip title="Refresh configurations">
-              <Button 
-                icon={<ReloadOutlined />} 
-                onClick={refresh} 
+              <Button
+                icon={<ReloadOutlined />}
+                onClick={refresh}
                 loading={isLoading}
               />
             </Tooltip>
-            <Button 
-              type="primary" 
+            <Button
+              type="primary"
               icon={<PlusOutlined />}
               onClick={() => setShowCreateModal(true)}
             >
@@ -240,7 +240,7 @@ export const MachineConfigManager: React.FC = () => {
               actions={[
                 <Tooltip title="Set as active">
                   <Button
-                    type={config.isActive ? "primary" : "default"}
+                    type={config.isActive ? 'primary' : 'default'}
                     icon={<CheckCircleOutlined />}
                     onClick={() => handleSetActive(config.id!)}
                     disabled={config.isActive}
@@ -266,7 +266,7 @@ export const MachineConfigManager: React.FC = () => {
                     icon={<DeleteOutlined />}
                     disabled={config.isActive}
                   />
-                </Popconfirm>
+                </Popconfirm>,
               ]}
             >
               <List.Item.Meta
@@ -314,9 +314,9 @@ export const MachineConfigManager: React.FC = () => {
         destroyOnHidden
         width={600}
       >
-        <Form 
-          form={form} 
-          onFinish={editingConfig ? handleUpdateConfig : handleCreateConfig} 
+        <Form
+          form={form}
+          onFinish={editingConfig ? handleUpdateConfig : handleCreateConfig}
           layout="vertical"
           initialValues={{
             units: 'mm',
@@ -328,13 +328,13 @@ export const MachineConfigManager: React.FC = () => {
               baudRate: 115200,
               dataBits: 8,
               stopBits: 1,
-              parity: 'none'
-            }
+              parity: 'none',
+            },
           }}
         >
-          <Form.Item 
-            name="name" 
-            label="Configuration Name" 
+          <Form.Item
+            name="name"
+            label="Configuration Name"
             rules={[{ required: true, message: 'Please enter a configuration name' }]}
           >
             <Input placeholder="e.g., CNC Router 3018" />
@@ -342,24 +342,24 @@ export const MachineConfigManager: React.FC = () => {
 
           <Title level={5}>Work Area</Title>
           <Space.Compact style={{ width: '100%' }}>
-            <Form.Item 
-              name="work_area_x" 
+            <Form.Item
+              name="work_area_x"
               label="X-Axis (Width)"
               style={{ flex: 1 }}
               rules={[{ required: true, message: 'Required' }]}
             >
               <Input type="number" placeholder="300" addonAfter="mm" />
             </Form.Item>
-            <Form.Item 
-              name="work_area_y" 
+            <Form.Item
+              name="work_area_y"
               label="Y-Axis (Depth)"
               style={{ flex: 1 }}
               rules={[{ required: true, message: 'Required' }]}
             >
               <Input type="number" placeholder="180" addonAfter="mm" />
             </Form.Item>
-            <Form.Item 
-              name="work_area_z" 
+            <Form.Item
+              name="work_area_z"
               label="Z-Axis (Height)"
               style={{ flex: 1 }}
               rules={[{ required: true, message: 'Required' }]}
@@ -382,8 +382,8 @@ export const MachineConfigManager: React.FC = () => {
           </Form.Item>
 
           <Space.Compact style={{ width: '100%' }}>
-            <Form.Item 
-              name={['connection_settings', 'baudRate']} 
+            <Form.Item
+              name={['connection_settings', 'baudRate']}
               label="Baud Rate"
               style={{ flex: 1 }}
             >
@@ -396,8 +396,8 @@ export const MachineConfigManager: React.FC = () => {
                 <Option value={230400}>230400</Option>
               </Select>
             </Form.Item>
-            <Form.Item 
-              name={['connection_settings', 'dataBits']} 
+            <Form.Item
+              name={['connection_settings', 'dataBits']}
               label="Data Bits"
               style={{ flex: 1 }}
             >
@@ -406,8 +406,8 @@ export const MachineConfigManager: React.FC = () => {
                 <Option value={8}>8</Option>
               </Select>
             </Form.Item>
-            <Form.Item 
-              name={['connection_settings', 'stopBits']} 
+            <Form.Item
+              name={['connection_settings', 'stopBits']}
               label="Stop Bits"
               style={{ flex: 1 }}
             >
@@ -416,8 +416,8 @@ export const MachineConfigManager: React.FC = () => {
                 <Option value={2}>2</Option>
               </Select>
             </Form.Item>
-            <Form.Item 
-              name={['connection_settings', 'parity']} 
+            <Form.Item
+              name={['connection_settings', 'parity']}
               label="Parity"
               style={{ flex: 1 }}
             >
@@ -431,7 +431,7 @@ export const MachineConfigManager: React.FC = () => {
         </Form>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default MachineConfigManager
+export default MachineConfigManager;

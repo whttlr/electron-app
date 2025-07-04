@@ -1,14 +1,35 @@
 // UI Shared Module - Public API
 
-// Shared components (to be implemented)
-// export { CommonButton } from './CommonButton';
-// export { StatusIndicator } from './StatusIndicator';
+// Design tokens
+export * from './design-tokens';
 
-// Shared types and interfaces
-// export type { CommonProps, ThemeProps } from './types';
+// Utilities
+export * from './utils';
 
-// Placeholder for shared components
-export const SharedModule = {
-  version: '1.0.0',
-  description: 'Shared UI components and utilities',
-};
+// Base components
+export * from './Button';
+export * from './Card';
+export * from './Input';
+export * from './Badge';
+export * from './Alert';
+
+// Layout components
+export * from './Container';
+export * from './Grid';
+export * from './Sidebar';
+
+// Animation components
+export * from './PageTransition';
+
+// Theme system
+export * from './ThemeProvider';
+
+// Re-export commonly used types
+export type { ButtonProps } from './Button';
+export type { InputProps } from './Input';
+export type { BadgeProps } from './Badge';
+export type { ContainerProps } from './Container';
+export type { GridProps, GridItemProps } from './Grid';
+export type { SidebarProps } from './Sidebar';
+export type { PageTransitionProps, SectionTransitionProps, AnimatedCardProps } from './PageTransition';
+export type { CustomThemeProviderProps, ThemeToggleProps } from './ThemeProvider';

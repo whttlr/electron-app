@@ -3,7 +3,7 @@
  * Real-time monitoring of CNC machine status with visual indicators
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   Row,
@@ -17,19 +17,19 @@ import {
   Button,
   Tooltip,
   Timeline,
-  Tag
-} from 'antd'
+  Tag,
+} from 'antd';
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
   StopOutlined,
   WarningOutlined,
   ReloadOutlined,
-  DashboardOutlined
-} from '@ant-design/icons'
-import { gcodeService, MachineStatus, GCodeExecution } from '../services/gcode'
+  DashboardOutlined,
+} from '@ant-design/icons';
+import { gcodeService, MachineStatus, GCodeExecution } from '../services/gcode';
 
-const { Title, Text } = Typography
+const { Title, Text } = Typography;
 
 interface MachineStatusMonitorProps {
   compact?: boolean
@@ -40,95 +40,93 @@ interface MachineStatusMonitorProps {
 export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
   compact = false,
   showControls = true,
-  refreshInterval = 1000
+  refreshInterval = 1000,
 }) => {
-  const [status, setStatus] = useState<MachineStatus | null>(null)
-  const [currentExecution, setCurrentExecution] = useState<GCodeExecution | null>(null)
-  const [isConnected, setIsConnected] = useState(false)
-  const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
+  const [status, setStatus] = useState<MachineStatus | null>(null);
+  const [currentExecution, setCurrentExecution] = useState<GCodeExecution | null>(null);
+  const [isConnected, setIsConnected] = useState(false);
+  const [lastUpdate, setLastUpdate] = useState<Date | null>(null);
 
   useEffect(() => {
-    initializeMonitor()
+    initializeMonitor();
     return () => {
       // Cleanup listeners when component unmounts
-      gcodeService.removeStatusListener(handleStatusUpdate)
-      gcodeService.removeExecutionListener(handleExecutionUpdate)
-    }
-  }, [])
+      gcodeService.removeStatusListener(handleStatusUpdate);
+      gcodeService.removeExecutionListener(handleExecutionUpdate);
+    };
+  }, []);
 
   const initializeMonitor = async () => {
     try {
       // Add listeners
-      gcodeService.addStatusListener(handleStatusUpdate)
-      gcodeService.addExecutionListener(handleExecutionUpdate)
-      
+      gcodeService.addStatusListener(handleStatusUpdate);
+      gcodeService.addExecutionListener(handleExecutionUpdate);
+
       // Get initial status
-      const initialStatus = await gcodeService.getMachineStatus()
+      const initialStatus = await gcodeService.getMachineStatus();
       if (initialStatus) {
-        setStatus(initialStatus)
-        setIsConnected(true)
-        setLastUpdate(new Date())
+        setStatus(initialStatus);
+        setIsConnected(true);
+        setLastUpdate(new Date());
       }
-      
-      setCurrentExecution(gcodeService.getCurrentExecution())
+
+      setCurrentExecution(gcodeService.getCurrentExecution());
     } catch (error) {
-      console.error('Failed to initialize machine monitor:', error)
-      setIsConnected(false)
+      console.error('Failed to initialize machine monitor:', error);
+      setIsConnected(false);
     }
-  }
+  };
 
   const handleStatusUpdate = (newStatus: MachineStatus) => {
-    setStatus(newStatus)
-    setIsConnected(true)
-    setLastUpdate(new Date())
-  }
+    setStatus(newStatus);
+    setIsConnected(true);
+    setLastUpdate(new Date());
+  };
 
   const handleExecutionUpdate = (execution: GCodeExecution | null) => {
-    setCurrentExecution(execution)
-  }
+    setCurrentExecution(execution);
+  };
 
   const handleRefresh = async () => {
     try {
-      await gcodeService.getMachineStatus()
+      await gcodeService.getMachineStatus();
     } catch (error) {
-      console.error('Failed to refresh status:', error)
-      setIsConnected(false)
+      console.error('Failed to refresh status:', error);
+      setIsConnected(false);
     }
-  }
+  };
 
   const getStateColor = (state: string) => {
     switch (state?.toLowerCase()) {
-      case 'idle': return '#52c41a'  // green
-      case 'run': return '#1890ff'   // blue
-      case 'alarm': return '#ff4d4f' // red
-      case 'hold': return '#faad14'  // orange
-      case 'home': return '#722ed1'  // purple
-      case 'check': return '#13c2c2' // cyan
-      default: return '#d9d9d9'      // gray
+      case 'idle': return '#52c41a'; // green
+      case 'run': return '#1890ff'; // blue
+      case 'alarm': return '#ff4d4f'; // red
+      case 'hold': return '#faad14'; // orange
+      case 'home': return '#722ed1'; // purple
+      case 'check': return '#13c2c2'; // cyan
+      default: return '#d9d9d9'; // gray
     }
-  }
+  };
 
   const getStateIcon = (state: string) => {
     switch (state?.toLowerCase()) {
-      case 'run': return <PlayCircleOutlined />
-      case 'hold': return <PauseCircleOutlined />
-      case 'alarm': return <WarningOutlined />
-      default: return <StopOutlined />
+      case 'run': return <PlayCircleOutlined />;
+      case 'hold': return <PauseCircleOutlined />;
+      case 'alarm': return <WarningOutlined />;
+      default: return <StopOutlined />;
     }
-  }
+  };
 
-  const formatPosition = (pos: { x: number; y: number; z: number }) => {
-    return `X${pos.x.toFixed(3)} Y${pos.y.toFixed(3)} Z${pos.z.toFixed(3)}`
-  }
+  const formatPosition = (pos: { x: number; y: number; z: number }) => `X${pos.x.toFixed(3)} Y${pos.y.toFixed(3)} Z${pos.z.toFixed(3)}`;
 
   const getExecutionProgress = () => {
-    if (!currentExecution) return 0
-    return Math.round((currentExecution.completedCommands / currentExecution.totalCommands) * 100)
-  }
+    if (!currentExecution) return 0;
+    return Math.round((currentExecution.completedCommands / currentExecution.totalCommands) * 100);
+  };
 
   if (!isConnected || !status) {
     return (
-      <Card title={compact ? undefined : "Machine Status"} size={compact ? "small" : "default"}>
+      <Card title={compact ? undefined : 'Machine Status'} size={compact ? 'small' : 'default'}>
         <Alert
           message="Machine Disconnected"
           description="Unable to connect to the CNC machine. Check your connection settings."
@@ -141,7 +139,7 @@ export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
           }
         />
       </Card>
-    )
+    );
   }
 
   if (compact) {
@@ -156,34 +154,36 @@ export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
             <Button type="text" size="small" icon={<ReloadOutlined />} onClick={handleRefresh} />
           )}
         </div>
-        
+
         <div style={{ fontSize: '12px', color: '#666' }}>
           {formatPosition(status.position)}
         </div>
-        
+
         {currentExecution && (
-          <Progress 
-            percent={getExecutionProgress()} 
-            size="small" 
+          <Progress
+            percent={getExecutionProgress()}
+            size="small"
             status={currentExecution.status === 'failed' ? 'exception' : 'active'}
           />
         )}
       </Space>
-    )
+    );
   }
 
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+      <div style={{
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16,
+      }}>
         <Title level={4} style={{ margin: 0 }}>
           <DashboardOutlined /> Machine Status
         </Title>
         {showControls && (
           <Space>
             <Tooltip title="Refresh status">
-              <Button 
-                type="text" 
-                icon={<ReloadOutlined />} 
+              <Button
+                type="text"
+                icon={<ReloadOutlined />}
                 onClick={handleRefresh}
               />
             </Tooltip>
@@ -197,10 +197,10 @@ export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
           <Card size="small">
             <Space size="large">
               <div style={{ textAlign: 'center' }}>
-                <div style={{ 
-                  fontSize: '24px', 
+                <div style={{
+                  fontSize: '24px',
                   color: getStateColor(status.state),
-                  marginBottom: 8 
+                  marginBottom: 8,
                 }}>
                   {getStateIcon(status.state)}
                 </div>
@@ -208,14 +208,14 @@ export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
                   {status.state.toUpperCase()}
                 </Text>
               </div>
-              
+
               <div>
                 <Text type="secondary">Machine Position</Text>
                 <div style={{ fontSize: '16px', fontFamily: 'monospace' }}>
                   {formatPosition(status.position)}
                 </div>
               </div>
-              
+
               <div>
                 <Text type="secondary">Work Position</Text>
                 <div style={{ fontSize: '16px', fontFamily: 'monospace' }}>
@@ -275,20 +275,20 @@ export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
                   <Text strong>{currentExecution.fileName || 'Multiple Commands'}</Text>
                   <div style={{ marginTop: 4 }}>
                     <Tag color={
-                      currentExecution.status === 'running' ? 'processing' :
-                      currentExecution.status === 'completed' ? 'success' :
-                      currentExecution.status === 'failed' ? 'error' : 'default'
+                      currentExecution.status === 'running' ? 'processing'
+                        : currentExecution.status === 'completed' ? 'success'
+                          : currentExecution.status === 'failed' ? 'error' : 'default'
                     }>
                       {currentExecution.status.toUpperCase()}
                     </Tag>
                   </div>
                 </div>
-                
+
                 <Progress
                   percent={getExecutionProgress()}
                   status={currentExecution.status === 'failed' ? 'exception' : 'active'}
                 />
-                
+
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12px' }}>
                   <Text type="secondary">
                     {currentExecution.completedCommands} / {currentExecution.totalCommands} completed
@@ -320,7 +320,7 @@ export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
                   {new Date(status.lastUpdate).toLocaleString()}
                 </div>
               </Timeline.Item>
-              
+
               {currentExecution && (
                 <Timeline.Item color="blue">
                   <Text>Execution started: {currentExecution.fileName || 'Commands'}</Text>
@@ -329,7 +329,7 @@ export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
                   </div>
                 </Timeline.Item>
               )}
-              
+
               <Timeline.Item color="gray">
                 <Text>Last position update</Text>
                 <div style={{ fontSize: '12px', color: '#666' }}>
@@ -341,7 +341,7 @@ export const MachineStatusMonitor: React.FC<MachineStatusMonitorProps> = ({
         </Col>
       </Row>
     </div>
-  )
-}
+  );
+};
 
-export default MachineStatusMonitor
+export default MachineStatusMonitor;

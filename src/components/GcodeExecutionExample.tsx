@@ -1,31 +1,37 @@
-import React, { useState } from 'react'
-import { Card, Button, Space, Input, Upload, Progress, Alert, message } from 'antd'
-import { PlayCircleOutlined, PauseCircleOutlined, StopOutlined, UploadOutlined } from '@ant-design/icons'
-import { useJobTracking } from '../services/job-tracking/useJobTracking'
-import { useMachineConfig } from '../services/machine-config/useMachineConfig'
+import React, { useState } from 'react';
+import {
+  Card, Button, Space, Input, Upload, Progress, Alert, message,
+} from 'antd';
+import {
+  PlayCircleOutlined, PauseCircleOutlined, StopOutlined, UploadOutlined,
+} from '@ant-design/icons';
+import { useJobTracking } from '../services/job-tracking/useJobTracking';
+import { useMachineConfig } from '../services/machine-config/useMachineConfig';
 
 /**
  * Example component showing how to integrate job tracking with G-code execution
  * This demonstrates the pattern for starting jobs and tracking progress
  */
 export const GcodeExecutionExample: React.FC = () => {
-  const { startJob, currentJob, pauseJob, resumeJob, completeJob, updateProgress, logPosition } = useJobTracking()
-  const { activeConfiguration } = useMachineConfig()
-  
-  const [jobName, setJobName] = useState('')
-  const [gcodeFile, setGcodeFile] = useState<string>('')
-  const [isExecuting, setIsExecuting] = useState(false)
+  const {
+    startJob, currentJob, pauseJob, resumeJob, completeJob, updateProgress, logPosition,
+  } = useJobTracking();
+  const { activeConfiguration } = useMachineConfig();
+
+  const [jobName, setJobName] = useState('');
+  const [gcodeFile, setGcodeFile] = useState<string>('');
+  const [isExecuting, setIsExecuting] = useState(false);
 
   // Example function to start a CNC job
   const handleStartJob = async () => {
     if (!jobName.trim()) {
-      message.error('Please enter a job name')
-      return
+      message.error('Please enter a job name');
+      return;
     }
 
     if (!activeConfiguration) {
-      message.error('No active machine configuration found')
-      return
+      message.error('No active machine configuration found');
+      return;
     }
 
     try {
@@ -33,53 +39,54 @@ export const GcodeExecutionExample: React.FC = () => {
       await startJob({
         job_name: jobName,
         gcode_file: gcodeFile || undefined,
-        machine_config_id: activeConfiguration.id
-      })
+        machine_config_id: activeConfiguration.id,
+      });
 
       // Start the "execution" simulation
-      setIsExecuting(true)
-      simulateGcodeExecution()
-      
-      message.success('Job started successfully')
+      setIsExecuting(true);
+      simulateGcodeExecution();
+
+      message.success('Job started successfully');
     } catch (error) {
-      message.error('Failed to start job')
+      message.error('Failed to start job');
     }
-  }
+  };
 
   // Example function to simulate G-code execution with progress updates
   const simulateGcodeExecution = () => {
-    let progress = 0
-    let x = 0, y = 0, z = 0
+    let progress = 0;
+    let x = 0; let y = 0; let
+      z = 0;
 
     const interval = setInterval(() => {
-      progress += Math.random() * 10
-      
+      progress += Math.random() * 10;
+
       // Simulate machine movement
-      x += (Math.random() - 0.5) * 10
-      y += (Math.random() - 0.5) * 10
-      z += (Math.random() - 0.5) * 2
+      x += (Math.random() - 0.5) * 10;
+      y += (Math.random() - 0.5) * 10;
+      z += (Math.random() - 0.5) * 2;
 
       // Update progress and log position
-      updateProgress(Math.min(progress, 100))
-      logPosition(x, y, z)
+      updateProgress(Math.min(progress, 100));
+      logPosition(x, y, z);
 
       // Complete when we reach 100%
       if (progress >= 100) {
-        clearInterval(interval)
-        setIsExecuting(false)
-        completeJob('completed')
-        message.success('Job completed successfully!')
+        clearInterval(interval);
+        setIsExecuting(false);
+        completeJob('completed');
+        message.success('Job completed successfully!');
       }
-    }, 500) // Update every 500ms
+    }, 500); // Update every 500ms
 
     // Store interval so we can clear it if needed
-    return interval
-  }
+    return interval;
+  };
 
   const handleFileUpload = (file: File) => {
-    setGcodeFile(file.name)
-    return false // Prevent auto upload
-  }
+    setGcodeFile(file.name);
+    return false; // Prevent auto upload
+  };
 
   return (
     <Card title="G-code Execution Example" style={{ marginBottom: 16 }}>
@@ -94,7 +101,7 @@ export const GcodeExecutionExample: React.FC = () => {
                 onChange={(e) => setJobName(e.target.value)}
                 style={{ marginBottom: 8 }}
               />
-              
+
               <Upload
                 beforeUpload={handleFileUpload}
                 accept=".gcode,.nc"
@@ -104,7 +111,7 @@ export const GcodeExecutionExample: React.FC = () => {
                   Select G-code File (Optional)
                 </Button>
               </Upload>
-              
+
               {gcodeFile && (
                 <Alert
                   message={`Selected file: ${gcodeFile}`}
@@ -127,7 +134,7 @@ export const GcodeExecutionExample: React.FC = () => {
                   style={{ marginTop: 8 }}
                 />
               )}
-              
+
               <Button
                 type="primary"
                 icon={<PlayCircleOutlined />}
@@ -148,13 +155,13 @@ export const GcodeExecutionExample: React.FC = () => {
               type="info"
               style={{ marginBottom: 16 }}
             />
-            
-            <Progress 
-              percent={currentJob.progress || 0} 
+
+            <Progress
+              percent={currentJob.progress || 0}
               status={currentJob.status === 'failed' ? 'exception' : 'active'}
               style={{ marginBottom: 16 }}
             />
-            
+
             <Space>
               {currentJob.status === 'running' && (
                 <Button
@@ -165,7 +172,7 @@ export const GcodeExecutionExample: React.FC = () => {
                   Pause
                 </Button>
               )}
-              
+
               {currentJob.status === 'paused' && (
                 <Button
                   type="primary"
@@ -175,7 +182,7 @@ export const GcodeExecutionExample: React.FC = () => {
                   Resume
                 </Button>
               )}
-              
+
               <Button
                 danger
                 icon={<StopOutlined />}
@@ -188,7 +195,7 @@ export const GcodeExecutionExample: React.FC = () => {
         )}
       </Space>
     </Card>
-  )
-}
+  );
+};
 
-export default GcodeExecutionExample
+export default GcodeExecutionExample;

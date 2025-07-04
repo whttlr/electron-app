@@ -21,8 +21,8 @@ export const workspaceConfig = {
     },
     // Origin position
     origin: {
-      x: 'left',   // left, center, right
-      y: 'front',  // front, center, back
+      x: 'left', // left, center, right
+      y: 'front', // front, center, back
       z: 'bottom', // bottom, center, top
     },
   },

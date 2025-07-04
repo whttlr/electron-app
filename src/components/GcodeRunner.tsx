@@ -3,7 +3,7 @@
  * Complete interface for G-code execution, file management, and machine monitoring
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Card,
   Row,
@@ -24,8 +24,8 @@ import {
   message,
   Modal,
   Dropdown,
-  Menu
-} from 'antd'
+  Menu,
+} from 'antd';
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
@@ -37,177 +37,176 @@ import {
   SendOutlined,
   MoreOutlined,
   DeleteOutlined,
-  DownloadOutlined
-} from '@ant-design/icons'
+  DownloadOutlined,
+} from '@ant-design/icons';
 import {
   gcodeService,
   GCodeCommand,
   GCodeExecution,
   GCodeFile,
-  MachineStatus
-} from '../services/gcode'
+  MachineStatus,
+} from '../services/gcode';
 
-const { Title, Text } = Typography
-const { TextArea } = Input
-const { TabPane } = Tabs
+const { Title, Text } = Typography;
+const { TextArea } = Input;
+const { TabPane } = Tabs;
 
 export const GcodeRunner: React.FC = () => {
-  const [loading, setLoading] = useState(false)
-  const [commandInput, setCommandInput] = useState('')
-  const [multilineInput, setMultilineInput] = useState('')
-  const [commandHistory, setCommandHistory] = useState<GCodeCommand[]>([])
-  const [executionHistory, setExecutionHistory] = useState<GCodeExecution[]>([])
-  const [currentExecution, setCurrentExecution] = useState<GCodeExecution | null>(null)
-  const [machineStatus, setMachineStatus] = useState<MachineStatus | null>(null)
-  const [uploadedFiles, setUploadedFiles] = useState<GCodeFile[]>([])
-  const [activeTab, setActiveTab] = useState('single')
-  
-  const historyEndRef = useRef<HTMLDivElement>(null)
+  const [loading, setLoading] = useState(false);
+  const [commandInput, setCommandInput] = useState('');
+  const [multilineInput, setMultilineInput] = useState('');
+  const [commandHistory, setCommandHistory] = useState<GCodeCommand[]>([]);
+  const [executionHistory, setExecutionHistory] = useState<GCodeExecution[]>([]);
+  const [currentExecution, setCurrentExecution] = useState<GCodeExecution | null>(null);
+  const [machineStatus, setMachineStatus] = useState<MachineStatus | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<GCodeFile[]>([]);
+  const [activeTab, setActiveTab] = useState('single');
+
+  const historyEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    initializeService()
+    initializeService();
     return () => {
-      gcodeService.cleanup()
-    }
-  }, [])
+      gcodeService.cleanup();
+    };
+  }, []);
 
   useEffect(() => {
     // Auto-scroll to bottom of command history
     if (historyEndRef.current) {
-      historyEndRef.current.scrollIntoView({ behavior: 'smooth' })
+      historyEndRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [commandHistory])
+  }, [commandHistory]);
 
   const initializeService = async () => {
     try {
-      await gcodeService.initialize()
-      
+      await gcodeService.initialize();
+
       // Load initial data
-      setCommandHistory(gcodeService.getCommandHistory())
-      setExecutionHistory(gcodeService.getExecutionHistory())
-      setCurrentExecution(gcodeService.getCurrentExecution())
-      setMachineStatus(gcodeService.getCurrentMachineStatus())
+      setCommandHistory(gcodeService.getCommandHistory());
+      setExecutionHistory(gcodeService.getExecutionHistory());
+      setCurrentExecution(gcodeService.getCurrentExecution());
+      setMachineStatus(gcodeService.getCurrentMachineStatus());
 
       // Add listeners
-      gcodeService.addStatusListener(handleStatusUpdate)
-      gcodeService.addExecutionListener(handleExecutionUpdate)
-      
+      gcodeService.addStatusListener(handleStatusUpdate);
+      gcodeService.addExecutionListener(handleExecutionUpdate);
     } catch (error) {
-      console.error('Failed to initialize G-code service:', error)
-      message.error('Failed to initialize G-code service')
+      console.error('Failed to initialize G-code service:', error);
+      message.error('Failed to initialize G-code service');
     }
-  }
+  };
 
   const handleStatusUpdate = (status: MachineStatus) => {
-    setMachineStatus(status)
-  }
+    setMachineStatus(status);
+  };
 
   const handleExecutionUpdate = (execution: GCodeExecution | null) => {
-    setCurrentExecution(execution)
-    setExecutionHistory(gcodeService.getExecutionHistory())
-  }
+    setCurrentExecution(execution);
+    setExecutionHistory(gcodeService.getExecutionHistory());
+  };
 
   const handleSingleCommand = async () => {
     if (!commandInput.trim()) {
-      message.error('Please enter a G-code command')
-      return
+      message.error('Please enter a G-code command');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      await gcodeService.executeCommand(commandInput.trim())
-      setCommandHistory(gcodeService.getCommandHistory())
-      setCommandInput('')
-      message.success('Command executed')
+      await gcodeService.executeCommand(commandInput.trim());
+      setCommandHistory(gcodeService.getCommandHistory());
+      setCommandInput('');
+      message.success('Command executed');
     } catch (error) {
-      console.error('Failed to execute command:', error)
-      message.error('Failed to execute command')
+      console.error('Failed to execute command:', error);
+      message.error('Failed to execute command');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleMultipleCommands = async () => {
     if (!multilineInput.trim()) {
-      message.error('Please enter G-code commands')
-      return
+      message.error('Please enter G-code commands');
+      return;
     }
 
     const commands = multilineInput
       .split('\n')
-      .map(line => line.trim())
-      .filter(line => line && !line.startsWith(';') && !line.startsWith('('))
+      .map((line) => line.trim())
+      .filter((line) => line && !line.startsWith(';') && !line.startsWith('('));
 
     if (commands.length === 0) {
-      message.error('No valid G-code commands found')
-      return
+      message.error('No valid G-code commands found');
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
     try {
-      await gcodeService.executeCommands(commands)
-      setCommandHistory(gcodeService.getCommandHistory())
-      setMultilineInput('')
-      message.success(`Executed ${commands.length} commands`)
+      await gcodeService.executeCommands(commands);
+      setCommandHistory(gcodeService.getCommandHistory());
+      setMultilineInput('');
+      message.success(`Executed ${commands.length} commands`);
     } catch (error) {
-      console.error('Failed to execute commands:', error)
-      message.error('Failed to execute commands')
+      console.error('Failed to execute commands:', error);
+      message.error('Failed to execute commands');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleFileUpload = async (file: File) => {
     try {
-      const gcodeFile = await gcodeService.uploadFile(file)
-      setUploadedFiles(prev => [gcodeFile, ...prev])
-      message.success(`File uploaded: ${file.name}`)
-      return false // Prevent default upload
+      const gcodeFile = await gcodeService.uploadFile(file);
+      setUploadedFiles((prev) => [gcodeFile, ...prev]);
+      message.success(`File uploaded: ${file.name}`);
+      return false; // Prevent default upload
     } catch (error) {
-      console.error('Failed to upload file:', error)
-      message.error('Failed to upload file')
-      return false
+      console.error('Failed to upload file:', error);
+      message.error('Failed to upload file');
+      return false;
     }
-  }
+  };
 
   const handleExecuteFile = async (file: GCodeFile) => {
     Modal.confirm({
       title: 'Execute G-code File',
       content: `Are you sure you want to execute "${file.name}" (${file.lineCount} lines)?`,
       onOk: async () => {
-        setLoading(true)
+        setLoading(true);
         try {
-          await gcodeService.executeFile(file)
-          message.success(`Started executing ${file.name}`)
+          await gcodeService.executeFile(file);
+          message.success(`Started executing ${file.name}`);
         } catch (error) {
-          console.error('Failed to execute file:', error)
-          message.error('Failed to execute file')
+          console.error('Failed to execute file:', error);
+          message.error('Failed to execute file');
         } finally {
-          setLoading(false)
+          setLoading(false);
         }
-      }
-    })
-  }
+      },
+    });
+  };
 
   const handleCancelExecution = async () => {
     try {
-      await gcodeService.cancelExecution()
-      message.success('Execution cancelled')
+      await gcodeService.cancelExecution();
+      message.success('Execution cancelled');
     } catch (error) {
-      console.error('Failed to cancel execution:', error)
-      message.error('Failed to cancel execution')
+      console.error('Failed to cancel execution:', error);
+      message.error('Failed to cancel execution');
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
-      case 'idle': return '#52c41a'
-      case 'run': return '#1890ff'
-      case 'alarm': return '#ff4d4f'
-      case 'hold': return '#faad14'
-      default: return '#d9d9d9'
+      case 'idle': return '#52c41a';
+      case 'run': return '#1890ff';
+      case 'alarm': return '#ff4d4f';
+      case 'hold': return '#faad14';
+      default: return '#d9d9d9';
     }
-  }
+  };
 
   const commandColumns = [
     {
@@ -215,13 +214,13 @@ export const GcodeRunner: React.FC = () => {
       dataIndex: 'timestamp',
       key: 'timestamp',
       width: 120,
-      render: (timestamp: string) => new Date(timestamp).toLocaleTimeString()
+      render: (timestamp: string) => new Date(timestamp).toLocaleTimeString(),
     },
     {
       title: 'Command',
       dataIndex: 'command',
       key: 'command',
-      ellipsis: true
+      ellipsis: true,
     },
     {
       title: 'Status',
@@ -233,10 +232,10 @@ export const GcodeRunner: React.FC = () => {
           pending: 'default',
           executing: 'processing',
           completed: 'success',
-          failed: 'error'
-        }
-        return <Tag color={colors[status as keyof typeof colors]}>{status}</Tag>
-      }
+          failed: 'error',
+        };
+        return <Tag color={colors[status as keyof typeof colors]}>{status}</Tag>;
+      },
     },
     {
       title: 'Response',
@@ -245,12 +244,12 @@ export const GcodeRunner: React.FC = () => {
       ellipsis: true,
       render: (response: string, record: GCodeCommand) => {
         if (record.error) {
-          return <Text type="danger">{record.error}</Text>
+          return <Text type="danger">{record.error}</Text>;
         }
-        return response || '-'
-      }
-    }
-  ]
+        return response || '-';
+      },
+    },
+  ];
 
   const executionColumns = [
     {
@@ -258,12 +257,12 @@ export const GcodeRunner: React.FC = () => {
       dataIndex: 'startTime',
       key: 'startTime',
       width: 120,
-      render: (startTime: string) => new Date(startTime).toLocaleTimeString()
+      render: (startTime: string) => new Date(startTime).toLocaleTimeString(),
     },
     {
       title: 'File/Description',
       key: 'description',
-      render: (record: GCodeExecution) => record.fileName || `${record.totalCommands} commands`
+      render: (record: GCodeExecution) => record.fileName || `${record.totalCommands} commands`,
     },
     {
       title: 'Progress',
@@ -275,7 +274,7 @@ export const GcodeRunner: React.FC = () => {
           size="small"
           status={record.status === 'failed' ? 'exception' : undefined}
         />
-      )
+      ),
     },
     {
       title: 'Status',
@@ -287,12 +286,12 @@ export const GcodeRunner: React.FC = () => {
           running: 'processing',
           completed: 'success',
           failed: 'error',
-          cancelled: 'default'
-        }
-        return <Tag color={colors[status as keyof typeof colors]}>{status}</Tag>
-      }
-    }
-  ]
+          cancelled: 'default',
+        };
+        return <Tag color={colors[status as keyof typeof colors]}>{status}</Tag>;
+      },
+    },
+  ];
 
   const fileMenuItems = (file: GCodeFile) => (
     <Menu>
@@ -307,12 +306,12 @@ export const GcodeRunner: React.FC = () => {
         Delete
       </Menu.Item>
     </Menu>
-  )
+  );
 
   return (
     <div style={{ padding: '24px' }}>
       <Title level={2}>G-Code Runner</Title>
-      
+
       <Row gutter={[16, 16]}>
         {/* Machine Status */}
         <Col span={24}>
@@ -414,7 +413,7 @@ export const GcodeRunner: React.FC = () => {
                   </Button>
                 </Space.Compact>
               </TabPane>
-              
+
               <TabPane tab="Multiple Commands" key="multiple">
                 <Space direction="vertical" style={{ width: '100%' }}>
                   <TextArea
@@ -435,7 +434,7 @@ export const GcodeRunner: React.FC = () => {
                   </Button>
                 </Space>
               </TabPane>
-              
+
               <TabPane tab="File Upload" key="file">
                 <Space direction="vertical" style={{ width: '100%' }}>
                   <Upload
@@ -445,7 +444,7 @@ export const GcodeRunner: React.FC = () => {
                   >
                     <Button icon={<UploadOutlined />}>Upload G-code File</Button>
                   </Upload>
-                  
+
                   {uploadedFiles.length > 0 && (
                     <List
                       size="small"
@@ -455,7 +454,7 @@ export const GcodeRunner: React.FC = () => {
                           actions={[
                             <Dropdown overlay={fileMenuItems(file)} trigger={['click']}>
                               <Button type="text" icon={<MoreOutlined />} />
-                            </Dropdown>
+                            </Dropdown>,
                           ]}
                         >
                           <List.Item.Meta
@@ -504,7 +503,7 @@ export const GcodeRunner: React.FC = () => {
         </Col>
       </Row>
     </div>
-  )
-}
+  );
+};
 
-export default GcodeRunner
+export default GcodeRunner;

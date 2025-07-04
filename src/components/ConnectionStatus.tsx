@@ -3,17 +3,19 @@
  * Displays current connection status and provides quick access to connection modal
  */
 
-import React, { useState, useEffect } from 'react'
-import { Button, Space, Typography, Tooltip, Badge } from 'antd'
-import { 
-  WifiOutlined, 
-  DisconnectOutlined, 
+import React, { useState, useEffect } from 'react';
+import {
+  Button, Space, Typography, Tooltip, Badge,
+} from 'antd';
+import {
+  WifiOutlined,
+  DisconnectOutlined,
   SettingOutlined,
-  ReloadOutlined 
-} from '@ant-design/icons'
-import { connectionService, ConnectionStatus as ConnectionStatusType } from '../services/connection'
+  ReloadOutlined,
+} from '@ant-design/icons';
+import { connectionService, ConnectionStatus as ConnectionStatusType } from '../services/connection';
 
-const { Text } = Typography
+const { Text } = Typography;
 
 interface ConnectionStatusProps {
   onOpenModal: () => void
@@ -24,94 +26,94 @@ interface ConnectionStatusProps {
 export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
   onOpenModal,
   compact = false,
-  showSettings = true
+  showSettings = true,
 }) => {
-  const [status, setStatus] = useState<ConnectionStatusType>({ connected: false })
-  const [loading, setLoading] = useState(false)
+  const [status, setStatus] = useState<ConnectionStatusType>({ connected: false });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // Initialize and get initial status
-    initializeConnection()
+    initializeConnection();
 
     // Add status listener
-    connectionService.addStatusListener(handleStatusChange)
+    connectionService.addStatusListener(handleStatusChange);
 
     return () => {
       // Remove status listener on cleanup
-      connectionService.removeStatusListener(handleStatusChange)
-    }
-  }, [])
+      connectionService.removeStatusListener(handleStatusChange);
+    };
+  }, []);
 
   const initializeConnection = async () => {
     try {
-      await connectionService.initialize()
-      const currentStatus = connectionService.getConnectionStatus()
-      setStatus(currentStatus)
+      await connectionService.initialize();
+      const currentStatus = connectionService.getConnectionStatus();
+      setStatus(currentStatus);
     } catch (error) {
-      console.error('Failed to initialize connection:', error)
+      console.error('Failed to initialize connection:', error);
     }
-  }
+  };
 
   const handleStatusChange = (newStatus: ConnectionStatusType) => {
-    setStatus(newStatus)
-  }
+    setStatus(newStatus);
+  };
 
   const handleRefresh = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      await connectionService.refreshConnectionStatus()
-      await connectionService.refreshAvailablePorts()
+      await connectionService.refreshConnectionStatus();
+      await connectionService.refreshAvailablePorts();
     } catch (error) {
-      console.error('Failed to refresh connection:', error)
+      console.error('Failed to refresh connection:', error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleQuickDisconnect = async () => {
     if (status.connected) {
-      setLoading(true)
+      setLoading(true);
       try {
-        await connectionService.disconnect()
+        await connectionService.disconnect();
       } catch (error) {
-        console.error('Failed to disconnect:', error)
+        console.error('Failed to disconnect:', error);
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
-  }
+  };
 
   const getStatusText = () => {
     if (status.connected && status.port) {
-      return compact ? status.port : `Connected to ${status.port}`
+      return compact ? status.port : `Connected to ${status.port}`;
     }
     if (status.error) {
-      return compact ? 'Error' : `Error: ${status.error}`
+      return compact ? 'Error' : `Error: ${status.error}`;
     }
-    return compact ? 'Not Connected' : 'Not Connected'
-  }
+    return compact ? 'Not Connected' : 'Not Connected';
+  };
 
   const getStatusColor = () => {
-    if (status.connected) return '#52c41a' // green
-    if (status.error) return '#ff4d4f' // red
-    return '#d9d9d9' // gray
-  }
+    if (status.connected) return '#52c41a'; // green
+    if (status.error) return '#ff4d4f'; // red
+    return '#d9d9d9'; // gray
+  };
 
   const getStatusIcon = () => {
     if (status.connected) {
-      return <WifiOutlined style={{ color: getStatusColor() }} />
+      return <WifiOutlined style={{ color: getStatusColor() }} />;
     }
-    return <DisconnectOutlined style={{ color: getStatusColor() }} />
-  }
+    return <DisconnectOutlined style={{ color: getStatusColor() }} />;
+  };
 
   if (compact) {
     return (
       <Space size="small">
-        <Badge 
-          color={getStatusColor()} 
+        <Badge
+          color={getStatusColor()}
           text={
-            <Button 
-              type="text" 
+            <Button
+              type="text"
               size="small"
               onClick={onOpenModal}
               style={{ padding: 0, height: 'auto' }}
@@ -124,19 +126,19 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
           }
         />
       </Space>
-    )
+    );
   }
 
   return (
-    <div style={{ 
-      display: 'flex', 
-      alignItems: 'center', 
+    <div style={{
+      display: 'flex',
+      alignItems: 'center',
       justifyContent: 'space-between',
       padding: '8px 12px',
       background: '#fafafa',
       border: '1px solid #d9d9d9',
       borderRadius: '6px',
-      minWidth: '200px'
+      minWidth: '200px',
     }}>
       <Space size="small">
         {getStatusIcon()}
@@ -193,7 +195,7 @@ export const ConnectionStatus: React.FC<ConnectionStatusProps> = ({
         )}
       </Space>
     </div>
-  )
-}
+  );
+};
 
-export default ConnectionStatus
+export default ConnectionStatus;

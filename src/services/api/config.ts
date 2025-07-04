@@ -30,7 +30,7 @@ export const apiConfig = {
     // Default headers for all requests
     defaultHeaders: {
       'Content-Type': 'application/json',
-      'Accept': 'application/json',
+      Accept: 'application/json',
     },
     // Default timeout for requests (ms)
     timeout: 5000,

@@ -3,9 +3,9 @@
  * Handles database-backed configuration storage
  */
 
-import { bundledApiSupabaseService } from './index'
+import { bundledApiSupabaseService } from './index';
 
-const API_BASE_URL = 'http://localhost:3000/api/v1/supabase'
+const API_BASE_URL = 'http://localhost:3000/api/v1/supabase';
 
 export interface AppConfiguration {
   id?: string
@@ -68,21 +68,21 @@ export class ConfigManagementService {
           ...options.headers,
         },
         ...options,
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `API request failed: ${response.statusText}`)
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `API request failed: ${response.statusText}`);
       }
 
-      const result = await response.json()
-      return result.data
+      const result = await response.json();
+      return result.data;
     } catch (error) {
       if (error instanceof Error) {
-        console.error(`Config Management API Error (${endpoint}):`, error.message)
-        throw error
+        console.error(`Config Management API Error (${endpoint}):`, error.message);
+        throw error;
       }
-      throw new Error('Unknown error occurred')
+      throw new Error('Unknown error occurred');
     }
   }
 
@@ -90,40 +90,40 @@ export class ConfigManagementService {
   async getConfiguration(configType: AppConfiguration['config_type']): Promise<AppConfiguration | null> {
     try {
       const configs = await this.request<AppConfiguration[]>(
-        `/app-configurations?config_type=${configType}&is_active=true`
-      )
-      return configs.length > 0 ? configs[0] : null
+        `/app-configurations?config_type=${configType}&is_active=true`,
+      );
+      return configs.length > 0 ? configs[0] : null;
     } catch {
-      return null
+      return null;
     }
   }
 
   async saveConfiguration(
-    configType: AppConfiguration['config_type'], 
-    configData: any
+    configType: AppConfiguration['config_type'],
+    configData: any,
   ): Promise<AppConfiguration> {
     // Deactivate previous active config
     await this.request(`/app-configurations/deactivate/${configType}`, {
       method: 'PATCH',
-    }).catch(() => {})
+    }).catch(() => {});
 
     return this.request<AppConfiguration>('/app-configurations', {
       method: 'POST',
       body: JSON.stringify({
         config_type: configType,
         config_data: configData,
-        is_active: true
+        is_active: true,
       }),
-    })
+    });
   }
 
   // User Preferences
   async getPreference(key: string): Promise<any> {
     try {
-      const pref = await this.request<UserPreference>(`/user-preferences/${key}`)
-      return pref.preference_value
+      const pref = await this.request<UserPreference>(`/user-preferences/${key}`);
+      return pref.preference_value;
     } catch {
-      return null
+      return null;
     }
   }
 
@@ -132,43 +132,43 @@ export class ConfigManagementService {
       method: 'POST',
       body: JSON.stringify({
         preference_key: key,
-        preference_value: value
+        preference_value: value,
       }),
-    })
+    });
   }
 
   // Feed & Speeds
   async getFeedSpeeds(machineConfigId: string): Promise<FeedSpeed[]> {
-    return this.request<FeedSpeed[]>(`/feed-speeds?machine_config_id=${machineConfigId}`)
+    return this.request<FeedSpeed[]>(`/feed-speeds?machine_config_id=${machineConfigId}`);
   }
 
   async createFeedSpeed(feedSpeed: Omit<FeedSpeed, 'id' | 'created_at' | 'updated_at'>): Promise<FeedSpeed> {
     return this.request<FeedSpeed>('/feed-speeds', {
       method: 'POST',
       body: JSON.stringify(feedSpeed),
-    })
+    });
   }
 
   async updateFeedSpeed(id: string, updates: Partial<FeedSpeed>): Promise<FeedSpeed> {
     return this.request<FeedSpeed>(`/feed-speeds/${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
-    })
+    });
   }
 
   async deleteFeedSpeed(id: string): Promise<void> {
     return this.request(`/feed-speeds/${id}`, {
       method: 'DELETE',
-    })
+    });
   }
 
   // Plugin Settings
   async getPluginSettings(pluginId: string): Promise<any> {
     try {
-      const settings = await this.request<PluginSettings>(`/plugin-settings/${pluginId}`)
-      return settings.settings_data
+      const settings = await this.request<PluginSettings>(`/plugin-settings/${pluginId}`);
+      return settings.settings_data;
     } catch {
-      return null
+      return null;
     }
   }
 
@@ -177,29 +177,29 @@ export class ConfigManagementService {
       method: 'POST',
       body: JSON.stringify({
         plugin_id: pluginId,
-        settings_data: settings
+        settings_data: settings,
       }),
-    })
+    });
   }
 
   // Plugin Stats
   async incrementPluginStat(
-    pluginId: string, 
-    stat: 'downloads' | 'likes' | 'stars' | 'installs'
+    pluginId: string,
+    stat: 'downloads' | 'likes' | 'stars' | 'installs',
   ): Promise<void> {
     return this.request(`/plugin-stats/${pluginId}/increment`, {
       method: 'PATCH',
       body: JSON.stringify({ stat }),
-    })
+    });
   }
 
   async getPluginStats(pluginId: string): Promise<PluginStats | null> {
     try {
-      return await this.request<PluginStats>(`/plugin-stats/${pluginId}`)
+      return await this.request<PluginStats>(`/plugin-stats/${pluginId}`);
     } catch {
-      return null
+      return null;
     }
   }
 }
 
-export const configManagementService = new ConfigManagementService()
+export const configManagementService = new ConfigManagementService();

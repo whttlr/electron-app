@@ -9,35 +9,35 @@ export type {
   ConfigEventType,
   ConfigEvent,
   ConfigFileName,
-  
+
   // Machine types
   MachineConfig,
   MachineState,
-  
+
   // State types
   StateConfig,
-  
+
   // App types
   AppConfig,
-  
+
   // UI types
   UIConfig,
   VisualizationConfig,
-  
+
   // API types
   APIConfig,
-  
+
   // Defaults types
   DefaultsConfig,
-  
+
   // Plugin types
   PluginConfig,
   PluginManifest,
   PluginRegistry,
-  
+
   // API types
   ConfigAPI,
-  PluginAPI
+  PluginAPI,
 } from '@whttlr/plugin-types';
 
 // Export constants (not types) separately

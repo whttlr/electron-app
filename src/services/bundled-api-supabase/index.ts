@@ -1,10 +1,10 @@
 /**
  * Bundled API Supabase Service
- * 
+ *
  * Client service for interacting with Supabase through the bundled API server
  */
 
-const API_BASE_URL = 'http://localhost:3000/api/v1/supabase'
+const API_BASE_URL = 'http://localhost:3000/api/v1/supabase';
 
 export interface MachineConfig {
   id?: string
@@ -50,90 +50,90 @@ export class BundledApiSupabaseService {
           ...options.headers,
         },
         ...options,
-      })
+      });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}))
-        throw new Error(errorData.message || `API request failed: ${response.statusText}`)
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `API request failed: ${response.statusText}`);
       }
 
-      const result = await response.json()
-      return result.data
+      const result = await response.json();
+      return result.data;
     } catch (error) {
       if (error instanceof Error) {
-        console.error(`Supabase API Error (${endpoint}):`, error.message)
-        throw error
+        console.error(`Supabase API Error (${endpoint}):`, error.message);
+        throw error;
       }
-      throw new Error('Unknown error occurred')
+      throw new Error('Unknown error occurred');
     }
   }
 
   // Machine configurations
   async getMachineConfigs(): Promise<MachineConfig[]> {
-    return this.request('/machine-configs')
+    return this.request('/machine-configs');
   }
 
   async getMachineConfig(id: string): Promise<MachineConfig> {
-    return this.request(`/machine-configs/${id}`)
+    return this.request(`/machine-configs/${id}`);
   }
 
   async createMachineConfig(config: Omit<MachineConfig, 'id' | 'created_at' | 'updated_at'>): Promise<MachineConfig> {
     return this.request('/machine-configs', {
       method: 'POST',
       body: JSON.stringify(config),
-    })
+    });
   }
 
   async updateMachineConfig(id: string, updates: Partial<MachineConfig>): Promise<MachineConfig> {
     return this.request(`/machine-configs/${id}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
-    })
+    });
   }
 
   async deleteMachineConfig(id: string): Promise<void> {
     return this.request(`/machine-configs/${id}`, {
       method: 'DELETE',
-    })
+    });
   }
 
   // Job history
-  async getJobs(params?: { 
+  async getJobs(params?: {
     limit?: number
     offset?: number
-    status?: string 
+    status?: string
   }): Promise<CncJob[]> {
-    const query = params ? new URLSearchParams(params as any).toString() : ''
-    return this.request(`/jobs${query ? `?${query}` : ''}`)
+    const query = params ? new URLSearchParams(params as any).toString() : '';
+    return this.request(`/jobs${query ? `?${query}` : ''}`);
   }
 
   async createJob(job: Omit<CncJob, 'id' | 'status' | 'created_at'>): Promise<CncJob> {
     return this.request('/jobs', {
       method: 'POST',
       body: JSON.stringify(job),
-    })
+    });
   }
 
   async updateJobStatus(
-    id: string, 
-    status: CncJob['status'], 
-    positionLog?: CncJob['position_log']
+    id: string,
+    status: CncJob['status'],
+    positionLog?: CncJob['position_log'],
   ): Promise<CncJob> {
     return this.request(`/jobs/${id}/status`, {
       method: 'PATCH',
       body: JSON.stringify({ status, position_log: positionLog }),
-    })
+    });
   }
 
   // Health check for the API connection
   async checkConnection(): Promise<boolean> {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/health')
-      return response.ok
+      const response = await fetch('http://localhost:3000/api/v1/health');
+      return response.ok;
     } catch {
-      return false
+      return false;
     }
   }
 }
 
-export const bundledApiSupabaseService = new BundledApiSupabaseService()
+export const bundledApiSupabaseService = new BundledApiSupabaseService();

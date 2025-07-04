@@ -1,6 +1,6 @@
 /**
  * API Service Module
- * 
+ *
  * Provides unified access to the embedded API server running within Electron.
  * Handles initialization, health checking, and provides type-safe methods
  * for CNC-specific operations.

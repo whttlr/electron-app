@@ -6,7 +6,7 @@ import {
   DownloadOutlined, CalendarOutlined, TagOutlined,
 } from '@ant-design/icons';
 import ReactMarkdown from 'react-markdown';
-import { UpdateCheckResult } from '../../services/update/types';
+import { UpdateCheckResult } from './types';
 import './ReleaseNotesPopover.css';
 
 const { Title, Text } = Typography;

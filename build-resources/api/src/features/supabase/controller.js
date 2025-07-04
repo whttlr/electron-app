@@ -362,24 +362,71 @@ export class SupabaseConfigController {
   async updatePluginStats(req, res) {
     try {
       const { plugin_id } = req.params
-      const updateData = {
-        ...req.body,
-        updated_at: new Date().toISOString()
+      
+      // Handle increment requests
+      if (req.url.includes('/increment') && req.body.stat) {
+        const { stat } = req.body
+        
+        // Get current stats
+        const { data: currentStats, error: fetchError } = await supabase
+          .from('plugin_stats')
+          .select('*')
+          .eq('plugin_id', plugin_id)
+          .single()
+        
+        if (fetchError && fetchError.code !== 'PGRST116') {
+          throw fetchError
+        }
+        
+        // Initialize stats if not exists
+        const stats = currentStats || {
+          plugin_id,
+          downloads: 0,
+          likes: 0,
+          stars: 0,
+          installs: 0,
+          created_at: new Date().toISOString()
+        }
+        
+        // Increment the specified stat
+        stats[stat] = (stats[stat] || 0) + 1
+        stats.updated_at = new Date().toISOString()
+        
+        const { data, error } = await supabase
+          .from('plugin_stats')
+          .upsert(stats, { 
+            onConflict: 'plugin_id',
+            returning: 'representation'
+          })
+          .select()
+          .single()
+        
+        if (error) throw error
+        
+        res.success(data, `Plugin ${stat} incremented successfully`)
+        info(`Incremented ${stat} for plugin: ${plugin_id}`)
+      } else {
+        // Handle regular update requests
+        const updateData = {
+          plugin_id,
+          ...req.body,
+          updated_at: new Date().toISOString()
+        }
+        
+        const { data, error } = await supabase
+          .from('plugin_stats')
+          .upsert(updateData, { 
+            onConflict: 'plugin_id',
+            returning: 'representation'
+          })
+          .select()
+          .single()
+        
+        if (error) throw error
+        
+        res.success(data, 'Plugin stats updated successfully')
+        info(`Updated plugin stats: ${plugin_id}`)
       }
-      
-      const { data, error } = await supabase
-        .from('plugin_stats')
-        .upsert({ plugin_id, ...updateData }, { 
-          onConflict: 'plugin_id',
-          returning: 'representation'
-        })
-        .select()
-        .single()
-      
-      if (error) throw error
-      
-      res.success(data, 'Plugin stats updated successfully')
-      info(`Updated plugin stats: ${plugin_id}`)
     } catch (error) {
       logError('Failed to update plugin stats:', error)
       res.error('Failed to update plugin stats', error.message)

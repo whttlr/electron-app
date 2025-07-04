@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import {
   Card,
   Table,
@@ -16,8 +16,8 @@ import {
   Typography,
   Alert,
   Badge,
-  Divider
-} from 'antd'
+  Divider,
+} from 'antd';
 import {
   PlayCircleOutlined,
   PauseCircleOutlined,
@@ -29,15 +29,15 @@ import {
   SearchOutlined,
   HistoryOutlined,
   FileTextOutlined,
-  SettingOutlined
-} from '@ant-design/icons'
-import { useJobTracking } from '../services/job-tracking/useJobTracking'
-import type { ExtendedCncJob } from '../services/job-tracking'
-import type { ColumnsType } from 'antd/es/table'
+  SettingOutlined,
+} from '@ant-design/icons';
+import type { ColumnsType } from 'antd/es/table';
+import { useJobTracking } from '../services/job-tracking/useJobTracking';
+import type { ExtendedCncJob } from '../services/job-tracking';
 
-const { Option } = Select
-const { Search } = Input
-const { Text, Title } = Typography
+const { Option } = Select;
+const { Search } = Input;
+const { Text, Title } = Typography;
 
 interface JobDetailsModalProps {
   job: ExtendedCncJob | null
@@ -46,9 +46,9 @@ interface JobDetailsModalProps {
 }
 
 const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, visible, onClose }) => {
-  if (!job) return null
+  if (!job) return null;
 
-  const positionLogSample = job.position_log?.slice(-10) || []
+  const positionLogSample = job.position_log?.slice(-10) || [];
 
   return (
     <Modal
@@ -58,7 +58,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, visible, onClose
       footer={[
         <Button key="close" onClick={onClose}>
           Close
-        </Button>
+        </Button>,
       ]}
       width={800}
     >
@@ -67,9 +67,9 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, visible, onClose
           <Statistic title="Status" value={job.status} />
         </Col>
         <Col span={12}>
-          <Statistic 
-            title="Duration" 
-            value={job.duration ? `${Math.floor(job.duration / 60)}m ${job.duration % 60}s` : 'N/A'} 
+          <Statistic
+            title="Duration"
+            value={job.duration ? `${Math.floor(job.duration / 60)}m ${job.duration % 60}s` : 'N/A'}
           />
         </Col>
         <Col span={12}>
@@ -100,7 +100,7 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, visible, onClose
             {positionLogSample.map((entry, index) => (
               <div key={index} style={{ marginBottom: 4, fontSize: '12px' }}>
                 <Text code>
-                  {new Date(entry.timestamp).toLocaleTimeString()} - 
+                  {new Date(entry.timestamp).toLocaleTimeString()} -
                   X:{entry.x} Y:{entry.y} Z:{entry.z}
                 </Text>
               </div>
@@ -109,8 +109,8 @@ const JobDetailsModal: React.FC<JobDetailsModalProps> = ({ job, visible, onClose
         </>
       )}
     </Modal>
-  )
-}
+  );
+};
 
 export const JobHistoryView: React.FC = () => {
   const {
@@ -123,78 +123,77 @@ export const JobHistoryView: React.FC = () => {
     resumeJob,
     completeJob,
     refreshHistory,
-    refreshStatistics
-  } = useJobTracking()
+    refreshStatistics,
+  } = useJobTracking();
 
-  const [selectedJob, setSelectedJob] = useState<ExtendedCncJob | null>(null)
-  const [statusFilter, setStatusFilter] = useState<string>('all')
-  const [searchText, setSearchText] = useState('')
+  const [selectedJob, setSelectedJob] = useState<ExtendedCncJob | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchText, setSearchText] = useState('');
 
   // Filter jobs based on status and search
-  const filteredJobs = jobHistory.filter(job => {
-    const matchesStatus = statusFilter === 'all' || job.status === statusFilter
-    const matchesSearch = job.job_name.toLowerCase().includes(searchText.toLowerCase()) ||
-                         (job.gcode_file && job.gcode_file.toLowerCase().includes(searchText.toLowerCase()))
-    return matchesStatus && matchesSearch
-  })
+  const filteredJobs = jobHistory.filter((job) => {
+    const matchesStatus = statusFilter === 'all' || job.status === statusFilter;
+    const matchesSearch = job.job_name.toLowerCase().includes(searchText.toLowerCase())
+                         || (job.gcode_file && job.gcode_file.toLowerCase().includes(searchText.toLowerCase()));
+    return matchesStatus && matchesSearch;
+  });
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case 'running': return <PlayCircleOutlined style={{ color: '#52c41a' }} />
-      case 'paused': return <PauseCircleOutlined style={{ color: '#faad14' }} />
-      case 'completed': return <CheckCircleOutlined style={{ color: '#52c41a' }} />
-      case 'failed': return <CloseCircleOutlined style={{ color: '#ff4d4f' }} />
-      case 'cancelled': return <StopOutlined style={{ color: '#8c8c8c' }} />
-      default: return <ClockCircleOutlined style={{ color: '#1890ff' }} />
+      case 'running': return <PlayCircleOutlined style={{ color: '#52c41a' }} />;
+      case 'paused': return <PauseCircleOutlined style={{ color: '#faad14' }} />;
+      case 'completed': return <CheckCircleOutlined style={{ color: '#52c41a' }} />;
+      case 'failed': return <CloseCircleOutlined style={{ color: '#ff4d4f' }} />;
+      case 'cancelled': return <StopOutlined style={{ color: '#8c8c8c' }} />;
+      default: return <ClockCircleOutlined style={{ color: '#1890ff' }} />;
     }
-  }
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'running': return 'processing'
-      case 'paused': return 'warning'
-      case 'completed': return 'success'
-      case 'failed': return 'error'
-      case 'cancelled': return 'default'
-      default: return 'default'
+      case 'running': return 'processing';
+      case 'paused': return 'warning';
+      case 'completed': return 'success';
+      case 'failed': return 'error';
+      case 'cancelled': return 'default';
+      default: return 'default';
     }
-  }
+  };
 
   const formatDuration = (seconds?: number) => {
-    if (!seconds) return 'N/A'
-    const hours = Math.floor(seconds / 3600)
-    const minutes = Math.floor((seconds % 3600) / 60)
-    const secs = seconds % 60
-    
+    if (!seconds) return 'N/A';
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+
     if (hours > 0) {
-      return `${hours}h ${minutes}m ${secs}s`
-    } else if (minutes > 0) {
-      return `${minutes}m ${secs}s`
-    } else {
-      return `${secs}s`
+      return `${hours}h ${minutes}m ${secs}s`;
+    } if (minutes > 0) {
+      return `${minutes}m ${secs}s`;
     }
-  }
+    return `${secs}s`;
+  };
 
   const handleJobAction = async (action: 'pause' | 'resume' | 'complete' | 'cancel') => {
     try {
       switch (action) {
         case 'pause':
-          await pauseJob()
-          break
+          await pauseJob();
+          break;
         case 'resume':
-          await resumeJob()
-          break
+          await resumeJob();
+          break;
         case 'complete':
-          await completeJob('completed')
-          break
+          await completeJob('completed');
+          break;
         case 'cancel':
-          await completeJob('cancelled')
-          break
+          await completeJob('cancelled');
+          break;
       }
     } catch (error) {
-      console.error(`Failed to ${action} job:`, error)
+      console.error(`Failed to ${action} job:`, error);
     }
-  }
+  };
 
   const columns: ColumnsType<ExtendedCncJob> = [
     {
@@ -203,8 +202,8 @@ export const JobHistoryView: React.FC = () => {
       key: 'job_name',
       render: (text, record) => (
         <Space>
-          <Button 
-            type="link" 
+          <Button
+            type="link"
             onClick={() => setSelectedJob(record)}
             style={{ padding: 0 }}
           >
@@ -216,7 +215,7 @@ export const JobHistoryView: React.FC = () => {
             </Tooltip>
           )}
         </Space>
-      )
+      ),
     },
     {
       title: 'Status',
@@ -232,33 +231,33 @@ export const JobHistoryView: React.FC = () => {
         { text: 'Paused', value: 'paused' },
         { text: 'Completed', value: 'completed' },
         { text: 'Failed', value: 'failed' },
-        { text: 'Cancelled', value: 'cancelled' }
+        { text: 'Cancelled', value: 'cancelled' },
       ],
-      onFilter: (value, record) => record.status === value
+      onFilter: (value, record) => record.status === value,
     },
     {
       title: 'Progress',
       dataIndex: 'progress',
       key: 'progress',
       render: (progress) => (
-        <Progress 
-          percent={progress || 0} 
-          size="small" 
+        <Progress
+          percent={progress || 0}
+          size="small"
           status={progress === 100 ? 'success' : 'active'}
         />
-      )
+      ),
     },
     {
       title: 'Duration',
       dataIndex: 'duration',
       key: 'duration',
-      render: (duration) => formatDuration(duration)
+      render: (duration) => formatDuration(duration),
     },
     {
       title: 'Created',
       dataIndex: 'created_at',
       key: 'created_at',
-      render: (date) => date ? new Date(date).toLocaleDateString() : 'N/A'
+      render: (date) => (date ? new Date(date).toLocaleDateString() : 'N/A'),
     },
     {
       title: 'Actions',
@@ -271,15 +270,15 @@ export const JobHistoryView: React.FC = () => {
         >
           Details
         </Button>
-      )
-    }
-  ]
+      ),
+    },
+  ];
 
   return (
     <div>
       {/* Current Job Status */}
       {currentJob && (
-        <Card 
+        <Card
           title={
             <Space>
               <PlayCircleOutlined />
@@ -290,7 +289,7 @@ export const JobHistoryView: React.FC = () => {
           extra={
             <Space>
               {currentJob.status === 'running' && (
-                <Button 
+                <Button
                   icon={<PauseCircleOutlined />}
                   onClick={() => handleJobAction('pause')}
                 >
@@ -298,7 +297,7 @@ export const JobHistoryView: React.FC = () => {
                 </Button>
               )}
               {currentJob.status === 'paused' && (
-                <Button 
+                <Button
                   type="primary"
                   icon={<PlayCircleOutlined />}
                   onClick={() => handleJobAction('resume')}
@@ -306,13 +305,13 @@ export const JobHistoryView: React.FC = () => {
                   Resume
                 </Button>
               )}
-              <Button 
+              <Button
                 icon={<CheckCircleOutlined />}
                 onClick={() => handleJobAction('complete')}
               >
                 Complete
               </Button>
-              <Button 
+              <Button
                 danger
                 icon={<StopOutlined />}
                 onClick={() => handleJobAction('cancel')}
@@ -327,23 +326,23 @@ export const JobHistoryView: React.FC = () => {
               <Statistic title="Job Name" value={currentJob.job_name} />
             </Col>
             <Col span={6}>
-              <Statistic 
-                title="Status" 
+              <Statistic
+                title="Status"
                 value={currentJob.status}
                 prefix={getStatusIcon(currentJob.status)}
               />
             </Col>
             <Col span={6}>
-              <Progress 
-                type="circle" 
+              <Progress
+                type="circle"
                 percent={currentJob.progress || 0}
                 size={80}
                 status={currentJob.status === 'failed' ? 'exception' : 'active'}
               />
             </Col>
             <Col span={6}>
-              <Statistic 
-                title="Duration" 
+              <Statistic
+                title="Duration"
                 value={formatDuration(currentJob.duration)}
               />
             </Col>
@@ -352,7 +351,7 @@ export const JobHistoryView: React.FC = () => {
       )}
 
       {/* Statistics */}
-      <Card 
+      <Card
         title={
           <Space>
             <HistoryOutlined />
@@ -361,11 +360,11 @@ export const JobHistoryView: React.FC = () => {
         }
         style={{ marginBottom: 16 }}
         extra={
-          <Button 
-            icon={<ReloadOutlined />} 
+          <Button
+            icon={<ReloadOutlined />}
             onClick={() => {
-              refreshHistory()
-              refreshStatistics()
+              refreshHistory();
+              refreshStatistics();
             }}
             loading={isLoading}
           >
@@ -378,22 +377,22 @@ export const JobHistoryView: React.FC = () => {
             <Statistic title="Total Jobs" value={statistics.total} />
           </Col>
           <Col span={6}>
-            <Statistic 
-              title="Completed" 
-              value={statistics.completed} 
+            <Statistic
+              title="Completed"
+              value={statistics.completed}
               valueStyle={{ color: '#3f8600' }}
             />
           </Col>
           <Col span={6}>
-            <Statistic 
-              title="Failed" 
-              value={statistics.failed} 
+            <Statistic
+              title="Failed"
+              value={statistics.failed}
               valueStyle={{ color: '#cf1322' }}
             />
           </Col>
           <Col span={6}>
-            <Statistic 
-              title="Avg Duration" 
+            <Statistic
+              title="Avg Duration"
               value={formatDuration(Math.floor(statistics.avgDuration))}
             />
           </Col>
@@ -401,7 +400,7 @@ export const JobHistoryView: React.FC = () => {
       </Card>
 
       {/* Job History */}
-      <Card 
+      <Card
         title={
           <Space>
             <HistoryOutlined />
@@ -450,11 +449,10 @@ export const JobHistoryView: React.FC = () => {
             pageSize: 20,
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total, range) => 
-              `${range[0]}-${range[1]} of ${total} jobs`
+            showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} jobs`,
           }}
           locale={{
-            emptyText: 'No jobs found. Start a new job to see it here.'
+            emptyText: 'No jobs found. Start a new job to see it here.',
           }}
         />
       </Card>
@@ -466,7 +464,7 @@ export const JobHistoryView: React.FC = () => {
         onClose={() => setSelectedJob(null)}
       />
     </div>
-  )
-}
+  );
+};
 
-export default JobHistoryView
+export default JobHistoryView;

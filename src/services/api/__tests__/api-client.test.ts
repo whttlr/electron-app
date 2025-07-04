@@ -59,7 +59,7 @@ describe('ApiClient', () => {
       const promise2 = apiClient.initialize();
 
       expect(promise1).toBe(promise2);
-      
+
       await promise1;
       expect(mockElectronAPI.getApiConfig).toHaveBeenCalledTimes(1);
     });
@@ -130,7 +130,7 @@ describe('ApiClient', () => {
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({ port: '/dev/ttyUSB0' }),
-        })
+        }),
       );
     });
 
@@ -141,7 +141,7 @@ describe('ApiClient', () => {
         expect.objectContaining({
           method: 'POST',
           body: JSON.stringify({ commands: ['G0 X10', 'G1 Y20'] }),
-        })
+        }),
       );
     });
   });

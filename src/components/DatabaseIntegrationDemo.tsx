@@ -3,12 +3,14 @@
  * Demonstrates the new database-backed configuration and plugin features
  */
 
-import React, { useState, useEffect } from 'react'
-import { Card, Row, Col, Typography, Statistic, Table, Spin, Alert, Button, Space } from 'antd'
-import { CheckCircleOutlined, CloseCircleOutlined, ReloadOutlined } from '@ant-design/icons'
-import { configManagementService } from '../services/bundled-api-supabase/config-management'
+import React, { useState, useEffect } from 'react';
+import {
+  Card, Row, Col, Typography, Statistic, Table, Spin, Alert, Button, Space,
+} from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined, ReloadOutlined } from '@ant-design/icons';
+import { configManagementService } from '../services/bundled-api-supabase/config-management';
 
-const { Title, Text } = Typography
+const { Title, Text } = Typography;
 
 interface ConnectionStatus {
   connected: boolean
@@ -24,36 +26,36 @@ export const DatabaseIntegrationDemo: React.FC = () => {
     loading: true,
     error: null,
     configCount: 0,
-    lastChecked: null
-  })
+    lastChecked: null,
+  });
 
-  const [pluginStats, setPluginStats] = useState<any[]>([])
+  const [pluginStats, setPluginStats] = useState<any[]>([]);
 
   const pluginStatsColumns = [
     { title: 'Plugin', dataIndex: 'name', key: 'name' },
     { title: 'Downloads', dataIndex: 'downloads', key: 'downloads' },
     { title: 'Likes', dataIndex: 'likes', key: 'likes' },
     { title: 'Stars', dataIndex: 'stars', key: 'stars' },
-    { title: 'Installs', dataIndex: 'installs', key: 'installs' }
-  ]
+    { title: 'Installs', dataIndex: 'installs', key: 'installs' },
+  ];
 
   const checkDatabaseConnection = async () => {
-    setStatus(prev => ({ ...prev, loading: true, error: null }))
-    
+    setStatus((prev) => ({ ...prev, loading: true, error: null }));
+
     try {
       // Test database connection by fetching configurations
-      const configs = await configManagementService.request('/app-configurations')
-      
+      const configs = await configManagementService.request('/app-configurations');
+
       // Try to get plugin stats
-      const stats = await configManagementService.request('/plugin-stats')
-      
+      const stats = await configManagementService.request('/plugin-stats');
+
       setStatus({
         connected: true,
         loading: false,
         error: null,
         configCount: configs.length || 0,
-        lastChecked: new Date()
-      })
+        lastChecked: new Date(),
+      });
 
       // Format plugin stats for display
       const formattedStats = stats.map((stat: any) => ({
@@ -62,39 +64,39 @@ export const DatabaseIntegrationDemo: React.FC = () => {
         downloads: stat.downloads || 0,
         likes: stat.likes || 0,
         stars: stat.stars || 0,
-        installs: stat.installs || 0
-      }))
+        installs: stat.installs || 0,
+      }));
 
-      setPluginStats(formattedStats)
+      setPluginStats(formattedStats);
     } catch (error) {
       setStatus({
         connected: false,
         loading: false,
         error: error instanceof Error ? error.message : 'Unknown error',
         configCount: 0,
-        lastChecked: new Date()
-      })
+        lastChecked: new Date(),
+      });
     }
-  }
+  };
 
   useEffect(() => {
-    checkDatabaseConnection()
-  }, [])
+    checkDatabaseConnection();
+  }, []);
 
   const getStatusColor = () => {
-    if (status.loading) return '#1890ff'
-    return status.connected ? '#52c41a' : '#ff4d4f'
-  }
+    if (status.loading) return '#1890ff';
+    return status.connected ? '#52c41a' : '#ff4d4f';
+  };
 
   const getStatusText = () => {
-    if (status.loading) return 'Checking...'
-    return status.connected ? 'Connected' : 'Disconnected'
-  }
+    if (status.loading) return 'Checking...';
+    return status.connected ? 'Connected' : 'Disconnected';
+  };
 
   const getStatusIcon = () => {
-    if (status.loading) return null
-    return status.connected ? <CheckCircleOutlined /> : <CloseCircleOutlined />
-  }
+    if (status.loading) return null;
+    return status.connected ? <CheckCircleOutlined /> : <CloseCircleOutlined />;
+  };
 
   return (
     <div style={{ padding: '24px' }}>
@@ -105,12 +107,12 @@ export const DatabaseIntegrationDemo: React.FC = () => {
 
       <Row gutter={[16, 16]} style={{ marginTop: 24 }}>
         <Col span={24}>
-          <Card 
+          <Card
             title="Database Connection Status"
             extra={
-              <Button 
-                type="text" 
-                icon={<ReloadOutlined />} 
+              <Button
+                type="text"
+                icon={<ReloadOutlined />}
                 onClick={checkDatabaseConnection}
                 loading={status.loading}
               >
@@ -142,7 +144,7 @@ export const DatabaseIntegrationDemo: React.FC = () => {
                 />
               </Col>
             </Row>
-            
+
             {status.error && (
               <Alert
                 message="Connection Error"
@@ -152,7 +154,7 @@ export const DatabaseIntegrationDemo: React.FC = () => {
                 showIcon
               />
             )}
-            
+
             {status.connected && (
               <Alert
                 message="Database Connected"
@@ -170,8 +172,12 @@ export const DatabaseIntegrationDemo: React.FC = () => {
             <Spin spinning={status.loading}>
               <Table
                 dataSource={pluginStats.length > 0 ? pluginStats : [
-                  { key: 'machine-monitor', name: 'Machine Monitor', downloads: 0, likes: 0, stars: 0, installs: 0 },
-                  { key: 'gcode-snippets', name: 'G-code Snippets', downloads: 0, likes: 0, stars: 0, installs: 0 }
+                  {
+                    key: 'machine-monitor', name: 'Machine Monitor', downloads: 0, likes: 0, stars: 0, installs: 0,
+                  },
+                  {
+                    key: 'gcode-snippets', name: 'G-code Snippets', downloads: 0, likes: 0, stars: 0, installs: 0,
+                  },
                 ]}
                 columns={pluginStatsColumns}
                 rowKey="key"
@@ -180,7 +186,7 @@ export const DatabaseIntegrationDemo: React.FC = () => {
               />
               <div style={{ marginTop: 16 }}>
                 <Text type="secondary">
-                  {status.connected 
+                  {status.connected
                     ? `Showing ${pluginStats.length > 0 ? 'real' : 'sample'} plugin analytics data from database.`
                     : 'Connect to database to see real plugin statistics.'
                   }
@@ -191,7 +197,7 @@ export const DatabaseIntegrationDemo: React.FC = () => {
         </Col>
       </Row>
     </div>
-  )
-}
+  );
+};
 
-export default DatabaseIntegrationDemo
+export default DatabaseIntegrationDemo;

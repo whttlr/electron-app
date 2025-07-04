@@ -3,10 +3,10 @@
  * Extends the existing plugin service with database-backed settings and analytics
  */
 
-import { PluginService } from './PluginService'
-import { configManagementService } from '../bundled-api-supabase/config-management'
-import { Plugin, PluginUpdate } from './types'
-import { PluginStateRecord } from '@whttlr/plugin-types'
+import { PluginStateRecord } from '@whttlr/plugin-types';
+import { PluginService } from './PluginService';
+import { configManagementService } from '../bundled-api-supabase/config-management';
+import { Plugin, PluginUpdate } from './types';
 
 export interface PluginSettings {
   [key: string]: any
@@ -29,14 +29,15 @@ export interface PluginDataAccess {
 }
 
 export class DatabasePluginService extends PluginService {
-  private static instance: DatabasePluginService
-  private pluginDataCache: Map<string, PluginDataAccess> = new Map()
+  private static instance: DatabasePluginService;
+
+  private pluginDataCache: Map<string, PluginDataAccess> = new Map();
 
   static getInstance(): DatabasePluginService {
     if (!DatabasePluginService.instance) {
-      DatabasePluginService.instance = new DatabasePluginService()
+      DatabasePluginService.instance = new DatabasePluginService();
     }
-    return DatabasePluginService.instance
+    return DatabasePluginService.instance;
   }
 
   /**
@@ -45,26 +46,26 @@ export class DatabasePluginService extends PluginService {
   async getPluginSettings(pluginId: string): Promise<PluginSettings> {
     try {
       // Check cache first
-      const cached = this.pluginDataCache.get(pluginId)
+      const cached = this.pluginDataCache.get(pluginId);
       if (cached) {
-        return cached.settings
+        return cached.settings;
       }
 
       // Fetch from database
-      const settings = await configManagementService.getPluginSettings(pluginId)
-      
+      const settings = await configManagementService.getPluginSettings(pluginId);
+
       // Update cache
       const dataAccess: PluginDataAccess = {
         settings: settings || {},
         analytics: await this.getPluginAnalytics(pluginId),
-        permissions: await this.getPluginPermissions(pluginId)
-      }
-      this.pluginDataCache.set(pluginId, dataAccess)
+        permissions: await this.getPluginPermissions(pluginId),
+      };
+      this.pluginDataCache.set(pluginId, dataAccess);
 
-      return settings || {}
+      return settings || {};
     } catch (error) {
-      console.error(`Failed to get plugin settings for ${pluginId}:`, error)
-      return {}
+      console.error(`Failed to get plugin settings for ${pluginId}:`, error);
+      return {};
     }
   }
 
@@ -73,19 +74,19 @@ export class DatabasePluginService extends PluginService {
    */
   async savePluginSettings(pluginId: string, settings: PluginSettings): Promise<void> {
     try {
-      await configManagementService.savePluginSettings(pluginId, settings)
-      
+      await configManagementService.savePluginSettings(pluginId, settings);
+
       // Update cache
-      const cached = this.pluginDataCache.get(pluginId)
+      const cached = this.pluginDataCache.get(pluginId);
       if (cached) {
-        cached.settings = settings
-        this.pluginDataCache.set(pluginId, cached)
+        cached.settings = settings;
+        this.pluginDataCache.set(pluginId, cached);
       }
 
-      console.log(`✅ Saved settings for plugin: ${pluginId}`)
+      console.log(`✅ Saved settings for plugin: ${pluginId}`);
     } catch (error) {
-      console.error(`Failed to save plugin settings for ${pluginId}:`, error)
-      throw error
+      console.error(`Failed to save plugin settings for ${pluginId}:`, error);
+      throw error;
     }
   }
 
@@ -94,11 +95,11 @@ export class DatabasePluginService extends PluginService {
    */
   async getPluginAnalytics(pluginId: string): Promise<PluginAnalytics> {
     try {
-      const stats = await configManagementService.getPluginStats(pluginId)
-      
+      const stats = await configManagementService.getPluginStats(pluginId);
+
       if (!stats) {
         // Initialize stats if they don't exist
-        await this.initializePluginStats(pluginId)
+        await this.initializePluginStats(pluginId);
         return {
           downloads: 0,
           likes: 0,
@@ -106,8 +107,8 @@ export class DatabasePluginService extends PluginService {
           installs: 0,
           usage_count: 0,
           last_used: '',
-          average_session_time: 0
-        }
+          average_session_time: 0,
+        };
       }
 
       return {
@@ -117,10 +118,10 @@ export class DatabasePluginService extends PluginService {
         installs: stats.installs,
         usage_count: 0, // This would come from usage tracking
         last_used: '',
-        average_session_time: 0
-      }
+        average_session_time: 0,
+      };
     } catch (error) {
-      console.error(`Failed to get plugin analytics for ${pluginId}:`, error)
+      console.error(`Failed to get plugin analytics for ${pluginId}:`, error);
       return {
         downloads: 0,
         likes: 0,
@@ -128,8 +129,8 @@ export class DatabasePluginService extends PluginService {
         installs: 0,
         usage_count: 0,
         last_used: '',
-        average_session_time: 0
-      }
+        average_session_time: 0,
+      };
     }
   }
 
@@ -139,9 +140,9 @@ export class DatabasePluginService extends PluginService {
   private async initializePluginStats(pluginId: string): Promise<void> {
     try {
       // This would create the initial stats entry
-      await configManagementService.incrementPluginStat(pluginId, 'installs')
+      await configManagementService.incrementPluginStat(pluginId, 'installs');
     } catch (error) {
-      console.error(`Failed to initialize plugin stats for ${pluginId}:`, error)
+      console.error(`Failed to initialize plugin stats for ${pluginId}:`, error);
     }
   }
 
@@ -150,10 +151,10 @@ export class DatabasePluginService extends PluginService {
    */
   async incrementDownload(pluginId: string): Promise<void> {
     try {
-      await configManagementService.incrementPluginStat(pluginId, 'downloads')
-      console.log(`📈 Incremented download count for plugin: ${pluginId}`)
+      await configManagementService.incrementPluginStat(pluginId, 'downloads');
+      console.log(`📈 Incremented download count for plugin: ${pluginId}`);
     } catch (error) {
-      console.error(`Failed to increment download for ${pluginId}:`, error)
+      console.error(`Failed to increment download for ${pluginId}:`, error);
     }
   }
 
@@ -162,10 +163,10 @@ export class DatabasePluginService extends PluginService {
    */
   async incrementInstall(pluginId: string): Promise<void> {
     try {
-      await configManagementService.incrementPluginStat(pluginId, 'installs')
-      console.log(`📈 Incremented install count for plugin: ${pluginId}`)
+      await configManagementService.incrementPluginStat(pluginId, 'installs');
+      console.log(`📈 Incremented install count for plugin: ${pluginId}`);
     } catch (error) {
-      console.error(`Failed to increment install for ${pluginId}:`, error)
+      console.error(`Failed to increment install for ${pluginId}:`, error);
     }
   }
 
@@ -174,10 +175,10 @@ export class DatabasePluginService extends PluginService {
    */
   async incrementLike(pluginId: string): Promise<void> {
     try {
-      await configManagementService.incrementPluginStat(pluginId, 'likes')
-      console.log(`👍 Incremented like count for plugin: ${pluginId}`)
+      await configManagementService.incrementPluginStat(pluginId, 'likes');
+      console.log(`👍 Incremented like count for plugin: ${pluginId}`);
     } catch (error) {
-      console.error(`Failed to increment like for ${pluginId}:`, error)
+      console.error(`Failed to increment like for ${pluginId}:`, error);
     }
   }
 
@@ -186,10 +187,10 @@ export class DatabasePluginService extends PluginService {
    */
   async incrementStar(pluginId: string): Promise<void> {
     try {
-      await configManagementService.incrementPluginStat(pluginId, 'stars')
-      console.log(`⭐ Incremented star count for plugin: ${pluginId}`)
+      await configManagementService.incrementPluginStat(pluginId, 'stars');
+      console.log(`⭐ Incremented star count for plugin: ${pluginId}`);
     } catch (error) {
-      console.error(`Failed to increment star for ${pluginId}:`, error)
+      console.error(`Failed to increment star for ${pluginId}:`, error);
     }
   }
 
@@ -198,12 +199,12 @@ export class DatabasePluginService extends PluginService {
    */
   async getPluginPermissions(pluginId: string): Promise<string[]> {
     try {
-      const plugins = await PluginService.loadPlugins()
-      const plugin = plugins.find(p => p.id === pluginId)
-      return plugin?.config?.permissions || []
+      const plugins = await PluginService.loadPlugins();
+      const plugin = plugins.find((p) => p.id === pluginId);
+      return plugin?.config?.permissions || [];
     } catch (error) {
-      console.error(`Failed to get plugin permissions for ${pluginId}:`, error)
-      return []
+      console.error(`Failed to get plugin permissions for ${pluginId}:`, error);
+      return [];
     }
   }
 
@@ -211,20 +212,20 @@ export class DatabasePluginService extends PluginService {
    * Create isolated data access for plugin
    */
   async createPluginDataAccess(pluginId: string): Promise<PluginDataAccess> {
-    const settings = await this.getPluginSettings(pluginId)
-    const analytics = await this.getPluginAnalytics(pluginId)
-    const permissions = await this.getPluginPermissions(pluginId)
+    const settings = await this.getPluginSettings(pluginId);
+    const analytics = await this.getPluginAnalytics(pluginId);
+    const permissions = await this.getPluginPermissions(pluginId);
 
     const dataAccess: PluginDataAccess = {
       settings,
       analytics,
-      permissions
-    }
+      permissions,
+    };
 
     // Cache the data access
-    this.pluginDataCache.set(pluginId, dataAccess)
+    this.pluginDataCache.set(pluginId, dataAccess);
 
-    return dataAccess
+    return dataAccess;
   }
 
   /**
@@ -235,40 +236,40 @@ export class DatabasePluginService extends PluginService {
       // Plugin-specific settings API
       settings: {
         get: async (key?: string) => {
-          const settings = await this.getPluginSettings(pluginId)
-          return key ? settings[key] : settings
+          const settings = await this.getPluginSettings(pluginId);
+          return key ? settings[key] : settings;
         },
         set: async (key: string, value: any) => {
-          const settings = await this.getPluginSettings(pluginId)
-          settings[key] = value
-          await this.savePluginSettings(pluginId, settings)
+          const settings = await this.getPluginSettings(pluginId);
+          settings[key] = value;
+          await this.savePluginSettings(pluginId, settings);
         },
         update: async (updates: PluginSettings) => {
-          const settings = await this.getPluginSettings(pluginId)
-          const newSettings = { ...settings, ...updates }
-          await this.savePluginSettings(pluginId, newSettings)
+          const settings = await this.getPluginSettings(pluginId);
+          const newSettings = { ...settings, ...updates };
+          await this.savePluginSettings(pluginId, newSettings);
         },
         delete: async (key: string) => {
-          const settings = await this.getPluginSettings(pluginId)
-          delete settings[key]
-          await this.savePluginSettings(pluginId, settings)
-        }
+          const settings = await this.getPluginSettings(pluginId);
+          delete settings[key];
+          await this.savePluginSettings(pluginId, settings);
+        },
       },
 
       // Plugin analytics (read-only)
       analytics: {
-        get: () => this.getPluginAnalytics(pluginId)
+        get: () => this.getPluginAnalytics(pluginId),
       },
 
       // Data validation based on permissions
       hasPermission: async (permission: string) => {
-        const permissions = await this.getPluginPermissions(pluginId)
-        return permissions.includes(permission)
+        const permissions = await this.getPluginPermissions(pluginId);
+        return permissions.includes(permission);
       },
 
       // Standard plugin API from parent class
-      ...this.getPluginAPI()
-    }
+      ...this.getPluginAPI(),
+    };
   }
 
   /**
@@ -276,10 +277,10 @@ export class DatabasePluginService extends PluginService {
    */
   private async updatePluginState(pluginId: string, state: Partial<PluginStateRecord>): Promise<void> {
     try {
-      await PluginService.updatePluginState(pluginId, state)
+      await PluginService.updatePluginState(pluginId, state);
     } catch (error) {
-      console.error(`Failed to update plugin state for ${pluginId}:`, error)
-      throw error
+      console.error(`Failed to update plugin state for ${pluginId}:`, error);
+      throw error;
     }
   }
 
@@ -289,24 +290,24 @@ export class DatabasePluginService extends PluginService {
   async installPlugin(plugin: Plugin): Promise<void> {
     try {
       // Install the plugin using parent static method
-      await PluginService.savePlugin(plugin, this.updatePluginState.bind(this))
-      
+      await PluginService.savePlugin(plugin, this.updatePluginState.bind(this));
+
       // Track installation
-      await this.incrementInstall(plugin.id)
-      
+      await this.incrementInstall(plugin.id);
+
       // Initialize plugin settings if needed
-      const settings = await this.getPluginSettings(plugin.id)
+      const settings = await this.getPluginSettings(plugin.id);
       if (Object.keys(settings).length === 0) {
         await this.savePluginSettings(plugin.id, {
           installed_at: new Date().toISOString(),
-          version: plugin.version
-        })
+          version: plugin.version,
+        });
       }
 
-      console.log(`✅ Plugin installed with analytics tracking: ${plugin.name}`)
+      console.log(`✅ Plugin installed with analytics tracking: ${plugin.name}`);
     } catch (error) {
-      console.error(`Failed to install plugin ${plugin.id}:`, error)
-      throw error
+      console.error(`Failed to install plugin ${plugin.id}:`, error);
+      throw error;
     }
   }
 
@@ -315,11 +316,11 @@ export class DatabasePluginService extends PluginService {
    */
   async downloadPlugin(pluginId: string): Promise<void> {
     try {
-      await this.incrementDownload(pluginId)
-      console.log(`📥 Plugin download tracked: ${pluginId}`)
+      await this.incrementDownload(pluginId);
+      console.log(`📥 Plugin download tracked: ${pluginId}`);
     } catch (error) {
-      console.error(`Failed to track plugin download ${pluginId}:`, error)
-      throw error
+      console.error(`Failed to track plugin download ${pluginId}:`, error);
+      throw error;
     }
   }
 
@@ -327,7 +328,7 @@ export class DatabasePluginService extends PluginService {
    * Clear plugin data cache
    */
   clearCache(): void {
-    this.pluginDataCache.clear()
+    this.pluginDataCache.clear();
   }
 
   /**
@@ -335,17 +336,17 @@ export class DatabasePluginService extends PluginService {
    */
   async getAllPluginStats(): Promise<{ [pluginId: string]: PluginAnalytics }> {
     try {
-      const plugins = await this.loadPlugins()
-      const stats: { [pluginId: string]: PluginAnalytics } = {}
+      const plugins = await this.loadPlugins();
+      const stats: { [pluginId: string]: PluginAnalytics } = {};
 
       for (const plugin of plugins) {
-        stats[plugin.id] = await this.getPluginAnalytics(plugin.id)
+        stats[plugin.id] = await this.getPluginAnalytics(plugin.id);
       }
 
-      return stats
+      return stats;
     } catch (error) {
-      console.error('Failed to get all plugin stats:', error)
-      return {}
+      console.error('Failed to get all plugin stats:', error);
+      return {};
     }
   }
 
@@ -354,24 +355,24 @@ export class DatabasePluginService extends PluginService {
    */
   async exportPluginData(pluginId: string): Promise<string> {
     try {
-      const dataAccess = await this.createPluginDataAccess(pluginId)
-      const plugins = await this.loadPlugins()
-      const plugin = plugins.find(p => p.id === pluginId)
+      const dataAccess = await this.createPluginDataAccess(pluginId);
+      const plugins = await this.loadPlugins();
+      const plugin = plugins.find((p) => p.id === pluginId);
 
       const exportData = {
         plugin,
         settings: dataAccess.settings,
         analytics: dataAccess.analytics,
-        exported_at: new Date().toISOString()
-      }
+        exported_at: new Date().toISOString(),
+      };
 
-      return JSON.stringify(exportData, null, 2)
+      return JSON.stringify(exportData, null, 2);
     } catch (error) {
-      console.error(`Failed to export plugin data for ${pluginId}:`, error)
-      throw error
+      console.error(`Failed to export plugin data for ${pluginId}:`, error);
+      throw error;
     }
   }
 }
 
 // Export singleton instance
-export const databasePluginService = DatabasePluginService.getInstance()
+export const databasePluginService = DatabasePluginService.getInstance();

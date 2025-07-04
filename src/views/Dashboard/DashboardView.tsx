@@ -7,15 +7,13 @@ import {
 } from '@ant-design/icons';
 import { PluginRenderer, SupabaseTestComponent } from '../../components';
 
-const { Title, Paragraph } = Typography;
-
-
 // Add inside your dashboard layout:
 
+import { DatabaseIntegrationDemo } from '../../components/DatabaseIntegrationDemo';
 
-  import { DatabaseIntegrationDemo } from '../../components/DatabaseIntegrationDemo'
+const { Title, Paragraph } = Typography;
 
-  // In your component:
+// In your component:
 
 const DashboardView: React.FC = () => (
     <div data-testid="dashboard-container">

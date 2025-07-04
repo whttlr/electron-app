@@ -1,100 +1,101 @@
-import React, { useEffect, useState } from 'react'
-import { Card, Button, List, message, Space, Form, Input, Select, Modal, Spin } from 'antd'
-import { bundledApiSupabaseService, type MachineConfig, type CncJob } from '../services/bundled-api-supabase'
+import React, { useEffect, useState } from 'react';
+import {
+  Card, Button, List, message, Space, Form, Input, Select, Modal, Spin,
+} from 'antd';
+import { bundledApiSupabaseService, type MachineConfig, type CncJob } from '../services/bundled-api-supabase';
 
-const { Option } = Select
+const { Option } = Select;
 
 export const SupabaseTestComponent: React.FC = () => {
-  const [machineConfigs, setMachineConfigs] = useState<MachineConfig[]>([])
-  const [jobs, setJobs] = useState<CncJob[]>([])
-  const [loading, setLoading] = useState(false)
-  const [connectionStatus, setConnectionStatus] = useState<boolean | null>(null)
-  const [showConfigModal, setShowConfigModal] = useState(false)
-  const [showJobModal, setShowJobModal] = useState(false)
-  const [form] = Form.useForm()
-  const [jobForm] = Form.useForm()
+  const [machineConfigs, setMachineConfigs] = useState<MachineConfig[]>([]);
+  const [jobs, setJobs] = useState<CncJob[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<boolean | null>(null);
+  const [showConfigModal, setShowConfigModal] = useState(false);
+  const [showJobModal, setShowJobModal] = useState(false);
+  const [form] = Form.useForm();
+  const [jobForm] = Form.useForm();
 
   useEffect(() => {
-    checkConnection()
-  }, [])
+    checkConnection();
+  }, []);
 
   const checkConnection = async () => {
     try {
-      const connected = await bundledApiSupabaseService.checkConnection()
-      setConnectionStatus(connected)
+      const connected = await bundledApiSupabaseService.checkConnection();
+      setConnectionStatus(connected);
       if (!connected) {
-        message.error('API server is not running on localhost:3000')
+        message.error('API server is not running on localhost:3000');
       } else {
-        loadData()
+        loadData();
       }
     } catch (error) {
-      setConnectionStatus(false)
-      message.error('Failed to check API connection')
+      setConnectionStatus(false);
+      message.error('Failed to check API connection');
     }
-  }
+  };
 
   const loadData = async () => {
-    
-    setLoading(true)
+    setLoading(true);
     try {
       const [configsData, jobsData] = await Promise.all([
         bundledApiSupabaseService.getMachineConfigs().catch(() => []),
-        bundledApiSupabaseService.getJobs({ limit: 10 }).catch(() => [])
-      ])
-      
-      setMachineConfigs(configsData)
-      setJobs(jobsData)
+        bundledApiSupabaseService.getJobs({ limit: 10 }).catch(() => []),
+      ]);
+
+      setMachineConfigs(configsData);
+      setJobs(jobsData);
     } catch (error) {
-      console.error('Failed to load data:', error)
-      message.error('Failed to load data from Supabase')
+      console.error('Failed to load data:', error);
+      message.error('Failed to load data from Supabase');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleCreateConfig = async (values: any) => {
     try {
-      const config = await bundledApiSupabaseService.createMachineConfig(values)
-      setMachineConfigs(prev => [config, ...prev])
-      setShowConfigModal(false)
-      form.resetFields()
-      message.success('Machine configuration created successfully')
+      const config = await bundledApiSupabaseService.createMachineConfig(values);
+      setMachineConfigs((prev) => [config, ...prev]);
+      setShowConfigModal(false);
+      form.resetFields();
+      message.success('Machine configuration created successfully');
     } catch (error) {
-      message.error('Failed to create machine configuration')
+      message.error('Failed to create machine configuration');
     }
-  }
+  };
 
   const handleCreateJob = async (values: any) => {
     try {
-      const job = await bundledApiSupabaseService.createJob(values)
-      setJobs(prev => [job, ...prev])
-      setShowJobModal(false)
-      jobForm.resetFields()
-      message.success('Job created successfully')
+      const job = await bundledApiSupabaseService.createJob(values);
+      setJobs((prev) => [job, ...prev]);
+      setShowJobModal(false);
+      jobForm.resetFields();
+      message.success('Job created successfully');
     } catch (error) {
-      message.error('Failed to create job')
+      message.error('Failed to create job');
     }
-  }
+  };
 
   const handleDeleteConfig = async (id: string) => {
     try {
-      await bundledApiSupabaseService.deleteMachineConfig(id)
-      setMachineConfigs(prev => prev.filter(config => config.id !== id))
-      message.success('Machine configuration deleted successfully')
+      await bundledApiSupabaseService.deleteMachineConfig(id);
+      setMachineConfigs((prev) => prev.filter((config) => config.id !== id));
+      message.success('Machine configuration deleted successfully');
     } catch (error) {
-      message.error('Failed to delete machine configuration')
+      message.error('Failed to delete machine configuration');
     }
-  }
+  };
 
   const handleUpdateJobStatus = async (id: string, status: CncJob['status']) => {
     try {
-      const updatedJob = await bundledApiSupabaseService.updateJobStatus(id, status)
-      setJobs(prev => prev.map(job => job.id === id ? updatedJob : job))
-      message.success(`Job status updated to ${status}`)
+      const updatedJob = await bundledApiSupabaseService.updateJobStatus(id, status);
+      setJobs((prev) => prev.map((job) => (job.id === id ? updatedJob : job)));
+      message.success(`Job status updated to ${status}`);
     } catch (error) {
-      message.error('Failed to update job status')
+      message.error('Failed to update job status');
     }
-  }
+  };
 
   if (connectionStatus === null) {
     return (
@@ -102,7 +103,7 @@ export const SupabaseTestComponent: React.FC = () => {
         <Spin size="large" />
         <p style={{ textAlign: 'center', marginTop: 16 }}>Checking API connection...</p>
       </Card>
-    )
+    );
   }
 
   if (!connectionStatus) {
@@ -120,13 +121,13 @@ export const SupabaseTestComponent: React.FC = () => {
           </Button>
         </div>
       </Card>
-    )
+    );
   }
 
   return (
     <div style={{ padding: '20px' }}>
-      <Card 
-        title="Supabase Integration Test" 
+      <Card
+        title="Supabase Integration Test"
         extra={
           <Space>
             <Button onClick={loadData} loading={loading}>
@@ -137,10 +138,10 @@ export const SupabaseTestComponent: React.FC = () => {
         }
       >
         <Space direction="vertical" style={{ width: '100%' }} size="large">
-          
+
           {/* Machine Configurations */}
-          <Card 
-            title="Machine Configurations" 
+          <Card
+            title="Machine Configurations"
             size="small"
             extra={
               <Button type="primary" onClick={() => setShowConfigModal(true)}>
@@ -154,13 +155,13 @@ export const SupabaseTestComponent: React.FC = () => {
               renderItem={(config) => (
                 <List.Item
                   actions={[
-                    <Button 
-                      danger 
-                      size="small" 
+                    <Button
+                      danger
+                      size="small"
                       onClick={() => handleDeleteConfig(config.id!)}
                     >
                       Delete
-                    </Button>
+                    </Button>,
                   ]}
                 >
                   <List.Item.Meta
@@ -179,8 +180,8 @@ export const SupabaseTestComponent: React.FC = () => {
           </Card>
 
           {/* Jobs */}
-          <Card 
-            title="CNC Jobs" 
+          <Card
+            title="CNC Jobs"
             size="small"
             extra={
               <Button type="primary" onClick={() => setShowJobModal(true)}>
@@ -206,7 +207,7 @@ export const SupabaseTestComponent: React.FC = () => {
                       <Option value="completed">Completed</Option>
                       <Option value="failed">Failed</Option>
                       <Option value="cancelled">Cancelled</Option>
-                    </Select>
+                    </Select>,
                   ]}
                 >
                   <List.Item.Meta
@@ -272,7 +273,7 @@ export const SupabaseTestComponent: React.FC = () => {
           </Form.Item>
           <Form.Item name="machine_config_id" label="Machine Configuration">
             <Select placeholder="Select a machine configuration">
-              {machineConfigs.map(config => (
+              {machineConfigs.map((config) => (
                 <Option key={config.id} value={config.id}>
                   {config.name}
                 </Option>
@@ -285,7 +286,7 @@ export const SupabaseTestComponent: React.FC = () => {
         </Form>
       </Modal>
     </div>
-  )
-}
+  );
+};
 
-export default SupabaseTestComponent
+export default SupabaseTestComponent;

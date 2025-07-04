@@ -18,6 +18,7 @@ import { configManagementService } from '../bundled-api-supabase/config-manageme
 
 export class ConfigLoader {
   private configPath: string = '';
+
   private configCache: Map<string, any> = new Map();
 
   /**
@@ -95,7 +96,7 @@ export class ConfigLoader {
 
       // Fall back to file system default
       const defaultConfig = await this.loadDefaultConfigFile<T>(fileName);
-      
+
       // Save default to database for future use
       await configManagementService.saveConfiguration(configType, defaultConfig);
       this.setCachedConfig(cacheKey, defaultConfig);
@@ -151,7 +152,7 @@ export class ConfigLoader {
 
     // Save to database
     await configManagementService.saveConfiguration(configType, config);
-    
+
     // Update cache
     this.setCachedConfig(cacheKey, config);
   }
@@ -202,7 +203,7 @@ export class ConfigLoader {
     this.configCache.clear();
     // Clear localStorage cache
     const keys = Object.keys(localStorage);
-    keys.forEach(key => {
+    keys.forEach((key) => {
       if (key.endsWith('_config')) {
         localStorage.removeItem(key);
       }

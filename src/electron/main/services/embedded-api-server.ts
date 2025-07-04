@@ -2,6 +2,7 @@ import { spawn, ChildProcess } from 'child_process';
 import { app } from 'electron';
 import path from 'path';
 import net from 'net';
+
 const fetch = require('node-fetch');
 
 export class EmbeddedApiServer {
@@ -66,13 +67,13 @@ export class EmbeddedApiServer {
     }
     // Development: Use API from build-resources (after integration)
     const devPath = path.join(__dirname, '..', '..', '..', 'build-resources', 'api', 'src', 'server.js');
-    
+
     // Fallback to direct API repo for development if build-resources doesn't exist
     const fs = require('fs');
     if (!fs.existsSync(devPath)) {
       return path.join(__dirname, '..', '..', '..', '..', '..', 'api', 'src', 'server.js');
     }
-    
+
     return devPath;
   }
 

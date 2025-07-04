@@ -18,6 +18,8 @@ import PluginsView from './views/Plugins/PluginsView';
 import SettingsView from './views/Settings/SettingsView';
 import ControlsView from './views/Controls/ControlsView';
 import PluginView from './views/Plugin/PluginView';
+import { UIDemoView } from './views/UIDemo/UIDemoView';
+import { CustomThemeProvider } from './ui/shared/ThemeProvider';
 import './App.css';
 
 const { Header, Content, Sider } = Layout;
@@ -55,6 +57,11 @@ const AppContent: React.FC = () => {
       key: '/controls',
       icon: <ControlOutlined />,
       label: <Link to="/controls" data-testid="nav-controls">Controls</Link>,
+    },
+    {
+      key: '/ui-demo',
+      icon: <MonitorOutlined />,
+      label: <Link to="/ui-demo" data-testid="nav-ui-demo">UI Demo</Link>,
     },
     // Add standalone plugin menu items
     ...standalonePlugins.map((plugin) => ({
@@ -98,7 +105,6 @@ const AppContent: React.FC = () => {
       <Layout>
         <Sider
           width={200}
-          style={{ background: '#fff' }}
           breakpoint="lg"
           collapsedWidth="0"
         >
@@ -122,6 +128,7 @@ const AppContent: React.FC = () => {
             <Routes>
               <Route path="/" element={<DashboardView />} />
               <Route path="/controls" element={<ControlsView />} />
+              <Route path="/ui-demo" element={<UIDemoView />} />
               <Route path="/plugins" element={<PluginsView />} />
               <Route path="/settings" element={<SettingsView />} />
               {/* Dynamic plugin routes */}
@@ -207,7 +214,9 @@ function App() {
     <Router>
       <SettingsProvider>
         <PluginProvider>
-          <AppContent />
+          <CustomThemeProvider>
+            <AppContent />
+          </CustomThemeProvider>
         </PluginProvider>
       </SettingsProvider>
     </Router>
