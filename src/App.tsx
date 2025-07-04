@@ -3,8 +3,13 @@ import {
   HashRouter as Router, Routes, Route, Link, useLocation,
 } from 'react-router-dom';
 import {
-  Layout, Menu, Spin, Alert, Space,
+  Layout, Menu, Spin, Alert, Space, ConfigProvider,
 } from 'antd';
+import dayjs from 'dayjs';
+import 'dayjs/locale/en';
+
+// Set dayjs locale
+dayjs.locale('en');
 import {
   DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined,
 } from '@ant-design/icons';
@@ -211,15 +216,17 @@ function App() {
   }
 
   return (
-    <Router>
-      <SettingsProvider>
-        <PluginProvider>
-          <CustomThemeProvider>
-            <AppContent />
-          </CustomThemeProvider>
-        </PluginProvider>
-      </SettingsProvider>
-    </Router>
+    <ConfigProvider>
+      <Router>
+        <SettingsProvider>
+          <PluginProvider>
+            <CustomThemeProvider>
+              <AppContent />
+            </CustomThemeProvider>
+          </PluginProvider>
+        </SettingsProvider>
+      </Router>
+    </ConfigProvider>
   );
 }
 

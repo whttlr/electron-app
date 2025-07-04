@@ -21,7 +21,9 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@config': path.resolve(__dirname, './config'),
-      '@locales': path.resolve(__dirname, './locales')
+      '@locales': path.resolve(__dirname, './locales'),
+      // Replace moment with dayjs for Ant Design
+      'moment': 'dayjs'
     }
   }
 })

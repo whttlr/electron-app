@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { cn } from './utils';
+import { InputNumber } from 'antd';
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -68,34 +69,49 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 Input.displayName = 'Input';
 
 // CNC-specific input variants
-const CoordinateInput = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, ...props }, ref) => (
-      <Input
+const CoordinateInput = React.forwardRef<any, Omit<InputProps, 'type'>>(
+  ({ className, value, onChange, ...props }, ref) => (
+      <InputNumber
         ref={ref}
-        type="number"
-        step="0.001"
+        step={0.001}
+        value={value as number}
+        onChange={(val) => onChange?.({ target: { value: val } } as any)}
         className={cn(
-          'font-mono text-center text-lg font-semibold',
+          'coordinate-input',
           className,
         )}
+        style={{
+          width: '100%',
+          textAlign: 'center',
+          fontSize: '1.125rem',
+          fontWeight: 600,
+          fontFamily: 'JetBrains Mono, monospace',
+        }}
         {...props}
       />
   ),
 );
 CoordinateInput.displayName = 'CoordinateInput';
 
-const PrecisionInput = React.forwardRef<HTMLInputElement, InputProps & {
+const PrecisionInput = React.forwardRef<any, Omit<InputProps, 'type'> & {
   precision?: number
 }>(
-  ({ className, precision = 3, ...props }, ref) => (
-      <Input
+  ({ className, precision = 3, value, onChange, ...props }, ref) => (
+      <InputNumber
         ref={ref}
-        type="number"
-        step={`0.${'0'.repeat(precision - 1)}1`}
+        step={Number(`0.${'0'.repeat(precision - 1)}1`)}
+        precision={precision}
+        value={value as number}
+        onChange={(val) => onChange?.({ target: { value: val } } as any)}
         className={cn(
-          'font-mono text-right',
+          'precision-input',
           className,
         )}
+        style={{
+          width: '100%',
+          textAlign: 'right',
+          fontFamily: 'JetBrains Mono, monospace',
+        }}
         {...props}
       />
   ),

@@ -248,3 +248,1068 @@ section {
 svg {
   stroke-width: 1;
 }
+
+/* Ant Design InputNumber Dark Theme Styling */
+.ant-input-number {
+  background-color: #18181a !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.ant-input-number:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-input-number:focus,
+.ant-input-number-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2) !important;
+}
+
+.ant-input-number-input {
+  background-color: transparent !important;
+  color: var(--color-foreground) !important;
+}
+
+.ant-input-number-handler-wrap {
+  background-color: #27272a !important;
+  border-left: 1px solid var(--color-border) !important;
+}
+
+.ant-input-number-handler {
+  color: var(--color-foreground) !important;
+  border-color: var(--color-border) !important;
+}
+
+.ant-input-number-handler:hover {
+  color: var(--color-primary) !important;
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+.ant-input-number-handler-up-inner,
+.ant-input-number-handler-down-inner {
+  color: var(--color-foreground) !important;
+}
+
+.ant-input-number-handler:hover .ant-input-number-handler-up-inner,
+.ant-input-number-handler:hover .ant-input-number-handler-down-inner {
+  color: var(--color-primary) !important;
+}
+
+.ant-input-number-handler-up {
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.ant-input-number-disabled {
+  background-color: var(--color-muted) !important;
+  opacity: 0.5;
+}
+
+/* Ant Design Form Components Dark Theme Styling */
+
+/* Form Labels */
+.ant-form-item-label > label {
+  color: var(--color-foreground) !important;
+  font-weight: 500;
+}
+
+.ant-form-item-label > label.ant-form-item-required:not(.ant-form-item-required-mark-optional)::before {
+  color: var(--color-destructive) !important;
+}
+
+/* Input Fields */
+.ant-input {
+  background-color: #18181a !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.ant-input:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-input:focus,
+.ant-input-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2) !important;
+}
+
+.ant-input::placeholder {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* TextArea */
+.ant-input {
+  background-color: #18181a !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+/* Select */
+.ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  background-color: #18181a !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-select-focused:not(.ant-select-disabled).ant-select:not(.ant-select-customize-input) .ant-select-selector {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2) !important;
+}
+
+.ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+  color: var(--color-muted-foreground) !important;
+}
+
+.ant-select-single .ant-select-selector .ant-select-selection-item {
+  color: var(--color-foreground) !important;
+}
+
+.ant-select-arrow {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* Select Dropdown */
+.ant-select-dropdown {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.ant-select-item {
+  color: var(--color-foreground) !important;
+}
+
+.ant-select-item-option-selected:not(.ant-select-item-option-disabled) {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+  color: var(--color-primary) !important;
+}
+
+.ant-select-item:hover:not(.ant-select-item-option-disabled) {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+/* Radio */
+.ant-radio-wrapper {
+  color: var(--color-foreground) !important;
+}
+
+.ant-radio-inner {
+  background-color: #18181a !important;
+  border-color: var(--color-border) !important;
+}
+
+.ant-radio:hover .ant-radio-inner {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-radio-checked .ant-radio-inner {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.ant-radio-checked::after {
+  border: 1px solid var(--color-primary) !important;
+}
+
+/* Checkbox */
+.ant-checkbox-wrapper {
+  color: var(--color-foreground) !important;
+}
+
+.ant-checkbox-inner {
+  background-color: #18181a !important;
+  border-color: var(--color-border) !important;
+}
+
+.ant-checkbox:hover .ant-checkbox-inner {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.ant-checkbox-checked::after {
+  border: 1px solid var(--color-primary) !important;
+}
+
+/* DatePicker and TimePicker */
+.ant-picker {
+  background-color: #18181a !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-picker-focused {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2) !important;
+}
+
+.ant-picker-input > input {
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker-input > input::placeholder {
+  color: var(--color-muted-foreground) !important;
+}
+
+.ant-picker-suffix {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* DatePicker Dropdown */
+.ant-picker-dropdown {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.ant-picker-panel {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.ant-picker-header {
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.ant-picker-content th,
+.ant-picker-content td {
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker-cell:hover:not(.ant-picker-cell-in-view) .ant-picker-cell-inner,
+.ant-picker-cell:hover:not(.ant-picker-cell-selected):not(.ant-picker-cell-range-start):not(.ant-picker-cell-range-end):not(.ant-picker-cell-range-hover-start):not(.ant-picker-cell-range-hover-end) .ant-picker-cell-inner {
+  background: rgba(168, 85, 247, 0.1) !important;
+}
+
+.ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-cell-range-end .ant-picker-cell-inner {
+  background: var(--color-primary) !important;
+  color: white !important;
+}
+
+/* Form Validation */
+.ant-form-item-has-error .ant-input,
+.ant-form-item-has-error .ant-input-affix-wrapper,
+.ant-form-item-has-error .ant-input:hover,
+.ant-form-item-has-error .ant-input-affix-wrapper:hover {
+  border-color: var(--color-destructive) !important;
+}
+
+.ant-form-item-has-error .ant-input:focus,
+.ant-form-item-has-error .ant-input-affix-wrapper:focus,
+.ant-form-item-has-error .ant-input-focused,
+.ant-form-item-has-error .ant-input-affix-wrapper-focused {
+  border-color: var(--color-destructive) !important;
+  box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2) !important;
+}
+
+.ant-form-item-explain-error {
+  color: var(--color-destructive) !important;
+}
+
+/* Ant Design Popover Dark Theme Styling */
+
+/* Popover Container */
+.ant-popover {
+  z-index: 1050;
+}
+
+.ant-popover-inner {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Popover Title */
+.ant-popover-title {
+  background-color: #18181a !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  color: var(--color-foreground) !important;
+  font-weight: 600;
+  font-size: 14px;
+  padding: 8px 12px !important;
+}
+
+/* Popover Content */
+.ant-popover-inner-content {
+  background-color: #18181a !important;
+  color: var(--color-foreground) !important;
+  padding: 0 !important;
+}
+
+.ant-popover-content {
+  color: var(--color-foreground) !important;
+}
+
+/* Popover Arrow */
+.ant-popover-arrow {
+  border-color: #18181a !important;
+}
+
+.ant-popover-arrow::before {
+  background: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.ant-popover-arrow::after {
+  background: #18181a !important;
+}
+
+/* Different arrow positions */
+.ant-popover-placement-top .ant-popover-arrow::before,
+.ant-popover-placement-topLeft .ant-popover-arrow::before,
+.ant-popover-placement-topRight .ant-popover-arrow::before {
+  border-top-color: transparent !important;
+  border-left-color: transparent !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: var(--color-border) !important;
+}
+
+.ant-popover-placement-bottom .ant-popover-arrow::before,
+.ant-popover-placement-bottomLeft .ant-popover-arrow::before,
+.ant-popover-placement-bottomRight .ant-popover-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: var(--color-border) !important;
+  border-bottom-color: transparent !important;
+  border-right-color: transparent !important;
+}
+
+.ant-popover-placement-left .ant-popover-arrow::before,
+.ant-popover-placement-leftTop .ant-popover-arrow::before,
+.ant-popover-placement-leftBottom .ant-popover-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: transparent !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: var(--color-border) !important;
+}
+
+.ant-popover-placement-right .ant-popover-arrow::before,
+.ant-popover-placement-rightTop .ant-popover-arrow::before,
+.ant-popover-placement-rightBottom .ant-popover-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: var(--color-border) !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: transparent !important;
+}
+
+/* Divider in Popover */
+.ant-popover .ant-divider-horizontal {
+  border-top-color: var(--color-border) !important;
+  margin: 8px 0 !important;
+}
+
+/* Ant Design Tour Dark Theme Styling */
+
+/* Tour Mask */
+.ant-tour-mask {
+  background-color: rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Tour Content */
+.ant-tour-content {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4), 0 8px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Tour Header */
+.ant-tour-header {
+  background-color: #18181a !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  padding: 16px 20px 12px !important;
+}
+
+.ant-tour-title {
+  color: var(--color-foreground) !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  margin: 0 !important;
+}
+
+.ant-tour-close {
+  color: var(--color-muted-foreground) !important;
+  font-size: 16px !important;
+  top: 16px !important;
+  right: 16px !important;
+}
+
+.ant-tour-close:hover {
+  color: var(--color-foreground) !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Tour Body */
+.ant-tour-inner {
+  padding: 16px 20px !important;
+  background-color: #18181a !important;
+}
+
+.ant-tour-description {
+  color: var(--color-muted-foreground) !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  margin: 0 !important;
+}
+
+/* Tour Footer */
+.ant-tour-footer {
+  background-color: #18181a !important;
+  border-top: 1px solid var(--color-border) !important;
+  padding: 12px 20px 16px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+}
+
+/* Tour Buttons */
+.ant-tour .ant-btn {
+  background-color: transparent !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+  font-size: 13px !important;
+  height: 32px !important;
+  padding: 0 16px !important;
+  border-radius: 6px !important;
+}
+
+.ant-tour .ant-btn:hover {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+.ant-tour .ant-btn-primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+.ant-tour .ant-btn-primary:hover {
+  background-color: var(--color-primary-light) !important;
+  border-color: var(--color-primary-light) !important;
+  color: white !important;
+}
+
+/* Tour Indicators */
+.ant-tour-indicators {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.ant-tour-indicator {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background-color: var(--color-muted) !important;
+  margin: 0 3px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-tour-indicator-active {
+  background-color: var(--color-primary) !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
+/* Tour Arrow */
+.ant-tour-arrow {
+  border-color: #18181a !important;
+}
+
+.ant-tour-arrow::before {
+  background: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.ant-tour-arrow::after {
+  background: #18181a !important;
+}
+
+/* Tour placement arrows */
+.ant-tour-placement-top .ant-tour-arrow::before,
+.ant-tour-placement-topLeft .ant-tour-arrow::before,
+.ant-tour-placement-topRight .ant-tour-arrow::before {
+  border-top-color: transparent !important;
+  border-left-color: transparent !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: var(--color-border) !important;
+}
+
+.ant-tour-placement-bottom .ant-tour-arrow::before,
+.ant-tour-placement-bottomLeft .ant-tour-arrow::before,
+.ant-tour-placement-bottomRight .ant-tour-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: var(--color-border) !important;
+  border-bottom-color: transparent !important;
+  border-right-color: transparent !important;
+}
+
+.ant-tour-placement-left .ant-tour-arrow::before,
+.ant-tour-placement-leftTop .ant-tour-arrow::before,
+.ant-tour-placement-leftBottom .ant-tour-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: transparent !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: var(--color-border) !important;
+}
+
+.ant-tour-placement-right .ant-tour-arrow::before,
+.ant-tour-placement-rightTop .ant-tour-arrow::before,
+.ant-tour-placement-rightBottom .ant-tour-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: var(--color-border) !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: transparent !important;
+}
+
+/* Ant Design Tooltip Dark Theme Styling */
+
+/* Tooltip Container */
+.ant-tooltip {
+  z-index: 1060;
+}
+
+.ant-tooltip-inner {
+  background-color: #1a1a1a !important;
+  color: var(--color-foreground) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 6px !important;
+  padding: 6px 8px !important;
+  font-size: 12px !important;
+  line-height: 1.4 !important;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3), 0 3px 6px rgba(0, 0, 0, 0.2) !important;
+  max-width: 250px !important;
+}
+
+/* Tooltip Arrow */
+.ant-tooltip-arrow {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.ant-tooltip-arrow::before {
+  background: #1a1a1a !important;
+  border: 1px solid var(--color-border) !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
+.ant-tooltip-arrow::after {
+  background: #1a1a1a !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+
+/* Tooltip placement arrows */
+.ant-tooltip-placement-top .ant-tooltip-arrow::before,
+.ant-tooltip-placement-topLeft .ant-tooltip-arrow::before,
+.ant-tooltip-placement-topRight .ant-tooltip-arrow::before {
+  border-top-color: transparent !important;
+  border-left-color: transparent !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: var(--color-border) !important;
+}
+
+.ant-tooltip-placement-bottom .ant-tooltip-arrow::before,
+.ant-tooltip-placement-bottomLeft .ant-tooltip-arrow::before,
+.ant-tooltip-placement-bottomRight .ant-tooltip-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: var(--color-border) !important;
+  border-bottom-color: transparent !important;
+  border-right-color: transparent !important;
+}
+
+.ant-tooltip-placement-left .ant-tooltip-arrow::before,
+.ant-tooltip-placement-leftTop .ant-tooltip-arrow::before,
+.ant-tooltip-placement-leftBottom .ant-tooltip-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: transparent !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: var(--color-border) !important;
+}
+
+.ant-tooltip-placement-right .ant-tooltip-arrow::before,
+.ant-tooltip-placement-rightTop .ant-tooltip-arrow::before,
+.ant-tooltip-placement-rightBottom .ant-tooltip-arrow::before {
+  border-top-color: var(--color-border) !important;
+  border-left-color: var(--color-border) !important;
+  border-bottom-color: var(--color-border) !important;
+  border-right-color: transparent !important;
+}
+
+/* Colored Tooltips */
+.ant-tooltip-red .ant-tooltip-inner {
+  background-color: #dc2626 !important;
+  border-color: #dc2626 !important;
+  color: white !important;
+}
+
+.ant-tooltip-red .ant-tooltip-arrow::before,
+.ant-tooltip-red .ant-tooltip-arrow::after {
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+.ant-tooltip-orange .ant-tooltip-inner {
+  background-color: #ea580c !important;
+  border-color: #ea580c !important;
+  color: white !important;
+}
+
+.ant-tooltip-orange .ant-tooltip-arrow::before,
+.ant-tooltip-orange .ant-tooltip-arrow::after {
+  background: #ea580c !important;
+  border-color: #ea580c !important;
+}
+
+.ant-tooltip-green .ant-tooltip-inner {
+  background-color: #16a34a !important;
+  border-color: #16a34a !important;
+  color: white !important;
+}
+
+.ant-tooltip-green .ant-tooltip-arrow::before,
+.ant-tooltip-green .ant-tooltip-arrow::after {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+}
+
+.ant-tooltip-blue .ant-tooltip-inner {
+  background-color: #2563eb !important;
+  border-color: #2563eb !important;
+  color: white !important;
+}
+
+.ant-tooltip-blue .ant-tooltip-arrow::before,
+.ant-tooltip-blue .ant-tooltip-arrow::after {
+  background: #2563eb !important;
+  border-color: #2563eb !important;
+}
+
+.ant-tooltip-purple .ant-tooltip-inner {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+.ant-tooltip-purple .ant-tooltip-arrow::before,
+.ant-tooltip-purple .ant-tooltip-arrow::after {
+  background: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+/* Rich content tooltips */
+.ant-tooltip-inner .max-w-xs,
+.ant-tooltip-inner .max-w-sm {
+  max-width: 100% !important;
+}
+
+/* Cursor styles for tooltips */
+.cursor-help {
+  cursor: help !important;
+}
+
+/* Ant Design Progress Dark Theme Styling */
+
+/* Linear Progress */
+.ant-progress {
+  color: var(--color-foreground) !important;
+}
+
+.ant-progress-bg {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ant-progress-inner {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 100px !important;
+}
+
+.ant-progress-text {
+  color: var(--color-foreground) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/* Progress Success */
+.ant-progress-status-success .ant-progress-bg {
+  background-color: #16a34a !important;
+}
+
+.ant-progress-status-success .ant-progress-text {
+  color: #16a34a !important;
+}
+
+/* Progress Exception/Error */
+.ant-progress-status-exception .ant-progress-bg {
+  background-color: #dc2626 !important;
+}
+
+.ant-progress-status-exception .ant-progress-text {
+  color: #dc2626 !important;
+}
+
+/* Progress Active (animated) */
+.ant-progress-status-active .ant-progress-bg::before {
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  ) !important;
+}
+
+/* Circular Progress */
+.ant-progress-circle {
+  color: var(--color-foreground) !important;
+}
+
+.ant-progress-circle .ant-progress-text {
+  color: var(--color-foreground) !important;
+  font-weight: 600 !important;
+}
+
+.ant-progress-circle .ant-progress-inner {
+  background-color: transparent !important;
+}
+
+/* Circle Trail (background circle) */
+.ant-progress-circle-trail {
+  stroke: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Circle Path (progress circle) */
+.ant-progress-circle-path {
+  stroke: var(--color-primary) !important;
+}
+
+/* Success Circle */
+.ant-progress-status-success .ant-progress-circle-path {
+  stroke: #16a34a !important;
+}
+
+.ant-progress-status-success .ant-progress-text {
+  color: #16a34a !important;
+}
+
+/* Exception Circle */
+.ant-progress-status-exception .ant-progress-circle-path {
+  stroke: #dc2626 !important;
+}
+
+.ant-progress-status-exception .ant-progress-text {
+  color: #dc2626 !important;
+}
+
+/* Small Progress */
+.ant-progress-small .ant-progress-text {
+  font-size: 11px !important;
+}
+
+/* Progress Line */
+.ant-progress-line {
+  position: relative;
+}
+
+.ant-progress-outer {
+  display: inline-block;
+  width: 100%;
+  margin-right: 0 !important;
+  padding-right: 0 !important;
+}
+
+/* Custom stroke colors for different states */
+.ant-progress-bg[style*="background-color: rgb(37, 99, 235)"] {
+  background-color: #2563eb !important;
+}
+
+.ant-progress-bg[style*="background-color: rgb(22, 163, 74)"] {
+  background-color: #16a34a !important;
+}
+
+.ant-progress-bg[style*="background-color: rgb(220, 38, 38)"] {
+  background-color: #dc2626 !important;
+}
+
+.ant-progress-bg[style*="background-color: rgb(168, 85, 247)"] {
+  background-color: var(--color-primary) !important;
+}
+
+/* Gradient Progress Support */
+.ant-progress-bg {
+  border-radius: 100px !important;
+  transition: all 0.3s ease !important;
+}
+
+/* Progress with custom trail colors */
+.ant-progress-inner[style*="background-color: rgba(255, 255, 255, 0.1)"] {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.ant-progress-inner[style*="background-color: rgba(37, 99, 235, 0.1)"] {
+  background-color: rgba(37, 99, 235, 0.1) !important;
+}
+
+.ant-progress-inner[style*="background-color: rgba(22, 163, 74, 0.1)"] {
+  background-color: rgba(22, 163, 74, 0.1) !important;
+}
+
+.ant-progress-inner[style*="background-color: rgba(168, 85, 247, 0.1)"] {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+/* Ensure proper text contrast */
+.ant-progress-text {
+  line-height: 1 !important;
+  white-space: nowrap !important;
+}
+
+/* Custom progress with enhanced styling for dashboard */
+.ant-progress.dashboard-progress .ant-progress-bg {
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
+}
+
+.ant-progress.dashboard-progress .ant-progress-inner {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Ant Design Notification Dark Theme Styling */
+
+/* Notification Container */
+.ant-notification {
+  z-index: 1070;
+  background: transparent !important;
+}
+
+/* Fix for notification wrapper and container backgrounds */
+.ant-notification-topLeft,
+.ant-notification-topRight,
+.ant-notification-bottomLeft,
+.ant-notification-bottomRight,
+.ant-notification-top,
+.ant-notification-bottom {
+  background: transparent !important;
+}
+
+.ant-notification-notice {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+  padding: 16px 20px !important;
+  margin-bottom: 16px !important;
+  color: var(--color-foreground) !important;
+  width: 384px !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Ensure no light backgrounds leak through */
+.ant-notification-notice::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #18181a;
+  z-index: -1;
+}
+
+/* Target specific elements that might show light backgrounds */
+.ant-notification-notice-content,
+.ant-notification-notice-message,
+.ant-notification-notice-description,
+.ant-notification-notice-icon {
+  background: transparent !important;
+}
+
+/* Notification Content */
+.ant-notification-notice-content {
+  margin-left: 0 !important;
+  margin-right: 38px !important;
+}
+
+.ant-notification-notice-with-icon .ant-notification-notice-content {
+  margin-left: 48px !important;
+}
+
+/* Notification Message */
+.ant-notification-notice-message {
+  color: var(--color-foreground) !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+  margin-bottom: 4px !important;
+}
+
+/* Notification Description */
+.ant-notification-notice-description {
+  color: var(--color-muted-foreground) !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+}
+
+/* Notification Icons */
+.ant-notification-notice-icon {
+  position: absolute !important;
+  left: 16px !important;
+  top: 16px !important;
+  font-size: 20px !important;
+}
+
+.ant-notification-notice-icon-success {
+  color: #16a34a !important;
+}
+
+.ant-notification-notice-icon-info {
+  color: #2563eb !important;
+}
+
+.ant-notification-notice-icon-warning {
+  color: #ea580c !important;
+}
+
+.ant-notification-notice-icon-error {
+  color: #dc2626 !important;
+}
+
+/* Close Button */
+.ant-notification-notice-close {
+  position: absolute !important;
+  top: 16px !important;
+  right: 16px !important;
+  color: var(--color-muted-foreground) !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  transition: color 0.2s ease !important;
+}
+
+.ant-notification-notice-close:hover {
+  color: var(--color-foreground) !important;
+}
+
+/* Custom Button in Notification */
+.ant-notification-notice-btn {
+  float: right !important;
+  margin-top: 8px !important;
+}
+
+.ant-notification-notice .ant-btn {
+  font-size: 12px !important;
+  height: 28px !important;
+  padding: 0 12px !important;
+  border-radius: 4px !important;
+}
+
+/* Different Notification Types */
+.ant-notification-notice-success {
+  border-left: 4px solid #16a34a !important;
+  background-color: #18181a !important;
+}
+
+.ant-notification-notice-info {
+  border-left: 4px solid #2563eb !important;
+  background-color: #18181a !important;
+}
+
+.ant-notification-notice-warning {
+  border-left: 4px solid #ea580c !important;
+  background-color: #18181a !important;
+}
+
+.ant-notification-notice-error {
+  border-left: 4px solid #dc2626 !important;
+  background-color: #18181a !important;
+}
+
+/* Notification Placement Styles */
+.ant-notification-topLeft,
+.ant-notification-topRight,
+.ant-notification-bottomLeft,
+.ant-notification-bottomRight,
+.ant-notification-top,
+.ant-notification-bottom {
+  margin-right: 0 !important;
+  margin-left: 0 !important;
+}
+
+/* Animation Enhancements */
+.ant-notification-notice {
+  transition: all 0.3s ease !important;
+}
+
+.ant-notification-fade-enter {
+  opacity: 0 !important;
+  transform: translateX(100%) !important;
+}
+
+.ant-notification-fade-enter-active {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.ant-notification-fade-leave {
+  opacity: 1 !important;
+  transform: translateX(0) !important;
+}
+
+.ant-notification-fade-leave-active {
+  opacity: 0 !important;
+  transform: translateX(100%) !important;
+}
+
+/* Custom Icon Styling */
+.ant-notification-notice-icon .anticon {
+  font-size: 20px !important;
+}
+
+/* Progress in Notifications */
+.ant-notification-notice .ant-progress {
+  margin-top: 8px !important;
+}
+
+.ant-notification-notice .ant-progress-text {
+  color: var(--color-muted-foreground) !important;
+}
+
+/* Enhanced styling for CNC notifications */
+.ant-notification-notice.cnc-notification {
+  border-left-width: 4px !important;
+  border-left-style: solid !important;
+  background: linear-gradient(135deg, #18181a 0%, #1a1a1d 100%) !important;
+}
+
+.ant-notification-notice.cnc-notification.success {
+  border-left-color: #16a34a !important;
+  box-shadow: 0 10px 40px rgba(22, 163, 74, 0.1), 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ant-notification-notice.cnc-notification.warning {
+  border-left-color: #ea580c !important;
+  box-shadow: 0 10px 40px rgba(234, 88, 12, 0.1), 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ant-notification-notice.cnc-notification.error {
+  border-left-color: #dc2626 !important;
+  box-shadow: 0 10px 40px rgba(220, 38, 38, 0.1), 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+}
+
+.ant-notification-notice.cnc-notification.info {
+  border-left-color: #2563eb !important;
+  box-shadow: 0 10px 40px rgba(37, 99, 235, 0.1), 0 6px 16px rgba(0, 0, 0, 0.3) !important;
+}

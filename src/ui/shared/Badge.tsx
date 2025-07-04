@@ -43,11 +43,12 @@ export interface BadgeProps
   pulse?: boolean
 }
 
-function Badge({
+const Badge = React.forwardRef<HTMLDivElement, BadgeProps>(({
   className, variant, size, pulse, ...props
-}: BadgeProps) {
+}, ref) => {
   return (
     <div
+      ref={ref}
       className={cn(
         badgeVariants({ variant, size }),
         pulse && 'animate-pulse',
@@ -56,7 +57,8 @@ function Badge({
       {...props}
     />
   );
-}
+});
+Badge.displayName = 'Badge';
 
 // CNC-specific badge variants
 const StatusBadge = React.forwardRef<

@@ -15,6 +15,7 @@ import {
 import { Button } from '../shared/Button';
 import { JogGrid } from '../shared/Grid';
 import { cn } from '../shared/utils';
+import { InputNumber } from 'antd';
 
 export interface JogControlsProps {
   onJog: (axis: 'X' | 'Y' | 'Z', direction: number) => void
@@ -261,14 +262,20 @@ export const JogDistanceControl: React.FC<JogDistanceControlProps> = ({
         {!continuous && (
           <>
             <div className="flex items-center gap-2">
-              <input
-                type="number"
+              <InputNumber
                 min={0.001}
                 max={1000}
                 step={0.001}
                 value={distance}
-                onChange={(e) => onDistanceChange(Number(e.target.value))}
-                className="flex-1 px-3 py-2 border border-input rounded-md font-mono"
+                onChange={(value) => onDistanceChange(value as number)}
+                className="flex-1 font-mono"
+                style={{
+                  backgroundColor: '#18181a',
+                  borderColor: 'var(--color-border)',
+                  color: 'var(--color-foreground)',
+                }}
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={(value) => value!.replace(/\$\s?|(,*)/g, '')}
               />
               <span className="text-sm text-muted-foreground">{unit}</span>
             </div>

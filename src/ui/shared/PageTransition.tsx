@@ -135,13 +135,14 @@ export interface AnimatedCardProps {
   className?: string
 }
 
-export const AnimatedCard: React.FC<AnimatedCardProps> = ({
+export const AnimatedCard = React.forwardRef<HTMLDivElement, AnimatedCardProps>(({
   children,
   delay = 0,
   hover = true,
   className,
-}) => (
+}, ref) => (
     <motion.div
+      ref={ref}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.3, delay }}
@@ -151,7 +152,8 @@ export const AnimatedCard: React.FC<AnimatedCardProps> = ({
     >
       {children}
     </motion.div>
-);
+));
+AnimatedCard.displayName = 'AnimatedCard';
 
 export interface LoadingTransitionProps {
   isLoading: boolean
