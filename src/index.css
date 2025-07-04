@@ -1313,3 +1313,161 @@ svg {
   border-left-color: #2563eb !important;
   box-shadow: 0 10px 40px rgba(37, 99, 235, 0.1), 0 6px 16px rgba(0, 0, 0, 0.3) !important;
 }
+
+/* Transfer Component Dark Theme Styling */
+.ant-transfer {
+  color: var(--color-foreground) !important;
+}
+
+.ant-transfer-list {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+}
+
+.ant-transfer-list-header {
+  background-color: #27272a !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.ant-transfer-list-header-title {
+  color: var(--color-foreground) !important;
+}
+
+.ant-transfer-list-content {
+  background-color: #18181a !important;
+}
+
+.ant-transfer-list-content-item {
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: var(--color-foreground) !important;
+  transition: background-color 0.2s ease !important;
+}
+
+.ant-transfer-list-content-item:hover {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+.ant-transfer-list-content-item-checked {
+  background-color: rgba(168, 85, 247, 0.2) !important;
+}
+
+.ant-transfer-list-search {
+  background-color: #27272a !important;
+  border-bottom: 1px solid var(--color-border) !important;
+}
+
+.ant-transfer-list-search .ant-input {
+  background-color: transparent !important;
+  border: none !important;
+  color: var(--color-foreground) !important;
+}
+
+.ant-transfer-list-search .ant-input::placeholder {
+  color: var(--color-muted-foreground) !important;
+}
+
+.ant-transfer-operation {
+  display: flex;
+  flex-direction: column;
+  gap: 8px !important;
+}
+
+.ant-transfer-operation .ant-btn {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary-foreground) !important;
+}
+
+.ant-transfer-operation .ant-btn:hover {
+  background-color: var(--color-primary-light) !important;
+  border-color: var(--color-primary-light) !important;
+}
+
+.ant-transfer-operation .ant-btn:disabled {
+  background-color: #3f3f46 !important;
+  border-color: #3f3f46 !important;
+  color: #71717a !important;
+}
+
+/* Upload Component Dark Theme Styling */
+.ant-upload.ant-upload-drag {
+  background-color: #18181a !important;
+  border: 2px dashed var(--color-border) !important;
+  border-radius: 8px !important;
+  transition: border-color 0.3s ease !important;
+}
+
+.ant-upload.ant-upload-drag:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.ant-upload.ant-upload-drag.ant-upload-drag-hover {
+  border-color: var(--color-primary) !important;
+  background-color: rgba(168, 85, 247, 0.05) !important;
+}
+
+.ant-upload-drag-container {
+  padding: 40px 20px !important;
+}
+
+.ant-upload-text {
+  color: var(--color-foreground) !important;
+  margin-bottom: 8px !important;
+}
+
+.ant-upload-hint {
+  color: var(--color-muted-foreground) !important;
+}
+
+.ant-upload-drag-icon {
+  margin-bottom: 16px !important;
+}
+
+.ant-upload-list {
+  background-color: transparent !important;
+}
+
+.ant-upload-list-item {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  color: var(--color-foreground) !important;
+}
+
+.ant-upload-list-item:hover {
+  background-color: #27272a !important;
+}
+
+.ant-upload-list-item-name {
+  color: var(--color-foreground) !important;
+}
+
+.ant-upload-list-item-card-actions {
+  background-color: transparent !important;
+}
+
+.ant-upload-list-item-card-actions .anticon {
+  color: var(--color-muted-foreground) !important;
+}
+
+.ant-upload-list-item-card-actions .anticon:hover {
+  color: var(--color-foreground) !important;
+}
+
+/* Upload dragger custom class */
+.upload-dragger {
+  background-color: #18181a !important;
+  border: 2px dashed var(--color-border) !important;
+}
+
+.upload-dragger:hover {
+  border-color: var(--color-primary) !important;
+}
+
+.upload-dragger .ant-upload-btn {
+  padding: 40px 20px !important;
+}

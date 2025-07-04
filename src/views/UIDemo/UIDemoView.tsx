@@ -23,7 +23,7 @@ import {
   AnimatedCard,
   Sidebar,
 } from '../../ui/shared';
-import { InputNumber, Form, Select, Switch, Checkbox, Radio, DatePicker, TimePicker, Popover, Divider, Tour, Tooltip, Progress, notification, Input as AntInput } from 'antd';
+import { InputNumber, Form, Select, Switch, Checkbox, Radio, DatePicker, TimePicker, Popover, Divider, Tour, Tooltip, Progress, notification, Input as AntInput, Transfer, Upload, Button as AntButton } from 'antd';
 import {
   JogControls,
   JogSpeedControl,
@@ -62,9 +62,11 @@ import {
   Wifi,
   WifiOff,
   Download,
-  Upload,
+  Upload as UploadIcon,
   Power,
   PowerOff,
+  X,
+  Check,
 } from 'lucide-react';
 
 // Removed Ant Design components
@@ -84,6 +86,13 @@ export const UIDemoView: React.FC = () => {
   const [tourOpen, setTourOpen] = useState(false);
   const [tourType, setTourType] = useState<'basic' | 'cnc' | 'advanced'>('basic');
 
+  // Transfer list state
+  const [transferTargetKeys, setTransferTargetKeys] = useState<string[]>(['item-2', 'item-4']);
+  const [transferSelectedKeys, setTransferSelectedKeys] = useState<string[]>([]);
+
+  // File upload state
+  const [fileList, setFileList] = useState<any[]>([]);
+
   // Tour target refs
   const basicButtonsRef = React.useRef(null);
   const statusBadgesRef = React.useRef(null);
@@ -95,6 +104,8 @@ export const UIDemoView: React.FC = () => {
   const tooltipRef = React.useRef(null);
   const progressRef = React.useRef(null);
   const notificationRef = React.useRef(null);
+  const transferRef = React.useRef(null);
+  const uploadRef = React.useRef(null);
 
   const handleJog = (axis: 'X' | 'Y' | 'Z', direction: number) => {
     setPosition((prev) => ({
@@ -228,6 +239,69 @@ export const UIDemoView: React.FC = () => {
     }, 4000);
   };
 
+  // Transfer list data and handlers
+  const transferData = [
+    { key: 'item-1', title: 'Work Area Limit X', description: 'Maximum X-axis travel distance' },
+    { key: 'item-2', title: 'Spindle Speed Control', description: 'RPM monitoring and adjustment' },
+    { key: 'item-3', title: 'Tool Height Sensor', description: 'Automatic tool length measurement' },
+    { key: 'item-4', title: 'Emergency Stop Circuit', description: 'Safety shutdown system' },
+    { key: 'item-5', title: 'Coolant System', description: 'Flood and mist coolant control' },
+    { key: 'item-6', title: 'Part Probing', description: 'Workpiece surface detection' },
+    { key: 'item-7', title: 'Feed Rate Override', description: 'Real-time speed adjustment' },
+    { key: 'item-8', title: 'G-Code Validation', description: 'Syntax and safety checking' },
+  ];
+
+  const handleTransferChange = (newTargetKeys: string[]) => {
+    setTransferTargetKeys(newTargetKeys);
+  };
+
+  const handleTransferSelectChange = (sourceSelectedKeys: string[], targetSelectedKeys: string[]) => {
+    setTransferSelectedKeys([...sourceSelectedKeys, ...targetSelectedKeys]);
+  };
+
+  // File upload handlers
+  const handleUploadChange = (info: any) => {
+    let newFileList = [...info.fileList];
+    
+    // Limit to 5 files
+    newFileList = newFileList.slice(-5);
+    
+    // Update file status
+    newFileList = newFileList.map(file => {
+      if (file.response) {
+        file.url = file.response.url;
+      }
+      return file;
+    });
+    
+    setFileList(newFileList);
+  };
+
+  const handleUploadRemove = (file: any) => {
+    const index = fileList.indexOf(file);
+    const newFileList = fileList.slice();
+    newFileList.splice(index, 1);
+    setFileList(newFileList);
+  };
+
+  const beforeUpload = (file: any) => {
+    const isValidType = file.type === 'text/plain' || file.name.endsWith('.gcode') || file.name.endsWith('.nc') || file.name.endsWith('.txt');
+    if (!isValidType) {
+      notification.error({
+        message: 'Invalid File Type',
+        description: 'Please upload G-Code files (.gcode, .nc, .txt)',
+      });
+    }
+    const isLt10M = file.size / 1024 / 1024 < 10;
+    if (!isLt10M) {
+      notification.error({
+        message: 'File Too Large',
+        description: 'File must be smaller than 10MB',
+      });
+    }
+    return isValidType && isLt10M;
+  };
+
   // Tour configurations
   const basicTourSteps = [
     {
@@ -330,6 +404,16 @@ export const UIDemoView: React.FC = () => {
       title: 'System Alerts',
       description: 'Critical notifications for machine status, safety alerts, maintenance reminders, and job updates.',
       target: () => notificationRef.current,
+    },
+    {
+      title: 'Feature Selection',
+      description: 'Use transfer lists to configure which CNC features and sensors are active for your machine setup.',
+      target: () => transferRef.current,
+    },
+    {
+      title: 'File Management',
+      description: 'Upload G-Code files, CAM programs, and machine configurations with drag-and-drop support.',
+      target: () => uploadRef.current,
     },
   ];
 
@@ -857,6 +941,116 @@ export const UIDemoView: React.FC = () => {
                                 placeholder="Additional notes or comments..."
                               />
                             </Form.Item>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Feature Selection & File Management */}
+                      <div className="border-t border-border pt-6 mt-6">
+                        <h3 className="text-lg font-semibold text-foreground mb-4">Advanced Configuration</h3>
+                        
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                          {/* Feature Selection */}
+                          <div className="space-y-4" ref={transferRef}>
+                            <h4 className="text-md font-medium text-foreground mb-3">Active Features & Sensors</h4>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Configure which CNC features and sensors are active for your machine setup. 
+                              Move items between Available and Active lists.
+                            </p>
+                            
+                            <Transfer
+                              dataSource={transferData}
+                              targetKeys={transferTargetKeys}
+                              selectedKeys={transferSelectedKeys}
+                              onChange={handleTransferChange}
+                              onSelectChange={handleTransferSelectChange}
+                              render={item => (
+                                <div className="flex flex-col">
+                                  <span className="font-medium text-foreground">{item.title}</span>
+                                  <span className="text-xs text-muted-foreground">{item.description}</span>
+                                </div>
+                              )}
+                              titles={['Available Features', 'Active Features']}
+                              showSearch
+                              searchPlaceholder="Search features..."
+                              listStyle={{
+                                width: 280,
+                                height: 320,
+                              }}
+                            />
+                          </div>
+
+                          {/* File Upload */}
+                          <div className="space-y-4" ref={uploadRef}>
+                            <h4 className="text-md font-medium text-foreground mb-3">G-Code File Upload</h4>
+                            <p className="text-sm text-muted-foreground mb-4">
+                              Upload G-Code files, CAM programs, and configuration files. 
+                              Supports drag-and-drop and validates file types.
+                            </p>
+
+                            <Upload.Dragger
+                              name="files"
+                              multiple
+                              action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                              onChange={handleUploadChange}
+                              onRemove={handleUploadRemove}
+                              beforeUpload={beforeUpload}
+                              fileList={fileList}
+                              accept=".gcode,.nc,.txt"
+                              className="upload-dragger"
+                            >
+                              <p className="ant-upload-drag-icon mb-4">
+                                <UploadIcon className="w-12 h-12 text-primary mx-auto" />
+                              </p>
+                              <p className="ant-upload-text text-foreground font-medium mb-2">
+                                Click or drag G-Code files to this area to upload
+                              </p>
+                              <p className="ant-upload-hint text-muted-foreground">
+                                Support for .gcode, .nc, and .txt files. Maximum file size: 10MB. 
+                                Multiple files supported (up to 5 files).
+                              </p>
+                            </Upload.Dragger>
+
+                            {fileList.length > 0 && (
+                              <div className="mt-4">
+                                <h5 className="text-sm font-medium text-foreground mb-2">
+                                  Uploaded Files ({fileList.length}/5):
+                                </h5>
+                                <div className="space-y-2">
+                                  {fileList.map((file, index) => (
+                                    <div 
+                                      key={index}
+                                      className="flex items-center justify-between p-3 bg-card border border-border rounded-lg"
+                                    >
+                                      <div className="flex items-center space-x-3">
+                                        <FileText className="w-5 h-5 text-primary" />
+                                        <div>
+                                          <p className="text-sm font-medium text-foreground">{file.name}</p>
+                                          <p className="text-xs text-muted-foreground">
+                                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <div className="flex items-center space-x-2">
+                                        {file.status === 'done' && (
+                                          <Check className="w-4 h-4 text-green-500" />
+                                        )}
+                                        {file.status === 'error' && (
+                                          <X className="w-4 h-4 text-red-500" />
+                                        )}
+                                        <AntButton
+                                          type="text"
+                                          size="small"
+                                          icon={<X className="w-4 h-4" />}
+                                          onClick={() => handleUploadRemove(file)}
+                                          className="text-muted-foreground hover:text-destructive"
+                                        />
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
