@@ -9,7 +9,7 @@ import { PluginRenderer, SupabaseTestComponent } from '../../components';
 
 // Add inside your dashboard layout:
 
-import { DatabaseIntegrationDemo } from '../../components/DatabaseIntegrationDemo';
+import DatabaseIntegrationDemo from '../../services/database/DatabaseDemo';
 
 const { Title, Paragraph } = Typography;
 

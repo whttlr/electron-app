@@ -1,12 +1,21 @@
 // Core Machine Module - Public API
 
-// Machine controller (to be implemented)
-// export { MachineController } from './MachineController';
+// Machine controller
+export { MachineController, machineController } from './MachineController';
 
 // Machine types and interfaces
-// export type { MachineState, MachineConfig } from './types';
+export type { 
+  MachineState, 
+  MachineCommand, 
+  CommandResponse, 
+  MachineEvent,
+  MachineEventHandler 
+} from './MachineController';
 
-// Placeholder for future machine control functionality
+// Configuration
+export { machineConfig, type MachineConfig } from './config';
+
+// Module metadata
 export const MachineModule = {
   version: '1.0.0',
   description: 'Core machine control and state management',

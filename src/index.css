@@ -1471,3 +1471,202 @@ svg {
 .upload-dragger .ant-upload-btn {
   padding: 40px 20px !important;
 }
+
+/* Fix 1: Operating Hours - TimePicker popup styles */
+.ant-picker-time-panel {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.ant-picker-time-panel-column {
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker-time-panel-column > li {
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker-time-panel-column > li.ant-picker-time-panel-cell-selected {
+  background-color: var(--color-primary) !important;
+  color: white !important;
+}
+
+.ant-picker-time-panel-column > li:hover {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+/* Fix 2 & 3: Maintenance Date Picker - Header text and footer colors */
+.ant-picker-header-view {
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker-header button {
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker-header button:hover {
+  color: var(--color-primary) !important;
+}
+
+.ant-picker-footer {
+  background-color: #18181a !important;
+  border-top: 1px solid var(--color-border) !important;
+}
+
+.ant-picker-footer a {
+  color: var(--color-primary) !important;
+}
+
+.ant-picker-footer a:hover {
+  color: var(--color-primary-light) !important;
+}
+
+/* Fix 7: Preview Values button text color */
+.ant-btn-default {
+  background-color: transparent !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-foreground) !important;
+}
+
+.ant-btn-default:hover {
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+/* Fix 8: Basic Notifications - Remove white background artifacts */
+.ant-notification-notice-wrapper {
+  background: transparent !important;
+}
+
+.ant-notification-notice-container {
+  background: transparent !important;
+}
+
+.ant-notification-hook-holder {
+  background: transparent !important;
+}
+
+/* Ensure notification parent elements have transparent backgrounds */
+.ant-notification > div {
+  background: transparent !important;
+}
+
+/* Fix 9: Jog Speed slider handle alignment */
+.ant-slider {
+  padding: 0 !important;
+  margin: 11px 6px !important;
+}
+
+.ant-slider-rail {
+  background-color: rgba(255, 255, 255, 0.1) !important;
+  height: 8px !important;
+  border-radius: 4px !important;
+}
+
+.ant-slider-track {
+  background-color: var(--color-primary) !important;
+  height: 8px !important;
+  border-radius: 4px !important;
+}
+
+.ant-slider-handle {
+  width: 20px !important;
+  height: 20px !important;
+  margin-top: -8px !important;
+  background-color: var(--color-primary) !important;
+  border: 3px solid #1a1a1a !important;
+  box-shadow: 0 2px 8px rgba(168, 85, 247, 0.5), 0 0 0 1px rgba(168, 85, 247, 0.2) !important;
+}
+
+.ant-slider-handle:hover {
+  background-color: var(--color-primary-light) !important;
+  transform: scale(1.15) !important;
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.8), 0 0 0 2px rgba(168, 85, 247, 0.3) !important;
+}
+
+.ant-slider-handle:focus {
+  box-shadow: 0 4px 12px rgba(168, 85, 247, 0.8), 0 0 0 2px rgba(168, 85, 247, 0.3) !important;
+}
+
+.ant-slider:hover .ant-slider-rail {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.ant-slider:hover .ant-slider-track {
+  background-color: var(--color-primary-light) !important;
+}
+
+/* Ensure consistent handle positioning */
+.ant-slider-handle::after {
+  display: none !important;
+}
+
+/* Fix month selector text in DatePicker */
+.ant-picker-month-btn,
+.ant-picker-year-btn {
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker-header-super-prev-btn,
+.ant-picker-header-prev-btn,
+.ant-picker-header-next-btn,
+.ant-picker-header-super-next-btn {
+  color: var(--color-foreground) !important;
+}
+
+.ant-picker-header-super-prev-btn:hover,
+.ant-picker-header-prev-btn:hover,
+.ant-picker-header-next-btn:hover,
+.ant-picker-header-super-next-btn:hover {
+  color: var(--color-primary) !important;
+}
+
+/* Fix 4: Available Features search field spacing */
+.ant-transfer-list-search {
+  margin-bottom: 16px !important;
+  padding-bottom: 8px !important;
+}
+
+.ant-transfer-list-body {
+  padding-top: 8px !important;
+}
+
+/* Fix 5 & 6: Available Features dropdown color theme and Transfer improvements */
+.ant-transfer-list-header-title {
+  font-weight: 600 !important;
+}
+
+.ant-transfer-list-header-dropdown {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 6px !important;
+}
+
+.ant-transfer-list-header-dropdown .ant-dropdown-menu {
+  background-color: #18181a !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.ant-transfer-list-header-dropdown .ant-dropdown-menu-item {
+  color: var(--color-foreground) !important;
+  background-color: transparent !important;
+}
+
+.ant-transfer-list-header-dropdown .ant-dropdown-menu-item:hover {
+  background-color: rgba(168, 85, 247, 0.1) !important;
+}
+
+.ant-transfer-list-header-dropdown .ant-dropdown-menu-item-selected {
+  background-color: rgba(168, 85, 247, 0.2) !important;
+  color: var(--color-primary) !important;
+}
+
+/* Fix Dashboard Grid row gaps */
+.dashboard-grid {
+  gap: 12px !important;
+}
+
+.dashboard-grid > * {
+  margin: 0 !important;
+}

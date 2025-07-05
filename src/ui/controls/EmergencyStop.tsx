@@ -88,13 +88,14 @@ export const EmergencyStop: React.FC<EmergencyStopProps> = ({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="absolute -top-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap"
+          className="absolute -top-8 left-1/2 transform -translate-x-1/2"
         >
-          <div className="flex items-center gap-1 text-red-500">
+          <div className="flex flex-col items-center gap-1 text-red-500">
             <AlertTriangle className="h-4 w-4" />
-            <span className={cn('font-semibold uppercase', config.text)}>
-              Emergency Stop
-            </span>
+            <div className={cn('font-semibold uppercase text-center leading-tight', config.text)}>
+              <div>Emergency</div>
+              <div>Stop</div>
+            </div>
           </div>
         </motion.div>
       )}

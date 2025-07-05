@@ -1,12 +1,26 @@
 // Core Visualization Module - Public API
 
-// Visualization controller (to be implemented)
-// export { VisualizationController } from './VisualizationController';
+// Visualization controller
+export { VisualizationController, visualizationController } from './VisualizationController';
 
 // Visualization types and interfaces
-// export type { SceneData, RenderConfig } from './types';
+export type { 
+  Camera3D, 
+  Camera2D, 
+  Light, 
+  SceneObject, 
+  ToolPath, 
+  ViewportSettings,
+  RenderQuality,
+  VisualizationState,
+  VisualizationEvent,
+  VisualizationEventHandler 
+} from './VisualizationController';
 
-// Placeholder for future visualization functionality
+// Configuration
+export { visualizationConfig, type VisualizationConfig } from './config';
+
+// Module metadata
 export const VisualizationModule = {
   version: '1.0.0',
   description: '3D/2D visualization calculations and scene management',

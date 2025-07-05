@@ -1,0 +1,226 @@
+{
+  "name": "CNC Control System",
+  "short_name": "CNC Control",
+  "description": "Industrial CNC machine control application for precision manufacturing",
+  "version": "1.0.0",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "theme_color": "#1890ff",
+  "background_color": "#141414",
+  "lang": "en",
+  "dir": "ltr",
+  
+  "icons": [
+    {
+      "src": "/icons/icon-72x72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-96x96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-128x128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-144x144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-152x152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+
+  "screenshots": [
+    {
+      "src": "/screenshots/desktop-wide.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "CNC Control Dashboard on Desktop"
+    },
+    {
+      "src": "/screenshots/tablet-narrow.png",
+      "sizes": "768x1024",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Mobile CNC Controls"
+    }
+  ],
+
+  "categories": [
+    "productivity",
+    "utilities",
+    "business"
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Machine Controls",
+      "short_name": "Controls",
+      "description": "Access machine jog controls and positioning",
+      "url": "/controls",
+      "icons": [
+        {
+          "src": "/icons/shortcut-controls.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Job Queue",
+      "short_name": "Jobs",
+      "description": "Manage and monitor CNC jobs",
+      "url": "/jobs",
+      "icons": [
+        {
+          "src": "/icons/shortcut-jobs.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Emergency Stop",
+      "short_name": "E-Stop",
+      "description": "Emergency stop all machine operations",
+      "url": "/emergency",
+      "icons": [
+        {
+          "src": "/icons/shortcut-emergency.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "gcode",
+          "accept": [".gcode", ".nc", ".tap", "text/plain"]
+        }
+      ]
+    }
+  },
+
+  "protocol_handlers": [
+    {
+      "protocol": "cnc",
+      "url": "/protocol?command=%s"
+    }
+  ],
+
+  "related_applications": [
+    {
+      "platform": "windows",
+      "url": "ms-windows-store://pdp/?productid=CNCControl",
+      "id": "com.company.cnccontrol"
+    },
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=com.company.cnccontrol",
+      "id": "com.company.cnccontrol"
+    }
+  ],
+
+  "prefer_related_applications": false,
+
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui",
+    "browser"
+  ],
+
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+
+  "handle_links": "preferred",
+
+  "scope_extensions": [
+    {
+      "origin": "*.cnc-control.local"
+    }
+  ],
+
+  "file_handlers": [
+    {
+      "action": "/open-gcode",
+      "accept": {
+        "text/plain": [".gcode", ".nc", ".tap"],
+        "application/gcode": [".gcode"]
+      },
+      "icons": [
+        {
+          "src": "/icons/gcode-file.png",
+          "sizes": "256x256",
+          "type": "image/png"
+        }
+      ],
+      "launch_type": "single-client"
+    }
+  ],
+
+  "permissions": [
+    "camera",
+    "microphone",
+    "persistent-storage",
+    "background-sync",
+    "push"
+  ],
+
+  "features": [
+    "cross-origin-isolated"
+  ],
+
+  "id": "cnc-control-system",
+  
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7"
+}

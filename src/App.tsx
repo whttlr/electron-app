@@ -15,16 +15,16 @@ import {
 } from '@ant-design/icons';
 import { PluginProvider, usePlugins } from './services/plugin';
 import { databaseService } from './services/database';
-import { SettingsProvider } from './contexts/SettingsContext';
+import { SettingsProvider } from './services/settings/SettingsContext';
 import { UpdateNotificationBadge, ReleaseNotesPopover } from './services/update';
-import { useUpdateService } from './hooks/useUpdateService';
+import { useUpdateService } from './services/update/useUpdateService';
 import DashboardView from './views/Dashboard/DashboardView';
 import PluginsView from './views/Plugins/PluginsView';
 import SettingsView from './views/Settings/SettingsView';
 import ControlsView from './views/Controls/ControlsView';
 import PluginView from './views/Plugin/PluginView';
-import { UIDemoView } from './views/UIDemo/UIDemoView';
 import { CustomThemeProvider } from './ui/shared/ThemeProvider';
+import { ComponentProvider } from './ui/providers/ComponentProvider';
 import './App.css';
 
 const { Header, Content, Sider } = Layout;
@@ -62,11 +62,6 @@ const AppContent: React.FC = () => {
       key: '/controls',
       icon: <ControlOutlined />,
       label: <Link to="/controls" data-testid="nav-controls">Controls</Link>,
-    },
-    {
-      key: '/ui-demo',
-      icon: <MonitorOutlined />,
-      label: <Link to="/ui-demo" data-testid="nav-ui-demo">UI Demo</Link>,
     },
     // Add standalone plugin menu items
     ...standalonePlugins.map((plugin) => ({
@@ -133,7 +128,6 @@ const AppContent: React.FC = () => {
             <Routes>
               <Route path="/" element={<DashboardView />} />
               <Route path="/controls" element={<ControlsView />} />
-              <Route path="/ui-demo" element={<UIDemoView />} />
               <Route path="/plugins" element={<PluginsView />} />
               <Route path="/settings" element={<SettingsView />} />
               {/* Dynamic plugin routes */}
@@ -220,9 +214,11 @@ function App() {
       <Router>
         <SettingsProvider>
           <PluginProvider>
-            <CustomThemeProvider>
-              <AppContent />
-            </CustomThemeProvider>
+            <ComponentProvider implementation="ant-design">
+              <CustomThemeProvider>
+                <AppContent />
+              </CustomThemeProvider>
+            </ComponentProvider>
           </PluginProvider>
         </SettingsProvider>
       </Router>

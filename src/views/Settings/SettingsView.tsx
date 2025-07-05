@@ -4,12 +4,12 @@ import {
 } from 'antd';
 import { SettingOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
 import { PluginRenderer } from '../../ui/plugin';
-import { useUpdateService } from '../../hooks/useUpdateService';
+import { useUpdateService } from '../../services/update/useUpdateService';
 import {
   useMachineConfig, useStateConfig, useUIConfig, useAPIConfig,
 } from '../../services/config';
 import { AppSettings } from '../../services/settings';
-import { useSettings } from '../../contexts/SettingsContext';
+import { useSettings } from '../../services/settings/SettingsContext';
 
 const { Title } = Typography;
 const { Option } = Select;

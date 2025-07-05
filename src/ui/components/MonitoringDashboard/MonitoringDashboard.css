@@ -1,0 +1,331 @@
+/**
+ * Monitoring Dashboard Styles
+ * Dark theme optimized styling for monitoring interface
+ */
+
+.monitoring-dashboard {
+  background: var(--bg-primary);
+  border-radius: 8px;
+  padding: 24px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 24px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.metrics-row .ant-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.metrics-row .ant-card:hover {
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.metrics-row .ant-statistic-title {
+  color: var(--text-secondary) !important;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.metrics-row .ant-statistic-content {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.health-row .ant-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.health-row .ant-card-head-title {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.health-row .ant-progress-text {
+  color: var(--text-primary) !important;
+}
+
+.alerts-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.alerts-list .ant-alert {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+}
+
+.alerts-list .ant-alert-message {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.alerts-list .ant-alert-description {
+  color: var(--text-secondary);
+}
+
+/* Chart containers */
+.monitoring-dashboard .recharts-wrapper {
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.monitoring-dashboard .recharts-cartesian-grid line {
+  stroke: var(--border-color);
+  opacity: 0.5;
+}
+
+.monitoring-dashboard .recharts-text {
+  fill: var(--text-secondary);
+  font-size: 12px;
+}
+
+.monitoring-dashboard .recharts-tooltip-wrapper {
+  background: var(--bg-secondary) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 6px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.monitoring-dashboard .recharts-default-tooltip {
+  background: var(--bg-secondary) !important;
+  border: none !important;
+  border-radius: 6px !important;
+  color: var(--text-primary) !important;
+}
+
+/* Tabs styling */
+.monitoring-dashboard .ant-tabs-nav {
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 24px;
+}
+
+.monitoring-dashboard .ant-tabs-tab {
+  color: var(--text-secondary);
+  border-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.monitoring-dashboard .ant-tabs-tab:hover {
+  color: var(--primary-color);
+}
+
+.monitoring-dashboard .ant-tabs-tab-active {
+  color: var(--primary-color) !important;
+  border-color: var(--primary-color) !important;
+}
+
+.monitoring-dashboard .ant-tabs-ink-bar {
+  background: var(--primary-color);
+}
+
+/* Card styling */
+.monitoring-dashboard .ant-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.monitoring-dashboard .ant-card-head {
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.monitoring-dashboard .ant-card-head-title {
+  color: var(--text-primary);
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.monitoring-dashboard .ant-card-body {
+  padding: 24px;
+}
+
+/* Table styling */
+.monitoring-dashboard .ant-table {
+  background: var(--bg-secondary);
+}
+
+.monitoring-dashboard .ant-table-thead > tr > th {
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.monitoring-dashboard .ant-table-tbody > tr > td {
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
+}
+
+.monitoring-dashboard .ant-table-tbody > tr:hover > td {
+  background: var(--bg-tertiary);
+}
+
+/* Progress bars */
+.monitoring-dashboard .ant-progress-line {
+  background: var(--bg-tertiary);
+}
+
+.monitoring-dashboard .ant-progress-text {
+  color: var(--text-primary);
+}
+
+/* Tags */
+.monitoring-dashboard .ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 12px;
+  padding: 2px 8px;
+}
+
+/* Badge styling */
+.monitoring-dashboard .ant-badge-count {
+  font-weight: 600;
+  font-size: 12px;
+  min-width: 20px;
+  height: 20px;
+  line-height: 18px;
+  border-radius: 10px;
+}
+
+/* Status indicators */
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-indicator.healthy {
+  background: rgba(82, 196, 26, 0.1);
+  color: #52c41a;
+  border: 1px solid rgba(82, 196, 26, 0.3);
+}
+
+.status-indicator.warning {
+  background: rgba(250, 173, 20, 0.1);
+  color: #faad14;
+  border: 1px solid rgba(250, 173, 20, 0.3);
+}
+
+.status-indicator.critical {
+  background: rgba(255, 77, 79, 0.1);
+  color: #ff4d4f;
+  border: 1px solid rgba(255, 77, 79, 0.3);
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .monitoring-dashboard {
+    padding: 16px;
+  }
+  
+  .dashboard-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .dashboard-header h2 {
+    font-size: 20px;
+  }
+  
+  .metrics-row .ant-statistic-content {
+    font-size: 20px;
+  }
+  
+  .monitoring-dashboard .ant-card-body {
+    padding: 16px;
+  }
+  
+  .recharts-wrapper {
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .monitoring-dashboard {
+    padding: 12px;
+  }
+  
+  .metrics-row .ant-statistic-content {
+    font-size: 18px;
+  }
+  
+  .monitoring-dashboard .ant-card-body {
+    padding: 12px;
+  }
+}
+
+/* Animation for real-time updates */
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.real-time-update {
+  animation: pulse 1s ease-in-out;
+}
+
+/* Loading states */
+.monitoring-dashboard .loading-skeleton {
+  background: linear-gradient(90deg, var(--bg-tertiary) 25%, rgba(255, 255, 255, 0.1) 50%, var(--bg-tertiary) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Chart responsiveness */
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+
+@media (max-width: 768px) {
+  .chart-container {
+    height: 250px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-container {
+    height: 200px;
+  }
+}

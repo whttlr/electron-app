@@ -1,13 +1,25 @@
 // Core Positioning Module - Public API
 
-// Position controllers (to be implemented)
-// export { PositionController } from './PositionController';
-// export { JogController } from './JogController';
+// Positioning controller
+export { PositioningController, positioningController } from './PositioningController';
 
 // Position types and interfaces
-// export type { Position, JogSettings } from './types';
+export type { 
+  Position, 
+  CoordinateSystem, 
+  JogSettings, 
+  JogCommand, 
+  PositionHistory,
+  HomingSettings,
+  PositioningState,
+  PositioningEvent,
+  PositioningEventHandler 
+} from './PositioningController';
 
-// Placeholder for future positioning functionality
+// Configuration
+export { positioningConfig, type PositioningConfig } from './config';
+
+// Module metadata
 export const PositioningModule = {
   version: '1.0.0',
   description: 'Position tracking and jog control logic',
