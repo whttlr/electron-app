@@ -14,13 +14,18 @@
 import {
   ReactNode, HTMLAttributes, ButtonHTMLAttributes, InputHTMLAttributes,
 } from 'react';
-import type {
-  ButtonVariants,
-  CardVariants,
-  BadgeVariants,
-  InputVariants,
-  AlertVariants,
-} from '../theme/component-styles';
+
+// Basic variant types - simplified without theme dependencies
+type VariantBase = {
+  variant?: string;
+  size?: string;
+};
+
+type ButtonVariants = VariantBase;
+type CardVariants = VariantBase & { hoverable?: boolean; interactive?: boolean };
+type BadgeVariants = VariantBase & { shape?: string; dot?: boolean };
+type InputVariants = VariantBase & { state?: string };
+type AlertVariants = VariantBase;
 
 // ============================================================================
 // BASE INTERFACES

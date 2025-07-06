@@ -251,9 +251,10 @@ export {
 
 /**
  * Re-export design tokens and styles
+ * TODO: Implement theme system when needed
  */
-export { designTokens, componentTokens } from '../theme/tokens';
-export { componentVariants } from '../theme/component-styles';
+// export { designTokens, componentTokens } from '../theme/tokens';
+// export { componentVariants } from '../theme/component-styles';
 
 // ============================================================================
 // UTILITY FUNCTIONS
