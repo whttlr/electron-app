@@ -1,6 +1,6 @@
 /**
  * MachineController - Core machine state and control logic
- * 
+ *
  * This controller manages the overall machine state, connection handling,
  * and provides the core interface for machine operations.
  */
@@ -19,7 +19,7 @@ export interface MachineState {
     status: 'disconnected' | 'connecting' | 'connected' | 'error';
     error: string | null;
   };
-  
+
   // Machine status
   status: {
     state: 'Idle' | 'Run' | 'Hold' | 'Jog' | 'Alarm' | 'Door' | 'Check' | 'Home' | 'Sleep';
@@ -37,14 +37,14 @@ export interface MachineState {
       rapidRate: number; // percentage
     };
   };
-  
+
   // Position information
   position: {
     work: { x: number; y: number; z: number };
     machine: { x: number; y: number; z: number };
     wco: { x: number; y: number; z: number }; // Work coordinate offset
   };
-  
+
   // Machine limits and capabilities
   limits: {
     softLimits: {
@@ -58,7 +58,7 @@ export interface MachineState {
       axis: string | null;
     };
   };
-  
+
   // Safety and alarms
   safety: {
     emergencyStop: boolean;
@@ -74,7 +74,7 @@ export interface MachineState {
       timestamp: Date;
     }>;
   };
-  
+
   // Machine capabilities
   capabilities: {
     axes: string[];
@@ -84,7 +84,7 @@ export interface MachineState {
     maxFeedRate: number;
     maxSpindleSpeed: number;
   };
-  
+
   // Real-time data
   realtime: {
     lastUpdate: Date;
@@ -111,7 +111,7 @@ export interface CommandResponse {
 }
 
 // Event types
-export type MachineEvent = 
+export type MachineEvent =
   | { type: 'connection_changed'; data: { isConnected: boolean; port: string | null } }
   | { type: 'state_changed'; data: { oldState: string; newState: string } }
   | { type: 'position_changed'; data: { position: MachineState['position'] } }
@@ -126,11 +126,17 @@ export type MachineEventHandler = (event: MachineEvent) => void;
  */
 export class MachineController {
   private state: MachineState;
+
   private config: MachineConfig;
+
   private eventHandlers: Map<string, Set<MachineEventHandler>> = new Map();
+
   private commandQueue: MachineCommand[] = [];
+
   private isProcessingCommands = false;
+
   private statusTimer: NodeJS.Timeout | null = null;
+
   private reconnectTimer: NodeJS.Timeout | null = null;
 
   constructor(config: MachineConfig = machineConfig) {
@@ -146,10 +152,10 @@ export class MachineController {
     try {
       // Set up status monitoring
       this.startStatusMonitoring();
-      
+
       // Emit initialization event
       this.emit('initialized', { timestamp: new Date() });
-      
+
       console.log('MachineController initialized successfully');
     } catch (error) {
       console.error('Failed to initialize MachineController:', error);
@@ -167,7 +173,7 @@ export class MachineController {
         status: 'connecting',
         port,
         baudRate,
-        error: null
+        error: null,
       });
 
       // Simulate connection process (replace with actual connection logic)
@@ -178,7 +184,7 @@ export class MachineController {
         isConnected: true,
         status: 'connected',
         lastConnected: new Date(),
-        reconnectAttempts: 0
+        reconnectAttempts: 0,
       });
 
       // Start real-time monitoring
@@ -198,18 +204,18 @@ export class MachineController {
     try {
       // Stop monitoring
       this.stopRealTimeMonitoring();
-      
+
       // Update connection state
       this.updateConnectionState({
         isConnected: false,
         status: 'disconnected',
         port: null,
-        error: null
+        error: null,
       });
 
       // Clear command queue
       this.commandQueue = [];
-      
+
       console.log('Disconnected from machine');
     } catch (error) {
       console.error('Error during disconnect:', error);
@@ -227,12 +233,12 @@ export class MachineController {
         command,
         timestamp: new Date(),
         priority,
-        callback: resolve
+        callback: resolve,
       };
 
       // Add to queue based on priority
       this.enqueueCommand(machineCommand);
-      
+
       // Process queue if not already processing
       if (!this.isProcessingCommands) {
         this.processCommandQueue();
@@ -247,16 +253,16 @@ export class MachineController {
     try {
       // Set emergency stop state
       this.state.safety.emergencyStop = true;
-      
+
       // Send emergency stop command with highest priority
       await this.sendCommand('!', 'emergency');
-      
+
       // Update machine state
       this.state.status.state = 'Alarm';
-      
+
       // Emit emergency stop event
       this.emit('emergency_stop', { active: true });
-      
+
       console.log('Emergency stop activated');
     } catch (error) {
       console.error('Failed to execute emergency stop:', error);
@@ -271,16 +277,16 @@ export class MachineController {
     try {
       // Clear emergency stop
       this.state.safety.emergencyStop = false;
-      
+
       // Send reset command
       await this.sendCommand('$X');
-      
+
       // Clear alarms
       this.state.safety.alarms = [];
-      
+
       // Reset machine state
       this.state.status.state = 'Idle';
-      
+
       console.log('Machine reset completed');
     } catch (error) {
       console.error('Failed to reset machine:', error);
@@ -321,9 +327,9 @@ export class MachineController {
    * Check if machine is ready for operations
    */
   isReady(): boolean {
-    return this.isConnected() && 
-           this.state.status.state === 'Idle' && 
-           !this.state.safety.emergencyStop;
+    return this.isConnected()
+           && this.state.status.state === 'Idle'
+           && !this.state.safety.emergencyStop;
   }
 
   /**
@@ -354,15 +360,15 @@ export class MachineController {
     if (this.reconnectTimer) {
       clearTimeout(this.reconnectTimer);
     }
-    
+
     // Disconnect if connected
     if (this.isConnected()) {
       await this.disconnect();
     }
-    
+
     // Clear event handlers
     this.eventHandlers.clear();
-    
+
     console.log('MachineController disposed');
   }
 
@@ -377,7 +383,7 @@ export class MachineController {
         lastConnected: null,
         reconnectAttempts: 0,
         status: 'disconnected',
-        error: null
+        error: null,
       },
       status: {
         state: 'Idle',
@@ -387,43 +393,43 @@ export class MachineController {
         spindleDirection: 'Off',
         coolant: {
           flood: false,
-          mist: false
+          mist: false,
         },
         overrides: {
           feedRate: 100,
           spindleSpeed: 100,
-          rapidRate: 100
-        }
+          rapidRate: 100,
+        },
       },
       position: {
         work: { x: 0, y: 0, z: 0 },
         machine: { x: 0, y: 0, z: 0 },
-        wco: { x: 0, y: 0, z: 0 }
+        wco: { x: 0, y: 0, z: 0 },
       },
       limits: {
         softLimits: {
           enabled: this.config.safety.enableSoftLimits,
-          min: { 
+          min: {
             x: this.config.limits.workingArea.x.min,
             y: this.config.limits.workingArea.y.min,
-            z: this.config.limits.workingArea.z.min
+            z: this.config.limits.workingArea.z.min,
           },
-          max: { 
+          max: {
             x: this.config.limits.workingArea.x.max,
             y: this.config.limits.workingArea.y.max,
-            z: this.config.limits.workingArea.z.max
-          }
+            z: this.config.limits.workingArea.z.max,
+          },
         },
         hardLimits: {
           enabled: true,
           triggered: false,
-          axis: null
-        }
+          axis: null,
+        },
       },
       safety: {
         emergencyStop: false,
         alarms: [],
-        warnings: []
+        warnings: [],
       },
       capabilities: {
         axes: ['X', 'Y', 'Z'],
@@ -431,21 +437,21 @@ export class MachineController {
         hasProbe: false,
         hasCoolant: true,
         maxFeedRate: this.config.limits.feedRate.max,
-        maxSpindleSpeed: this.config.limits.spindleSpeed.max
+        maxSpindleSpeed: this.config.limits.spindleSpeed.max,
       },
       realtime: {
         lastUpdate: new Date(),
         bufferSize: 0,
         plannerBlocks: 0,
-        serialRxBuffer: 0
-      }
+        serialRxBuffer: 0,
+      },
     };
   }
 
   private initializeEventHandlers(): void {
     // Initialize event handler sets
     const events = ['connection_changed', 'state_changed', 'position_changed', 'alarm_triggered', 'emergency_stop', 'error'];
-    events.forEach(event => {
+    events.forEach((event) => {
       this.eventHandlers.set(event, new Set());
     });
   }
@@ -453,7 +459,7 @@ export class MachineController {
   private emit(event: string, data: any): void {
     const handlers = this.eventHandlers.get(event);
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
           handler({ type: event, data } as MachineEvent);
         } catch (error) {
@@ -466,18 +472,18 @@ export class MachineController {
   private updateConnectionState(updates: Partial<MachineState['connection']>): void {
     const oldState = { ...this.state.connection };
     this.state.connection = { ...this.state.connection, ...updates };
-    
+
     // Emit connection change event
     this.emit('connection_changed', {
       isConnected: this.state.connection.isConnected,
-      port: this.state.connection.port
+      port: this.state.connection.port,
     });
   }
 
   private async simulateConnection(port: string, baudRate: number): Promise<void> {
     // Simulate connection delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // For now, simulate successful connection
     // In a real implementation, this would establish actual serial communication
     console.log(`Simulated connection to ${port} at ${baudRate} baud`);
@@ -487,12 +493,12 @@ export class MachineController {
     this.updateConnectionState({
       status: 'error',
       error: error.message,
-      reconnectAttempts: this.state.connection.reconnectAttempts + 1
+      reconnectAttempts: this.state.connection.reconnectAttempts + 1,
     });
 
     // Attempt auto-reconnect if enabled
-    if (this.config.connection.autoReconnect && 
-        this.state.connection.reconnectAttempts < this.config.connection.maxReconnectAttempts) {
+    if (this.config.connection.autoReconnect
+        && this.state.connection.reconnectAttempts < this.config.connection.maxReconnectAttempts) {
       this.scheduleReconnect();
     }
   }
@@ -551,7 +557,7 @@ export class MachineController {
     // Simulate position updates
     // In a real implementation, this would receive position data from the machine
     this.emit('position_changed', {
-      position: this.state.position
+      position: this.state.position,
     });
   }
 
@@ -561,11 +567,13 @@ export class MachineController {
 
   private enqueueCommand(command: MachineCommand): void {
     // Insert command based on priority
-    const priorityOrder = { emergency: 0, high: 1, normal: 2, low: 3 };
+    const priorityOrder = {
+      emergency: 0, high: 1, normal: 2, low: 3,
+    };
     const insertIndex = this.commandQueue.findIndex(
-      cmd => priorityOrder[cmd.priority] > priorityOrder[command.priority]
+      (cmd) => priorityOrder[cmd.priority] > priorityOrder[command.priority],
     );
-    
+
     if (insertIndex === -1) {
       this.commandQueue.push(command);
     } else {
@@ -582,7 +590,7 @@ export class MachineController {
 
     while (this.commandQueue.length > 0) {
       const command = this.commandQueue.shift()!;
-      
+
       try {
         const response = await this.executeCommand(command);
         if (command.callback) {
@@ -592,9 +600,9 @@ export class MachineController {
         const errorResponse: CommandResponse = {
           success: false,
           message: error instanceof Error ? error.message : 'Unknown error',
-          timestamp: new Date()
+          timestamp: new Date(),
         };
-        
+
         if (command.callback) {
           command.callback(errorResponse);
         }
@@ -606,15 +614,15 @@ export class MachineController {
 
   private async executeCommand(command: MachineCommand): Promise<CommandResponse> {
     // Simulate command execution
-    await new Promise(resolve => setTimeout(resolve, 50));
-    
+    await new Promise((resolve) => setTimeout(resolve, 50));
+
     // In a real implementation, this would send the command to the machine
     console.log(`Executing command: ${command.command}`);
-    
+
     return {
       success: true,
       message: 'Command executed successfully',
-      timestamp: new Date()
+      timestamp: new Date(),
     };
   }
 }

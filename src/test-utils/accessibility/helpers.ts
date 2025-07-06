@@ -17,11 +17,11 @@ export const axeTestHelpers = {
   async testColorContrast(element: HTMLElement, expectedRatio: number = 4.5) {
     const results = await axe(element, {
       rules: {
-        'color-contrast': { enabled: true }
-      }
+        'color-contrast': { enabled: true },
+      },
     });
-    
-    const violations = results.violations.filter(v => v.id === 'color-contrast');
+
+    const violations = results.violations.filter((v) => v.id === 'color-contrast');
     expect(violations).toHaveLength(0);
   },
 
@@ -29,13 +29,13 @@ export const axeTestHelpers = {
     const results = await axe(container, { rules });
     expect(results).toHaveNoViolations();
     return results;
-  }
+  },
 };
 
 export const keyboardTestHelpers = {
   async testTabNavigation(container: HTMLElement) {
     const focusableElements = container.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
 
     if (focusableElements.length === 0) {
@@ -77,11 +77,11 @@ export const keyboardTestHelpers = {
       up: '{ArrowUp}',
       down: '{ArrowDown}',
       left: '{ArrowLeft}',
-      right: '{ArrowRight}'
+      right: '{ArrowRight}',
     };
 
     await userEvent.keyboard(keyMap[direction]);
-  }
+  },
 };
 
 export const screenReaderHelpers = {
@@ -91,14 +91,14 @@ export const screenReaderHelpers = {
 
   expectAriaLabelledBy(element: HTMLElement, labelId: string) {
     expect(element).toHaveAttribute('aria-labelledby', labelId);
-    
+
     const labelElement = document.getElementById(labelId);
     expect(labelElement).toBeInTheDocument();
   },
 
   expectAriaDescribedBy(element: HTMLElement, descriptionId: string) {
     expect(element).toHaveAttribute('aria-describedby', descriptionId);
-    
+
     const descriptionElement = document.getElementById(descriptionId);
     expect(descriptionElement).toBeInTheDocument();
   },
@@ -129,26 +129,25 @@ export const screenReaderHelpers = {
 
   expectVisuallyHidden(element: HTMLElement) {
     const styles = getComputedStyle(element);
-    const isVisuallyHidden = 
-      styles.position === 'absolute' &&
-      styles.width === '1px' &&
-      styles.height === '1px' &&
-      styles.overflow === 'hidden' &&
-      styles.clip === 'rect(0, 0, 0, 0)';
-    
+    const isVisuallyHidden = styles.position === 'absolute'
+      && styles.width === '1px'
+      && styles.height === '1px'
+      && styles.overflow === 'hidden'
+      && styles.clip === 'rect(0, 0, 0, 0)';
+
     expect(isVisuallyHidden).toBe(true);
   },
 
   async testDynamicAnnouncement(liveRegion: HTMLElement, newContent: string) {
     const initialContent = liveRegion.textContent;
-    
+
     // Update content
     fireEvent.change(liveRegion, { target: { textContent: newContent } });
-    
+
     await waitFor(() => {
       expect(liveRegion.textContent).toBe(newContent);
     });
-  }
+  },
 };
 
 export const focusTestHelpers = {
@@ -163,20 +162,19 @@ export const focusTestHelpers = {
   expectFocusVisible(element: HTMLElement) {
     element.focus();
     expect(document.activeElement).toBe(element);
-    
+
     // Check for visible focus indicator
     const styles = getComputedStyle(element);
-    const hasFocusIndicator = 
-      styles.outline !== 'none' || 
-      styles.boxShadow !== 'none' ||
-      styles.borderColor !== 'transparent';
-    
+    const hasFocusIndicator = styles.outline !== 'none'
+      || styles.boxShadow !== 'none'
+      || styles.borderColor !== 'transparent';
+
     expect(hasFocusIndicator).toBe(true);
   },
 
   async testFocusTrap(container: HTMLElement) {
     const focusableElements = container.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
 
     if (focusableElements.length < 2) {
@@ -199,5 +197,5 @@ export const focusTestHelpers = {
     firstElement.focus();
     await userEvent.tab({ shift: true });
     expect(document.activeElement).toBe(lastElement);
-  }
+  },
 };

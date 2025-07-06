@@ -1,12 +1,14 @@
 /**
  * Accessibility Enhancements for Touch Interfaces
- * 
+ *
  * Comprehensive accessibility improvements for CNC control interfaces,
  * focusing on touch accessibility, screen readers, high contrast modes,
  * and industrial environment considerations.
  */
 
-import React, { useEffect, useCallback, useRef, useState } from 'react';
+import React, {
+  useEffect, useCallback, useRef, useState,
+} from 'react';
 
 // Accessibility configuration
 export interface AccessibilityConfig {
@@ -71,7 +73,7 @@ export class AriaLiveRegionManager {
     const element = this.regions.get(region);
     if (element) {
       element.textContent = message;
-      
+
       // Clear after announcement to allow repeat announcements
       setTimeout(() => {
         element.textContent = '';
@@ -88,7 +90,7 @@ export class AriaLiveRegionManager {
   }
 
   cleanup(): void {
-    this.regions.forEach(element => {
+    this.regions.forEach((element) => {
       if (element.parentNode) {
         element.parentNode.removeChild(element);
       }
@@ -100,7 +102,9 @@ export class AriaLiveRegionManager {
 // Voice synthesis manager for industrial environments
 export class VoiceAnnouncementManager {
   private synthesis: SpeechSynthesis | null = null;
+
   private voice: SpeechSynthesisVoice | null = null;
+
   private enabled = false;
 
   constructor() {
@@ -116,11 +120,9 @@ export class VoiceAnnouncementManager {
     const setVoice = () => {
       const voices = this.synthesis!.getVoices();
       // Prefer clear, robotic voices for industrial environments
-      this.voice = voices.find(voice => 
-        voice.name.toLowerCase().includes('robotic') ||
-        voice.name.toLowerCase().includes('alex') ||
-        voice.name.toLowerCase().includes('daniel')
-      ) || voices[0] || null;
+      this.voice = voices.find((voice) => voice.name.toLowerCase().includes('robotic')
+        || voice.name.toLowerCase().includes('alex')
+        || voice.name.toLowerCase().includes('daniel')) || voices[0] || null;
     };
 
     if (this.synthesis.getVoices().length > 0) {
@@ -297,6 +299,7 @@ export class FocusTrapManager {
 // High contrast mode manager
 export class HighContrastManager {
   private enabled = false;
+
   private customStyles: HTMLStyleElement | null = null;
 
   enable(): void {
@@ -396,6 +399,7 @@ export class HighContrastManager {
 // Color blindness filter manager
 export class ColorBlindnessFilterManager {
   private currentFilter: string = 'none';
+
   private filterStyles: HTMLStyleElement | null = null;
 
   setFilter(type: 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia'): void {
@@ -409,7 +413,7 @@ export class ColorBlindnessFilterManager {
     if (this.currentFilter === 'none') return;
 
     this.filterStyles = document.createElement('style');
-    
+
     const filters = {
       protanopia: 'sepia(100%) saturate(150%) hue-rotate(320deg)',
       deuteranopia: 'sepia(100%) saturate(150%) hue-rotate(60deg)',
@@ -512,10 +516,8 @@ export const useFocusTrap = (containerId: string, enabled = true) => {
     }
   }, [containerId]);
 
-  useEffect(() => {
-    return () => {
-      releaseFocus();
-    };
+  useEffect(() => () => {
+    releaseFocus();
   }, [releaseFocus]);
 
   return { trapFocus, releaseFocus };
@@ -550,7 +552,9 @@ export const useHighContrast = () => {
     }
   }, []);
 
-  return { enabled, toggle, enable, disable };
+  return {
+    enabled, toggle, enable, disable,
+  };
 };
 
 export const useColorBlindnessFilter = () => {
@@ -578,7 +582,7 @@ export const useAccessibilityConfig = (initialConfig: Partial<AccessibilityConfi
   });
 
   const updateConfig = useCallback((updates: Partial<AccessibilityConfig>) => {
-    setConfig(prev => ({ ...prev, ...updates }));
+    setConfig((prev) => ({ ...prev, ...updates }));
   }, []);
 
   // Apply system preferences
@@ -595,14 +599,14 @@ export const useAccessibilityConfig = (initialConfig: Partial<AccessibilityConfi
       });
     };
 
-    Object.values(mediaQueries).forEach(mq => {
+    Object.values(mediaQueries).forEach((mq) => {
       mq.addEventListener('change', handleMediaChange);
     });
 
     handleMediaChange();
 
     return () => {
-      Object.values(mediaQueries).forEach(mq => {
+      Object.values(mediaQueries).forEach((mq) => {
         mq.removeEventListener('change', handleMediaChange);
       });
     };

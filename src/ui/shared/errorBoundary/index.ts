@@ -1,6 +1,6 @@
 /**
  * Error Boundary Module
- * 
+ *
  * Comprehensive error handling with recovery strategies,
  * error reporting, and user-friendly error displays.
  */

@@ -18,18 +18,18 @@ export const analyticsConfig: AnalyticsConfig = {
   enableUserBehaviorTracking: true,
   enableSecurityMonitoring: true,
   enableSystemHealthMonitoring: true,
-  
+
   sampling: {
     performance: 0.1, // 10% sampling for performance events
-    errors: 1.0,      // 100% sampling for errors
-    userEvents: 0.5   // 50% sampling for user events
+    errors: 1.0, // 100% sampling for errors
+    userEvents: 0.5, // 50% sampling for user events
   },
-  
+
   privacy: {
     anonymizeIP: true,
     respectDoNotTrack: true,
-    enableDataCollection: true
-  }
+    enableDataCollection: true,
+  },
 };
 
 // Environment-specific overrides
@@ -40,8 +40,8 @@ export const developmentConfig: Partial<AnalyticsConfig> = {
   sampling: {
     performance: 1.0,
     errors: 1.0,
-    userEvents: 1.0
-  }
+    userEvents: 1.0,
+  },
 };
 
 export const productionConfig: Partial<AnalyticsConfig> = {
@@ -52,8 +52,8 @@ export const productionConfig: Partial<AnalyticsConfig> = {
   sampling: {
     performance: 0.05, // 5% sampling in production
     errors: 1.0,
-    userEvents: 0.2    // 20% sampling in production
-  }
+    userEvents: 0.2, // 20% sampling in production
+  },
 };
 
 // Feature flags for different monitoring aspects
@@ -65,30 +65,30 @@ export const monitoringFeatures = {
   systemHealthDashboard: true,
   alertingSystem: true,
   customMetrics: true,
-  apmIntegration: true
+  apmIntegration: true,
 };
 
 // Performance monitoring thresholds
 export const performanceThresholds = {
   // Core Web Vitals
-  lcp: 2500,    // Largest Contentful Paint (ms)
-  fid: 100,     // First Input Delay (ms)
-  cls: 0.1,     // Cumulative Layout Shift
-  fcp: 1800,    // First Contentful Paint (ms)
-  ttfb: 600,    // Time to First Byte (ms)
-  
+  lcp: 2500, // Largest Contentful Paint (ms)
+  fid: 100, // First Input Delay (ms)
+  cls: 0.1, // Cumulative Layout Shift
+  fcp: 1800, // First Contentful Paint (ms)
+  ttfb: 600, // Time to First Byte (ms)
+
   // CNC-specific thresholds
-  jogResponseTime: 100,       // Jog command response (ms)
-  positionUpdateLatency: 50,  // Position update latency (ms)
-  fileLoadTime: 5000,         // File load time (ms)
-  pluginInitTime: 2000,       // Plugin initialization (ms)
-  renderTime: 16,             // Frame render time (ms)
-  
+  jogResponseTime: 100, // Jog command response (ms)
+  positionUpdateLatency: 50, // Position update latency (ms)
+  fileLoadTime: 5000, // File load time (ms)
+  pluginInitTime: 2000, // Plugin initialization (ms)
+  renderTime: 16, // Frame render time (ms)
+
   // System thresholds
-  memoryUsage: 0.8,           // 80% memory usage
-  cpuUsage: 0.7,              // 70% CPU usage
-  errorRate: 0.05,            // 5% error rate
-  responseTime: 1000          // 1 second response time
+  memoryUsage: 0.8, // 80% memory usage
+  cpuUsage: 0.7, // 70% CPU usage
+  errorRate: 0.05, // 5% error rate
+  responseTime: 1000, // 1 second response time
 };
 
 // Error severity mapping
@@ -96,23 +96,23 @@ export const errorSeverityLevels = {
   low: {
     threshold: 1,
     autoResolve: true,
-    notificationChannels: ['console']
+    notificationChannels: ['console'],
   },
   medium: {
     threshold: 5,
     autoResolve: false,
-    notificationChannels: ['console', 'browser']
+    notificationChannels: ['console', 'browser'],
   },
   high: {
     threshold: 1,
     autoResolve: false,
-    notificationChannels: ['console', 'browser', 'webhook']
+    notificationChannels: ['console', 'browser', 'webhook'],
   },
   critical: {
     threshold: 1,
     autoResolve: false,
-    notificationChannels: ['console', 'browser', 'webhook', 'email']
-  }
+    notificationChannels: ['console', 'browser', 'webhook', 'email'],
+  },
 };
 
 // User behavior tracking configuration
@@ -125,7 +125,7 @@ export const behaviorTrackingConfig = {
   trackCNCOperations: true,
   trackPluginUsage: true,
   trackFileOperations: true,
-  trackErrorRecovery: true
+  trackErrorRecovery: true,
 };
 
 // Security monitoring configuration
@@ -137,7 +137,7 @@ export const securityMonitoringConfig = {
   monitorFileUploads: true,
   trackPrivilegeEscalation: true,
   rateLimitMonitoring: true,
-  ipGeolocationTracking: false // Disabled for privacy
+  ipGeolocationTracking: false, // Disabled for privacy
 };
 
 // System health monitoring configuration
@@ -153,13 +153,13 @@ export const systemHealthConfig = {
     diskUsage: true,
     networkLatency: true,
     cncConnectionStatus: true,
-    pluginHealth: true
+    pluginHealth: true,
   },
   alertThresholds: {
     responseTime: 2000,
     errorRate: 0.1,
     memoryUsage: 0.9,
     cpuUsage: 0.8,
-    diskUsage: 0.9
-  }
+    diskUsage: 0.9,
+  },
 };

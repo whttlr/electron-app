@@ -4,16 +4,16 @@
 export { PositioningController, positioningController } from './PositioningController';
 
 // Position types and interfaces
-export type { 
-  Position, 
-  CoordinateSystem, 
-  JogSettings, 
-  JogCommand, 
+export type {
+  Position,
+  CoordinateSystem,
+  JogSettings,
+  JogCommand,
   PositionHistory,
   HomingSettings,
   PositioningState,
   PositioningEvent,
-  PositioningEventHandler 
+  PositioningEventHandler,
 } from './PositioningController';
 
 // Configuration

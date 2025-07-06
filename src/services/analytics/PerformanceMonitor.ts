@@ -9,9 +9,13 @@ import { performanceThresholds } from './config';
 
 export class PerformanceMonitor extends EventEmitter {
   private observer?: PerformanceObserver;
+
   private metrics: Partial<PerformanceMetrics> = {};
+
   private isMonitoring = false;
+
   private intervalId?: NodeJS.Timeout;
+
   private measurementBuffer: Map<string, number[]> = new Map();
 
   constructor() {
@@ -27,7 +31,7 @@ export class PerformanceMonitor extends EventEmitter {
 
     this.isMonitoring = true;
     this.observer?.observe({ entryTypes: ['navigation', 'measure', 'paint', 'largest-contentful-paint'] });
-    
+
     // Start periodic system metrics collection
     this.intervalId = setInterval(() => {
       this.collectSystemMetrics();
@@ -35,7 +39,7 @@ export class PerformanceMonitor extends EventEmitter {
 
     // Measure initial Core Web Vitals
     this.measureCoreWebVitals();
-    
+
     this.emit('monitoring_started');
   }
 
@@ -47,11 +51,11 @@ export class PerformanceMonitor extends EventEmitter {
 
     this.isMonitoring = false;
     this.observer?.disconnect();
-    
+
     if (this.intervalId) {
       clearInterval(this.intervalId);
     }
-    
+
     this.emit('monitoring_stopped');
   }
 
@@ -77,7 +81,7 @@ export class PerformanceMonitor extends EventEmitter {
       taskCompletionTime: this.metrics.taskCompletionTime || 0,
       errorRate: this.metrics.errorRate || 0,
       sessionDuration: this.metrics.sessionDuration || 0,
-      bounceRate: this.metrics.bounceRate || 0
+      bounceRate: this.metrics.bounceRate || 0,
     };
   }
 
@@ -86,16 +90,16 @@ export class PerformanceMonitor extends EventEmitter {
    */
   measureJogResponse(): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const responseTime = performance.now() - startTime;
       this.updateMetric('jogResponseTime', responseTime);
-      
+
       if (responseTime > performanceThresholds.jogResponseTime) {
         this.emit('performance_alert', {
           metric: 'jogResponseTime',
           value: responseTime,
-          threshold: performanceThresholds.jogResponseTime
+          threshold: performanceThresholds.jogResponseTime,
         });
       }
     };
@@ -106,16 +110,16 @@ export class PerformanceMonitor extends EventEmitter {
    */
   measurePositionUpdate(): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const latency = performance.now() - startTime;
       this.updateMetric('positionUpdateLatency', latency);
-      
+
       if (latency > performanceThresholds.positionUpdateLatency) {
         this.emit('performance_alert', {
           metric: 'positionUpdateLatency',
           value: latency,
-          threshold: performanceThresholds.positionUpdateLatency
+          threshold: performanceThresholds.positionUpdateLatency,
         });
       }
     };
@@ -126,22 +130,22 @@ export class PerformanceMonitor extends EventEmitter {
    */
   measureFileLoad(fileSize?: number): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const loadTime = performance.now() - startTime;
       this.updateMetric('fileLoadTime', loadTime);
-      
+
       this.emit('file_load_measured', {
         loadTime,
         fileSize,
-        throughput: fileSize ? fileSize / (loadTime / 1000) : undefined
+        throughput: fileSize ? fileSize / (loadTime / 1000) : undefined,
       });
-      
+
       if (loadTime > performanceThresholds.fileLoadTime) {
         this.emit('performance_alert', {
           metric: 'fileLoadTime',
           value: loadTime,
-          threshold: performanceThresholds.fileLoadTime
+          threshold: performanceThresholds.fileLoadTime,
         });
       }
     };
@@ -152,22 +156,22 @@ export class PerformanceMonitor extends EventEmitter {
    */
   measurePluginInit(pluginId: string): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const initTime = performance.now() - startTime;
       this.updateMetric('pluginInitTime', initTime);
-      
+
       this.emit('plugin_init_measured', {
         pluginId,
-        initTime
+        initTime,
       });
-      
+
       if (initTime > performanceThresholds.pluginInitTime) {
         this.emit('performance_alert', {
           metric: 'pluginInitTime',
           value: initTime,
           threshold: performanceThresholds.pluginInitTime,
-          context: { pluginId }
+          context: { pluginId },
         });
       }
     };
@@ -178,16 +182,16 @@ export class PerformanceMonitor extends EventEmitter {
    */
   measureRender(): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const renderTime = performance.now() - startTime;
       this.updateMetric('renderTime', renderTime);
-      
+
       if (renderTime > performanceThresholds.renderTime) {
         this.emit('performance_alert', {
           metric: 'renderTime',
           value: renderTime,
-          threshold: performanceThresholds.renderTime
+          threshold: performanceThresholds.renderTime,
         });
       }
     };
@@ -198,14 +202,14 @@ export class PerformanceMonitor extends EventEmitter {
    */
   measureTaskCompletion(taskType: string): () => void {
     const startTime = performance.now();
-    
+
     return () => {
       const completionTime = performance.now() - startTime;
       this.updateMetric('taskCompletionTime', completionTime);
-      
+
       this.emit('task_completion_measured', {
         taskType,
-        completionTime
+        completionTime,
       });
     };
   }
@@ -217,15 +221,15 @@ export class PerformanceMonitor extends EventEmitter {
     metrics: PerformanceMetrics;
     alerts: Array<{ metric: string; severity: string; message: string }>;
     recommendations: string[];
-  } {
+    } {
     const metrics = this.getMetrics();
     const alerts = this.generateAlerts(metrics);
     const recommendations = this.generateRecommendations(metrics);
-    
+
     return {
       metrics,
       alerts,
-      recommendations
+      recommendations,
     };
   }
 
@@ -250,26 +254,26 @@ export class PerformanceMonitor extends EventEmitter {
         const navEntry = entry as PerformanceNavigationTiming;
         this.metrics.ttfb = navEntry.responseStart - navEntry.requestStart;
         break;
-        
+
       case 'paint':
         if (entry.name === 'first-contentful-paint') {
           this.metrics.fcp = entry.startTime;
         }
         break;
-        
+
       case 'largest-contentful-paint':
         this.metrics.lcp = entry.startTime;
         break;
-        
+
       case 'measure':
         this.handleCustomMeasure(entry);
         break;
     }
-    
+
     this.emit('metric_updated', {
       type: entry.entryType,
       name: entry.name,
-      value: entry.startTime || entry.duration
+      value: entry.startTime || entry.duration,
     });
   }
 
@@ -311,70 +315,70 @@ export class PerformanceMonitor extends EventEmitter {
   private collectSystemMetrics(): void {
     // Memory usage
     this.metrics.memoryUsage = this.getMemoryUsage();
-    
+
     // Network quality
     this.metrics.networkQuality = this.getNetworkQuality();
-    
+
     // Battery level (if available)
-    this.getBatteryLevel().then(level => {
+    this.getBatteryLevel().then((level) => {
       if (level !== null) {
         this.metrics.batteryLevel = level;
       }
     });
-    
+
     // CPU usage estimation (approximate)
-    this.estimateCPUUsage().then(usage => {
+    this.estimateCPUUsage().then((usage) => {
       this.metrics.cpuUsage = usage;
     });
-    
+
     this.emit('system_metrics_updated', {
       memoryUsage: this.metrics.memoryUsage,
       networkQuality: this.metrics.networkQuality,
       batteryLevel: this.metrics.batteryLevel,
-      cpuUsage: this.metrics.cpuUsage
+      cpuUsage: this.metrics.cpuUsage,
     });
   }
 
   private getMemoryUsage(): MemoryUsage {
     if ('memory' in performance) {
-      const memory = (performance as any).memory;
+      const { memory } = (performance as any);
       return {
         used: memory.usedJSHeapSize,
         total: memory.totalJSHeapSize,
         percentage: memory.usedJSHeapSize / memory.totalJSHeapSize,
         jsHeapSizeLimit: memory.jsHeapSizeLimit,
         totalJSHeapSize: memory.totalJSHeapSize,
-        usedJSHeapSize: memory.usedJSHeapSize
+        usedJSHeapSize: memory.usedJSHeapSize,
       };
     }
-    
+
     return {
       used: 0,
       total: 0,
       percentage: 0,
       jsHeapSizeLimit: 0,
       totalJSHeapSize: 0,
-      usedJSHeapSize: 0
+      usedJSHeapSize: 0,
     };
   }
 
   private getNetworkQuality(): NetworkQuality {
-    const connection = (navigator as any).connection;
-    
+    const { connection } = (navigator as any);
+
     if (connection) {
       return {
         effectiveType: connection.effectiveType || 'unknown',
         downlink: connection.downlink || 0,
         rtt: connection.rtt || 0,
-        saveData: connection.saveData || false
+        saveData: connection.saveData || false,
       };
     }
-    
+
     return {
       effectiveType: 'unknown',
       downlink: 0,
       rtt: 0,
-      saveData: false
+      saveData: false,
     };
   }
 
@@ -394,14 +398,14 @@ export class PerformanceMonitor extends EventEmitter {
   private async estimateCPUUsage(): Promise<number> {
     // Simple CPU usage estimation based on task execution time
     const start = performance.now();
-    
+
     // Perform a small computational task
     for (let i = 0; i < 100000; i++) {
       Math.random();
     }
-    
+
     const duration = performance.now() - start;
-    
+
     // Normalize to 0-1 range (this is a rough estimation)
     return Math.min(duration / 10, 1);
   }
@@ -411,71 +415,71 @@ export class PerformanceMonitor extends EventEmitter {
     if (!this.measurementBuffer.has(metric)) {
       this.measurementBuffer.set(metric, []);
     }
-    
+
     const buffer = this.measurementBuffer.get(metric)!;
     buffer.push(value);
-    
+
     // Keep only last 10 measurements
     if (buffer.length > 10) {
       buffer.shift();
     }
-    
+
     // Calculate average
     const average = buffer.reduce((sum, val) => sum + val, 0) / buffer.length;
     (this.metrics as any)[metric] = average;
-    
+
     this.emit('metric_updated', { metric, value: average });
   }
 
   private generateAlerts(metrics: PerformanceMetrics): Array<{ metric: string; severity: string; message: string }> {
     const alerts = [];
-    
+
     if (metrics.lcp > performanceThresholds.lcp) {
       alerts.push({
         metric: 'lcp',
         severity: 'warning',
-        message: `LCP (${metrics.lcp}ms) exceeds threshold (${performanceThresholds.lcp}ms)`
+        message: `LCP (${metrics.lcp}ms) exceeds threshold (${performanceThresholds.lcp}ms)`,
       });
     }
-    
+
     if (metrics.fid > performanceThresholds.fid) {
       alerts.push({
         metric: 'fid',
         severity: 'warning',
-        message: `FID (${metrics.fid}ms) exceeds threshold (${performanceThresholds.fid}ms)`
+        message: `FID (${metrics.fid}ms) exceeds threshold (${performanceThresholds.fid}ms)`,
       });
     }
-    
+
     if (metrics.memoryUsage.percentage > performanceThresholds.memoryUsage) {
       alerts.push({
         metric: 'memory',
         severity: 'critical',
-        message: `Memory usage (${(metrics.memoryUsage.percentage * 100).toFixed(1)}%) exceeds threshold (${performanceThresholds.memoryUsage * 100}%)`
+        message: `Memory usage (${(metrics.memoryUsage.percentage * 100).toFixed(1)}%) exceeds threshold (${performanceThresholds.memoryUsage * 100}%)`,
       });
     }
-    
+
     return alerts;
   }
 
   private generateRecommendations(metrics: PerformanceMetrics): string[] {
     const recommendations = [];
-    
+
     if (metrics.lcp > performanceThresholds.lcp) {
       recommendations.push('Consider optimizing largest contentful paint by reducing image sizes or using lazy loading');
     }
-    
+
     if (metrics.memoryUsage.percentage > 0.7) {
       recommendations.push('High memory usage detected. Consider closing unused plugins or refreshing the application');
     }
-    
+
     if (metrics.jogResponseTime > performanceThresholds.jogResponseTime) {
       recommendations.push('CNC jog response time is slow. Check network connection and machine status');
     }
-    
+
     if (metrics.networkQuality.effectiveType === 'slow-2g' || metrics.networkQuality.effectiveType === '2g') {
       recommendations.push('Slow network detected. Consider enabling offline mode or reducing update frequency');
     }
-    
+
     return recommendations;
   }
 }

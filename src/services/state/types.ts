@@ -1,6 +1,6 @@
 /**
  * State Management Types
- * 
+ *
  * Type definitions for all state stores in the CNC application.
  */
 
@@ -8,7 +8,7 @@
 // MACHINE TYPES
 // ============================================================================
 
-export type MachineStatus = 
+export type MachineStatus =
   | 'disconnected'
   | 'connecting'
   | 'connected'
@@ -61,7 +61,7 @@ export interface WorkingArea {
 // JOB TYPES
 // ============================================================================
 
-export type JobStatus = 
+export type JobStatus =
   | 'pending'
   | 'queued'
   | 'running'

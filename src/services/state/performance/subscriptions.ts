@@ -12,7 +12,7 @@ export const setupPerformanceSubscriptions = (usePerformanceStore: any) => {
     (state: PerformanceStore) => state.metricsHistory.length,
     () => {
       usePerformanceStore.getState().calculateStatistics();
-    }
+    },
   );
 
   // Auto-apply optimizations when performance degrades
@@ -20,12 +20,12 @@ export const setupPerformanceSubscriptions = (usePerformanceStore: any) => {
     (state: PerformanceStore) => performanceSelectors.systemHealth(state).overall,
     (health: 'good' | 'warning' | 'critical') => {
       const store = usePerformanceStore.getState();
-      
+
       if (health === 'critical' && !store.optimizations.lowPowerMode) {
         // Auto-enable low power mode in critical situations
         store.updateOptimizations({ lowPowerMode: true });
       }
-    }
+    },
   );
 
   // Start monitoring on store initialization

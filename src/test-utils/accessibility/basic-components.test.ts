@@ -4,9 +4,11 @@
  */
 
 import { axe, toHaveNoViolations } from 'jest-axe';
-import { renderWithProviders } from '../index';
 import React from 'react';
-import { Button, Input, Modal, Card, Alert, Tooltip, Progress } from 'antd';
+import {
+  Button, Input, Modal, Card, Alert, Tooltip, Progress,
+} from 'antd';
+import { renderWithProviders } from '../index';
 import { setupA11yTests } from './setup';
 
 expect.extend(toHaveNoViolations);
@@ -25,9 +27,9 @@ describe('Basic Component Accessibility', () => {
         React.createElement(Button, { key: 'link', type: 'link' }, 'Link Button'),
         React.createElement(Button, { key: 'disabled', disabled: true }, 'Disabled Button'),
         React.createElement(Button, { key: 'loading', loading: true }, 'Loading Button'),
-      ])
+      ]),
     );
-    
+
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
@@ -41,17 +43,17 @@ describe('Basic Component Accessibility', () => {
           id: 'email',
           type: 'email',
           placeholder: 'Enter your email',
-          'aria-describedby': 'error-text'
+          'aria-describedby': 'error-text',
         }),
         React.createElement('div', {
           key: 'error',
           id: 'error-text',
           role: 'alert',
-          'aria-live': 'polite'
+          'aria-live': 'polite',
         }, 'Please enter a valid email address'),
-      ])
+      ]),
     );
-    
+
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
@@ -62,35 +64,35 @@ describe('Basic Component Accessibility', () => {
         React.createElement(Card, {
           key: 'card',
           title: 'Accessible Card',
-          extra: React.createElement('a', { href: '#' }, 'More')
+          extra: React.createElement('a', { href: '#' }, 'More'),
         }, 'Card content with proper structure'),
-        
+
         React.createElement(Alert, {
           key: 'alert',
           message: 'Important Information',
           description: 'This alert provides important information to users',
           type: 'info',
           showIcon: true,
-          closable: true
+          closable: true,
         }),
-        
+
         React.createElement(Tooltip, {
           key: 'tooltip',
-          title: 'Helpful tooltip information'
+          title: 'Helpful tooltip information',
         }, React.createElement('span', {}, 'Hover for tooltip')),
-        
+
         React.createElement('div', { key: 'progress' }, [
           React.createElement('label', { htmlFor: 'progress-bar' }, 'Loading Progress'),
           React.createElement(Progress, {
             id: 'progress-bar',
             percent: 75,
             status: 'active',
-            'aria-label': 'Loading progress: 75%'
-          })
-        ])
-      ])
+            'aria-label': 'Loading progress: 75%',
+          }),
+        ]),
+      ]),
     );
-    
+
     const results = await axe(container);
     expect(results).toHaveNoViolations();
   });
@@ -104,21 +106,21 @@ describe('Basic Component Accessibility', () => {
             React.createElement('ul', {}, [
               React.createElement('li', { key: '1' }, React.createElement('a', { href: '/' }, 'Home')),
               React.createElement('li', { key: '2' }, React.createElement('a', { href: '/about' }, 'About')),
-            ])
-          ])
+            ]),
+          ]),
         ]),
         React.createElement('section', { key: 'content', 'aria-labelledby': 'section-title' }, [
           React.createElement('h2', { id: 'section-title' }, 'Main Content'),
-          React.createElement('p', {}, 'This is the main content area.')
+          React.createElement('p', {}, 'This is the main content area.'),
         ]),
         React.createElement('aside', { key: 'sidebar', 'aria-label': 'Sidebar content' }, [
           React.createElement('h3', {}, 'Related Information'),
-          React.createElement('p', {}, 'Additional information and links.')
+          React.createElement('p', {}, 'Additional information and links.'),
         ]),
         React.createElement('footer', { key: 'footer' }, [
-          React.createElement('p', {}, '© 2024 CNC Control. All rights reserved.')
-        ])
-      ])
+          React.createElement('p', {}, '© 2024 CNC Control. All rights reserved.'),
+        ]),
+      ]),
     );
 
     // Check for proper landmark elements
@@ -133,7 +135,7 @@ describe('Basic Component Accessibility', () => {
     const h1 = container.querySelector('h1');
     const h2 = container.querySelector('h2');
     const h3 = container.querySelector('h3');
-    
+
     expect(h1).toBeInTheDocument();
     expect(h2).toBeInTheDocument();
     expect(h3).toBeInTheDocument();
@@ -146,22 +148,22 @@ describe('Basic Component Accessibility', () => {
           key: 'loading',
           'aria-live': 'polite',
           'aria-busy': 'true',
-          role: 'status'
+          role: 'status',
         }, 'Loading content...'),
-        
+
         React.createElement(Button, {
           key: 'loading-button',
           loading: true,
-          'aria-label': 'Processing request'
+          'aria-label': 'Processing request',
         }, 'Submit'),
-        
+
         React.createElement('div', {
           key: 'spinner',
           role: 'progressbar',
           'aria-valuetext': 'Loading in progress',
-          'aria-label': 'Content loading'
-        }, 'Loading...')
-      ])
+          'aria-label': 'Content loading',
+        }, 'Loading...'),
+      ]),
     );
 
     const results = await axe(container);
@@ -170,7 +172,7 @@ describe('Basic Component Accessibility', () => {
     // Check for proper loading indicators
     const loadingStatus = container.querySelector('[role="status"]');
     const progressBar = container.querySelector('[role="progressbar"]');
-    
+
     expect(loadingStatus).toHaveAttribute('aria-live', 'polite');
     expect(progressBar).toHaveAttribute('aria-label', 'Content loading');
   });

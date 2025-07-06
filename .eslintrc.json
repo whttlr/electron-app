@@ -1,0 +1,183 @@
+{
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true,
+    "es2022": true,
+    "jest": true
+  },
+  "extends": [
+    "airbnb-base",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "plugins": [
+    "boundaries",
+    "@typescript-eslint",
+    "react",
+    "react-hooks"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "project": "./tsconfig.json"
+  },
+  "rules": {
+    "import/extensions": ["error", "ignorePackages", {
+      "js": "always",
+      "ts": "never",
+      "tsx": "never"
+    }],
+    "import/prefer-default-export": "off",
+    "no-console": "off",
+    "max-len": ["error", { "code": 150, "ignoreUrls": true, "ignoreStrings": true }],
+    "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
+    "react/jsx-key": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/no-unknown-property": ["error", { "ignore": ["position", "transparent", "args", "intensity"] }],
+    "react/no-unescaped-entities": "warn",
+    "@typescript-eslint/no-unused-vars": ["warn", { "argsIgnorePattern": "^_" }],
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "no-use-before-define": "off",
+    "class-methods-use-this": "warn",
+    "no-useless-constructor": "warn",
+    "no-empty-function": "warn",
+    "default-param-last": "warn",
+    "no-return-await": "warn",
+    "no-param-reassign": "warn",
+    "no-shadow": "warn",
+    "import/no-extraneous-dependencies": "warn",
+    "no-underscore-dangle": "warn",
+    "no-restricted-syntax": "warn",
+    "import/no-self-import": "warn",
+    "no-new": "warn",
+    "no-nested-ternary": "warn",
+    "radix": "warn",
+    "no-promise-executor-return": "warn",
+    "no-await-in-loop": "warn",
+    "implicit-arrow-linebreak": "warn",
+    "no-plusplus": "warn",
+    "boundaries/element-types": [2, {
+      "default": "disallow",
+      "rules": [
+        {
+          "from": "core",
+          "allow": ["services", "utils", "core"]
+        },
+        {
+          "from": "services",
+          "allow": ["utils", "services"]
+        },
+        {
+          "from": "ui",
+          "allow": ["core", "services", "utils"]
+        },
+        {
+          "from": "views",
+          "allow": ["core", "services", "ui", "utils"]
+        },
+        {
+          "from": "utils",
+          "allow": []
+        }
+      ]
+    }],
+    "boundaries/entry-point": [2, {
+      "default": "disallow",
+      "rules": [
+        {
+          "target": ["core"],
+          "allow": ["index.ts", "index.js"]
+        },
+        {
+          "target": ["services"],
+          "allow": ["**/*"]
+        }
+      ]
+    }],
+    "boundaries/no-unknown": [2],
+    "boundaries/no-unknown-files": [2]
+  },
+  "settings": {
+    "react": {
+      "version": "detect"
+    },
+    "import/resolver": {
+      "typescript": {
+        "alwaysTryTypes": true,
+        "project": "./tsconfig.json"
+      }
+    },
+    "boundaries/elements": [
+      {
+        "type": "core",
+        "pattern": "src/core/**/*",
+        "mode": "file"
+      },
+      {
+        "type": "services",
+        "pattern": "src/services/**/*",
+        "mode": "file"
+      },
+      {
+        "type": "ui",
+        "pattern": "src/ui/**/*",
+        "mode": "file"
+      },
+      {
+        "type": "views",
+        "pattern": "src/views/**/*",
+        "mode": "file"
+      },
+      {
+        "type": "utils",
+        "pattern": "src/utils/**/*",
+        "mode": "file"
+      }
+    ],
+    "boundaries/ignore": [
+      "src/**/__tests__/**/*",
+      "src/**/__mocks__/**/*",
+      "**/*.test.js",
+      "**/*.spec.js",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/config.js",
+      "**/index.js",
+      "**/index.ts",
+      "src/App.tsx",
+      "src/main.tsx",
+      "src/setupTests.ts",
+      "src/index.css",
+      "src/App.css",
+      "src/electron/**/*",
+      "src/contexts/**/*",
+      "src/components/**/*"
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["**/__tests__/**/*", "**/*.test.js", "**/*.spec.js", "**/*.test.ts", "**/*.test.tsx"],
+      "rules": {
+        "boundaries/element-types": "off",
+        "boundaries/entry-point": "off",
+        "import/no-extraneous-dependencies": ["error", { "devDependencies": true }]
+      }
+    },
+    {
+      "files": ["**/config.js", "**/*.config.js"],
+      "rules": {
+        "boundaries/element-types": "off",
+        "boundaries/entry-point": "off"
+      }
+    }
+  ]
+}

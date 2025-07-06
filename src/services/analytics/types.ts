@@ -45,7 +45,7 @@ export interface AnalyticsEvent {
   context: EventContext;
 }
 
-export type EventType = 
+export type EventType =
   | 'performance'
   | 'error'
   | 'user_interaction'
@@ -73,20 +73,20 @@ export interface PerformanceMetrics {
   cls: number; // Cumulative Layout Shift
   fcp: number; // First Contentful Paint
   ttfb: number; // Time to First Byte
-  
+
   // Custom CNC metrics
   jogResponseTime: number;
   positionUpdateLatency: number;
   fileLoadTime: number;
   pluginInitTime: number;
   renderTime: number;
-  
+
   // System metrics
   memoryUsage: MemoryUsage;
   cpuUsage: number;
   networkQuality: NetworkQuality;
   batteryLevel?: number;
-  
+
   // User experience metrics
   taskCompletionTime: number;
   errorRate: number;
@@ -221,29 +221,29 @@ export type SecuritySeverity = 'info' | 'warning' | 'critical';
 // System health monitoring
 export interface SystemMetrics {
   timestamp: number;
-  
+
   // Application health
   uptime: number;
   responseTime: number;
   errorRate: number;
   throughput: number;
-  
+
   // CNC-specific metrics
   cncConnectionStatus: 'connected' | 'disconnected' | 'error';
   activeJobs: number;
   queueSize: number;
   machineUtilization: number;
-  
+
   // Plugin system health
   loadedPlugins: number;
   failedPlugins: number;
   pluginMemoryUsage: number;
-  
+
   // Browser/device metrics
   browserMemory: MemoryUsage;
   deviceBattery?: number;
   networkStatus: 'online' | 'offline' | 'slow';
-  
+
   // User session metrics
   activeSessions: number;
   averageSessionDuration: number;

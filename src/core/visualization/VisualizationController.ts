@@ -1,6 +1,6 @@
 /**
  * VisualizationController - 3D/2D rendering logic and scene management
- * 
+ *
  * This controller manages the visualization layer for the CNC interface,
  * including 3D scene management, 2D plotting, camera controls, and rendering optimizations.
  */
@@ -88,26 +88,26 @@ export interface RenderQuality {
 export interface VisualizationState {
   // View mode
   viewMode: '3D' | '2D' | 'dual';
-  
+
   // Cameras
   camera3D: Camera3D;
   camera2D: Camera2D;
-  
+
   // Scene objects
   objects: SceneObject[];
-  
+
   // Lighting
   lights: Light[];
-  
+
   // Tool paths
   toolPaths: ToolPath[];
-  
+
   // Viewport settings
   viewport: ViewportSettings;
-  
+
   // Render quality
   quality: RenderQuality;
-  
+
   // Performance monitoring
   performance: {
     fps: number;
@@ -117,7 +117,7 @@ export interface VisualizationState {
     drawCalls: number;
     memoryUsage: number;
   };
-  
+
   // Animation
   animation: {
     enabled: boolean;
@@ -127,7 +127,7 @@ export interface VisualizationState {
     totalFrames: number;
     isPlaying: boolean;
   };
-  
+
   // Interaction
   interaction: {
     orbitControls: boolean;
@@ -137,7 +137,7 @@ export interface VisualizationState {
     autoRotate: boolean;
     autoRotateSpeed: number;
   };
-  
+
   // Visibility toggles
   visibility: {
     grid: boolean;
@@ -152,7 +152,7 @@ export interface VisualizationState {
 }
 
 // Event types for visualization
-export type VisualizationEvent = 
+export type VisualizationEvent =
   | { type: 'camera_changed'; data: { camera: Camera3D | Camera2D; viewMode: string } }
   | { type: 'object_added'; data: { object: SceneObject } }
   | { type: 'object_removed'; data: { objectId: string } }
@@ -169,12 +169,19 @@ export type VisualizationEventHandler = (event: VisualizationEvent) => void;
  */
 export class VisualizationController {
   private state: VisualizationState;
+
   private config: VisualizationConfig;
+
   private eventHandlers: Map<string, Set<VisualizationEventHandler>> = new Map();
+
   private animationTimer: NodeJS.Timeout | null = null;
+
   private performanceTimer: NodeJS.Timeout | null = null;
+
   private lastFrameTime = 0;
+
   private frameCount = 0;
+
   private isInitialized = false;
 
   constructor(config: VisualizationConfig = visualizationConfig) {
@@ -190,13 +197,13 @@ export class VisualizationController {
     try {
       // Set up default scene
       this.setupDefaultScene();
-      
+
       // Start performance monitoring
       this.startPerformanceMonitoring();
-      
+
       // Initialize camera positions
       this.resetCamera();
-      
+
       this.isInitialized = true;
       console.log('VisualizationController initialized successfully');
     } catch (error) {
@@ -211,13 +218,13 @@ export class VisualizationController {
   setViewMode(mode: '3D' | '2D' | 'dual'): void {
     const oldMode = this.state.viewMode;
     this.state.viewMode = mode;
-    
+
     // Adjust camera and scene based on mode
     this.adaptToViewMode(mode);
-    
+
     // Emit view mode change event
     this.emit('view_mode_changed', { oldMode, newMode: mode });
-    
+
     console.log(`View mode changed to: ${mode}`);
   }
 
@@ -226,7 +233,7 @@ export class VisualizationController {
    */
   updateCamera3D(camera: Partial<Camera3D>): void {
     this.state.camera3D = { ...this.state.camera3D, ...camera };
-    
+
     // Emit camera change event
     this.emit('camera_changed', { camera: this.state.camera3D, viewMode: '3D' });
   }
@@ -236,7 +243,7 @@ export class VisualizationController {
    */
   updateCamera2D(camera: Partial<Camera2D>): void {
     this.state.camera2D = { ...this.state.camera2D, ...camera };
-    
+
     // Emit camera change event
     this.emit('camera_changed', { camera: this.state.camera2D, viewMode: '2D' });
   }
@@ -253,7 +260,7 @@ export class VisualizationController {
         fov: this.config.threeDimensions.camera.fov,
         near: this.config.threeDimensions.camera.near,
         far: this.config.threeDimensions.camera.far,
-        zoom: 1
+        zoom: 1,
       };
     } else {
       this.state.camera2D = {
@@ -261,7 +268,7 @@ export class VisualizationController {
         zoom: this.config.twoDimensions.view.defaultZoom,
         minZoom: this.config.twoDimensions.view.minZoom,
         maxZoom: this.config.twoDimensions.view.maxZoom,
-        panEnabled: this.config.twoDimensions.view.enablePanning
+        panEnabled: this.config.twoDimensions.view.enablePanning,
       };
     }
   }
@@ -272,14 +279,14 @@ export class VisualizationController {
   addObject(object: Omit<SceneObject, 'id'>): string {
     const newObject: SceneObject = {
       id: this.generateId('object'),
-      ...object
+      ...object,
     };
-    
+
     this.state.objects.push(newObject);
-    
+
     // Emit object added event
     this.emit('object_added', { object: newObject });
-    
+
     return newObject.id;
   }
 
@@ -287,16 +294,16 @@ export class VisualizationController {
    * Remove object from scene
    */
   removeObject(objectId: string): boolean {
-    const index = this.state.objects.findIndex(obj => obj.id === objectId);
+    const index = this.state.objects.findIndex((obj) => obj.id === objectId);
     if (index === -1) {
       return false;
     }
-    
+
     this.state.objects.splice(index, 1);
-    
+
     // Emit object removed event
     this.emit('object_removed', { objectId });
-    
+
     return true;
   }
 
@@ -304,11 +311,11 @@ export class VisualizationController {
    * Update object properties
    */
   updateObject(objectId: string, updates: Partial<SceneObject>): boolean {
-    const object = this.state.objects.find(obj => obj.id === objectId);
+    const object = this.state.objects.find((obj) => obj.id === objectId);
     if (!object) {
       return false;
     }
-    
+
     Object.assign(object, updates);
     return true;
   }
@@ -319,14 +326,14 @@ export class VisualizationController {
   addToolPath(toolPath: Omit<ToolPath, 'id'>): string {
     const newToolPath: ToolPath = {
       id: this.generateId('path'),
-      ...toolPath
+      ...toolPath,
     };
-    
+
     this.state.toolPaths.push(newToolPath);
-    
+
     // Emit tool path updated event
     this.emit('tool_path_updated', { toolPath: newToolPath });
-    
+
     return newToolPath.id;
   }
 
@@ -334,16 +341,16 @@ export class VisualizationController {
    * Update tool path animation progress
    */
   updateToolPathProgress(pathId: string, progress: number): boolean {
-    const toolPath = this.state.toolPaths.find(tp => tp.id === pathId);
+    const toolPath = this.state.toolPaths.find((tp) => tp.id === pathId);
     if (!toolPath) {
       return false;
     }
-    
+
     toolPath.progress = Math.max(0, Math.min(1, progress));
-    
+
     // Emit tool path updated event
     this.emit('tool_path_updated', { toolPath });
-    
+
     return true;
   }
 
@@ -365,18 +372,18 @@ export class VisualizationController {
     if (!this.state.animation.enabled) {
       return;
     }
-    
+
     this.state.animation.isPlaying = true;
-    
+
     if (this.animationTimer) {
       clearInterval(this.animationTimer);
     }
-    
+
     const frameInterval = 1000 / 60; // 60 FPS
     this.animationTimer = setInterval(() => {
       this.updateAnimation();
     }, frameInterval);
-    
+
     console.log('Animation started');
   }
 
@@ -385,12 +392,12 @@ export class VisualizationController {
    */
   stopAnimation(): void {
     this.state.animation.isPlaying = false;
-    
+
     if (this.animationTimer) {
       clearInterval(this.animationTimer);
       this.animationTimer = null;
     }
-    
+
     console.log('Animation stopped');
   }
 
@@ -400,10 +407,10 @@ export class VisualizationController {
   setRenderQuality(quality: RenderQuality['level']): void {
     const qualitySettings = this.getQualitySettings(quality);
     this.state.quality = { ...this.state.quality, ...qualitySettings };
-    
+
     // Emit quality change event
     this.emit('quality_changed', { quality: this.state.quality });
-    
+
     console.log(`Render quality set to: ${quality}`);
   }
 
@@ -412,7 +419,7 @@ export class VisualizationController {
    */
   updateViewport(settings: Partial<ViewportSettings>): void {
     this.state.viewport = { ...this.state.viewport, ...settings };
-    
+
     // Update aspect ratio if dimensions changed
     if (settings.width && settings.height) {
       this.state.viewport.aspectRatio = settings.width / settings.height;
@@ -424,7 +431,7 @@ export class VisualizationController {
    */
   toggleVisibility(type: keyof VisualizationState['visibility']): void {
     this.state.visibility[type] = !this.state.visibility[type];
-    
+
     // Update corresponding objects
     this.updateObjectVisibility(type, this.state.visibility[type]);
   }
@@ -434,33 +441,33 @@ export class VisualizationController {
    */
   setWorkspaceBounds(bounds: { min: { x: number; y: number; z: number }; max: { x: number; y: number; z: number } }): void {
     // Remove existing bounds
-    this.state.objects = this.state.objects.filter(obj => obj.type !== 'bounds');
-    
+    this.state.objects = this.state.objects.filter((obj) => obj.type !== 'bounds');
+
     // Add new bounds visualization
     this.addObject({
       type: 'bounds',
-      position: { 
+      position: {
         x: (bounds.min.x + bounds.max.x) / 2,
         y: (bounds.min.y + bounds.max.y) / 2,
-        z: (bounds.min.z + bounds.max.z) / 2
+        z: (bounds.min.z + bounds.max.z) / 2,
       },
       rotation: { x: 0, y: 0, z: 0 },
-      scale: { 
+      scale: {
         x: bounds.max.x - bounds.min.x,
         y: bounds.max.y - bounds.min.y,
-        z: bounds.max.z - bounds.min.z
+        z: bounds.max.z - bounds.min.z,
       },
       color: '#ff0000',
       opacity: 0.3,
       visible: this.state.visibility.bounds,
       geometry: {
         type: 'box',
-        parameters: { wireframe: true }
+        parameters: { wireframe: true },
       },
       material: {
         type: 'basic',
-        properties: { transparent: true }
-      }
+        properties: { transparent: true },
+      },
     });
   }
 
@@ -468,7 +475,7 @@ export class VisualizationController {
    * Update tool position in visualization
    */
   updateToolPosition(position: { x: number; y: number; z: number }): void {
-    const toolObject = this.state.objects.find(obj => obj.type === 'tool');
+    const toolObject = this.state.objects.find((obj) => obj.type === 'tool');
     if (toolObject) {
       toolObject.position = { ...position };
     }
@@ -521,19 +528,19 @@ export class VisualizationController {
       clearInterval(this.animationTimer);
       this.animationTimer = null;
     }
-    
+
     if (this.performanceTimer) {
       clearInterval(this.performanceTimer);
       this.performanceTimer = null;
     }
-    
+
     // Clear objects and paths
     this.state.objects = [];
     this.state.toolPaths = [];
-    
+
     // Clear event handlers
     this.eventHandlers.clear();
-    
+
     this.isInitialized = false;
     console.log('VisualizationController disposed');
   }
@@ -550,14 +557,14 @@ export class VisualizationController {
         fov: this.config.threeDimensions.camera.fov,
         near: this.config.threeDimensions.camera.near,
         far: this.config.threeDimensions.camera.far,
-        zoom: 1
+        zoom: 1,
       },
       camera2D: {
         position: { x: 0, y: 0 },
         zoom: this.config.twoDimensions.view.defaultZoom,
         minZoom: this.config.twoDimensions.view.minZoom,
         maxZoom: this.config.twoDimensions.view.maxZoom,
-        panEnabled: this.config.twoDimensions.view.enablePanning
+        panEnabled: this.config.twoDimensions.view.enablePanning,
       },
       objects: [],
       lights: [],
@@ -565,18 +572,18 @@ export class VisualizationController {
       viewport: {
         width: 800,
         height: 600,
-        aspectRatio: 4/3,
+        aspectRatio: 4 / 3,
         pixelRatio: this.config.threeDimensions.renderer.pixelRatio,
         backgroundColor: '#f0f0f0',
         antialias: this.config.threeDimensions.renderer.antialias,
-        shadows: this.config.threeDimensions.renderer.shadows
+        shadows: this.config.threeDimensions.renderer.shadows,
       },
       quality: {
         level: 'medium',
         shadowMapSize: this.config.threeDimensions.renderer.shadowMapSize,
         antialias: this.config.threeDimensions.renderer.antialias,
         pixelRatio: this.config.threeDimensions.renderer.pixelRatio,
-        maxFPS: this.config.performance.maxFPS
+        maxFPS: this.config.performance.maxFPS,
       },
       performance: {
         fps: 0,
@@ -584,7 +591,7 @@ export class VisualizationController {
         renderTime: 0,
         triangleCount: 0,
         drawCalls: 0,
-        memoryUsage: 0
+        memoryUsage: 0,
       },
       animation: {
         enabled: this.config.animation.enableTransitions,
@@ -592,7 +599,7 @@ export class VisualizationController {
         loop: false,
         currentFrame: 0,
         totalFrames: 0,
-        isPlaying: false
+        isPlaying: false,
       },
       interaction: {
         orbitControls: true,
@@ -600,7 +607,7 @@ export class VisualizationController {
         zoomEnabled: this.config.threeDimensions.controls.enableZoom,
         rotateEnabled: this.config.threeDimensions.controls.enableRotate,
         autoRotate: this.config.threeDimensions.controls.autoRotate,
-        autoRotateSpeed: this.config.threeDimensions.controls.autoRotateSpeed
+        autoRotateSpeed: this.config.threeDimensions.controls.autoRotateSpeed,
       },
       visibility: {
         grid: this.config.twoDimensions.grid.enabled,
@@ -610,15 +617,15 @@ export class VisualizationController {
         material: true,
         fixtures: true,
         toolPaths: true,
-        shadows: this.config.threeDimensions.renderer.shadows
-      }
+        shadows: this.config.threeDimensions.renderer.shadows,
+      },
     };
   }
 
   private initializeEventHandlers(): void {
-    const events = ['camera_changed', 'object_added', 'object_removed', 'tool_path_updated', 
-                   'view_mode_changed', 'quality_changed', 'performance_update', 'animation_state_changed'];
-    events.forEach(event => {
+    const events = ['camera_changed', 'object_added', 'object_removed', 'tool_path_updated',
+      'view_mode_changed', 'quality_changed', 'performance_update', 'animation_state_changed'];
+    events.forEach((event) => {
       this.eventHandlers.set(event, new Set());
     });
   }
@@ -626,13 +633,13 @@ export class VisualizationController {
   private setupDefaultScene(): void {
     // Add default lights
     this.addDefaultLights();
-    
+
     // Add coordinate axes
     this.addCoordinateAxes();
-    
+
     // Add grid
     this.addGrid();
-    
+
     // Add default tool
     this.addDefaultTool();
   }
@@ -645,7 +652,7 @@ export class VisualizationController {
       color: this.config.threeDimensions.lighting.ambient.color,
       intensity: this.config.threeDimensions.lighting.ambient.intensity,
       castShadow: false,
-      enabled: true
+      enabled: true,
     });
 
     // Directional light
@@ -656,7 +663,7 @@ export class VisualizationController {
       intensity: this.config.threeDimensions.lighting.directional.intensity,
       position: { ...this.config.threeDimensions.lighting.directional.position },
       castShadow: this.config.threeDimensions.lighting.directional.castShadow,
-      enabled: true
+      enabled: true,
     });
   }
 
@@ -674,12 +681,12 @@ export class VisualizationController {
       visible: true,
       geometry: {
         type: 'line',
-        parameters: { points: [[0, 0, 0], [100, 0, 0]] }
+        parameters: { points: [[0, 0, 0], [100, 0, 0]] },
       },
       material: {
         type: 'line',
-        properties: { linewidth: 2 }
-      }
+        properties: { linewidth: 2 },
+      },
     });
 
     // Y axis (green)
@@ -693,12 +700,12 @@ export class VisualizationController {
       visible: true,
       geometry: {
         type: 'line',
-        parameters: { points: [[0, 0, 0], [0, 100, 0]] }
+        parameters: { points: [[0, 0, 0], [0, 100, 0]] },
       },
       material: {
         type: 'line',
-        properties: { linewidth: 2 }
-      }
+        properties: { linewidth: 2 },
+      },
     });
 
     // Z axis (blue)
@@ -712,12 +719,12 @@ export class VisualizationController {
       visible: true,
       geometry: {
         type: 'line',
-        parameters: { points: [[0, 0, 0], [0, 0, 100]] }
+        parameters: { points: [[0, 0, 0], [0, 0, 100]] },
       },
       material: {
         type: 'line',
-        properties: { linewidth: 2 }
-      }
+        properties: { linewidth: 2 },
+      },
     });
   }
 
@@ -734,17 +741,17 @@ export class VisualizationController {
       visible: true,
       geometry: {
         type: 'plane',
-        parameters: { 
-          width: 1000, 
+        parameters: {
+          width: 1000,
           height: 1000,
           widthSegments: 100,
-          heightSegments: 100
-        }
+          heightSegments: 100,
+        },
       },
       material: {
         type: 'basic',
-        properties: { wireframe: true }
-      }
+        properties: { wireframe: true },
+      },
     });
   }
 
@@ -763,13 +770,13 @@ export class VisualizationController {
           radiusTop: 3,
           radiusBottom: 3,
           height: 50,
-          radialSegments: 8
-        }
+          radialSegments: 8,
+        },
       },
       material: {
         type: 'phong',
-        properties: {}
-      }
+        properties: {},
+      },
     });
   }
 
@@ -788,7 +795,7 @@ export class VisualizationController {
     if (!this.state.animation.isPlaying) return;
 
     this.state.animation.currentFrame += this.state.animation.speed;
-    
+
     if (this.state.animation.currentFrame >= this.state.animation.totalFrames) {
       if (this.state.animation.loop) {
         this.state.animation.currentFrame = 0;
@@ -800,16 +807,16 @@ export class VisualizationController {
 
     // Update tool path animations
     this.updateToolPathAnimations();
-    
+
     // Emit animation state change
     this.emit('animation_state_changed', {
       isPlaying: this.state.animation.isPlaying,
-      frame: this.state.animation.currentFrame
+      frame: this.state.animation.currentFrame,
     });
   }
 
   private updateToolPathAnimations(): void {
-    this.state.toolPaths.forEach(toolPath => {
+    this.state.toolPaths.forEach((toolPath) => {
       if (toolPath.animated) {
         const progress = this.state.animation.currentFrame / this.state.animation.totalFrames;
         toolPath.progress = progress;
@@ -826,28 +833,28 @@ export class VisualizationController {
   private updatePerformanceMetrics(): void {
     const now = performance.now();
     const deltaTime = now - this.lastFrameTime;
-    
+
     if (deltaTime > 0) {
       this.state.performance.fps = Math.round(1000 / deltaTime);
       this.state.performance.frameTime = deltaTime;
     }
-    
+
     this.lastFrameTime = now;
     this.frameCount++;
-    
+
     // Update other performance metrics
     this.state.performance.triangleCount = this.calculateTriangleCount();
-    this.state.performance.drawCalls = this.state.objects.filter(obj => obj.visible).length;
-    
+    this.state.performance.drawCalls = this.state.objects.filter((obj) => obj.visible).length;
+
     // Emit performance update
     this.emit('performance_update', {
-      performance: this.state.performance
+      performance: this.state.performance,
     });
   }
 
   private calculateTriangleCount(): number {
     // Simplified calculation based on visible objects
-    return this.state.objects.filter(obj => obj.visible).length * 100;
+    return this.state.objects.filter((obj) => obj.visible).length * 100;
   }
 
   private getQualitySettings(quality: RenderQuality['level']): Partial<RenderQuality> {
@@ -858,7 +865,7 @@ export class VisualizationController {
           shadowMapSize: 512,
           antialias: false,
           pixelRatio: 1,
-          maxFPS: 30
+          maxFPS: 30,
         };
       case 'medium':
         return {
@@ -866,7 +873,7 @@ export class VisualizationController {
           shadowMapSize: 1024,
           antialias: true,
           pixelRatio: 1,
-          maxFPS: 60
+          maxFPS: 60,
         };
       case 'high':
         return {
@@ -874,7 +881,7 @@ export class VisualizationController {
           shadowMapSize: 2048,
           antialias: true,
           pixelRatio: window.devicePixelRatio || 1,
-          maxFPS: 60
+          maxFPS: 60,
         };
       case 'ultra':
         return {
@@ -882,7 +889,7 @@ export class VisualizationController {
           shadowMapSize: 4096,
           antialias: true,
           pixelRatio: window.devicePixelRatio || 1,
-          maxFPS: 120
+          maxFPS: 120,
         };
       default:
         return { level: 'medium' };
@@ -890,7 +897,7 @@ export class VisualizationController {
   }
 
   private updateObjectVisibility(type: keyof VisualizationState['visibility'], visible: boolean): void {
-    this.state.objects.forEach(object => {
+    this.state.objects.forEach((object) => {
       if (object.type === type) {
         object.visible = visible;
       }
@@ -904,7 +911,7 @@ export class VisualizationController {
   private emit(event: string, data: any): void {
     const handlers = this.eventHandlers.get(event);
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
           handler({ type: event, data } as VisualizationEvent);
         } catch (error) {

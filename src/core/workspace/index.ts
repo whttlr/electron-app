@@ -4,17 +4,17 @@
 export { WorkspaceController, workspaceController } from './WorkspaceController';
 
 // Workspace types and interfaces
-export type { 
-  WorkspaceDimensions, 
-  WorkspaceOrigin, 
-  Material, 
-  Fixture, 
-  Tool, 
+export type {
+  WorkspaceDimensions,
+  WorkspaceOrigin,
+  Material,
+  Fixture,
+  Tool,
   WorkspaceGrid,
   MeasurementTool,
   WorkspaceState,
   WorkspaceEvent,
-  WorkspaceEventHandler 
+  WorkspaceEventHandler,
 } from './WorkspaceController';
 
 // Configuration

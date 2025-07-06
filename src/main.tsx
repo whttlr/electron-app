@@ -10,6 +10,7 @@ import advancedFormat from 'dayjs/plugin/advancedFormat';
 import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import App from './App';
 import './index.css';
+import './globals.css';
 
 // Configure dayjs for Ant Design
 dayjs.extend(customParseFormat);

@@ -3,8 +3,7 @@
  * Common setup functions for accessibility testing
  */
 
-import { axe, toHaveNoViolations } from 'jest-axe';
-import { configureAxe } from 'jest-axe';
+import { axe, toHaveNoViolations, configureAxe } from 'jest-axe';
 
 // Extend Jest matchers
 expect.extend(toHaveNoViolations);
@@ -19,7 +18,7 @@ const axeConfig = configureAxe({
     'aria-required-attr': { enabled: true },
     'focus-order-semantics': { enabled: true },
     'landmark-one-main': { enabled: true },
-    'region': { enabled: true },
+    region: { enabled: true },
     'skip-link': { enabled: true },
   },
   tags: ['wcag2a', 'wcag2aa', 'wcag21aa'],
@@ -29,7 +28,7 @@ const axeConfig = configureAxe({
 export const setupA11yTests = () => {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: jest.fn().mockImplementation(query => ({
+    value: jest.fn().mockImplementation((query) => ({
       matches: false,
       media: query,
       onchange: null,
@@ -57,16 +56,22 @@ export const setupA11yTests = () => {
   // Mock IntersectionObserver for visibility tests
   global.IntersectionObserver = class IntersectionObserver {
     constructor() {}
+
     observe() {}
+
     unobserve() {}
+
     disconnect() {}
   };
 
   // Mock ResizeObserver for responsive tests
   global.ResizeObserver = class ResizeObserver {
     constructor() {}
+
     observe() {}
+
     unobserve() {}
+
     disconnect() {}
   };
 };
@@ -80,7 +85,7 @@ export const createA11yTestSuite = (
     skipKeyboard?: boolean;
     skipScreenReader?: boolean;
     customTests?: Array<() => void>;
-  } = {}
+  } = {},
 ) => {
   describe(`${componentName} Accessibility`, () => {
     beforeEach(() => {
@@ -99,11 +104,11 @@ export const createA11yTestSuite = (
       it('should support keyboard navigation', async () => {
         const { container } = renderComponent();
         const focusableElements = container.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
         );
-        
+
         expect(focusableElements.length).toBeGreaterThan(0);
-        
+
         // Test tab navigation
         const firstElement = focusableElements[0] as HTMLElement;
         firstElement.focus();
@@ -115,7 +120,7 @@ export const createA11yTestSuite = (
       it('should provide screen reader support', () => {
         const { container } = renderComponent();
         const ariaElements = container.querySelectorAll('[aria-label], [aria-labelledby], [aria-describedby]');
-        
+
         // Should have some ARIA attributes for screen readers
         expect(ariaElements.length).toBeGreaterThan(0);
       });

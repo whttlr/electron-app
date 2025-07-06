@@ -31,7 +31,7 @@ export interface UseAnalyticsReturn {
  */
 export const useAnalytics = (): UseAnalyticsReturn => {
   const context = useContext(AnalyticsContext);
-  
+
   if (!context) {
     throw new Error('useAnalytics must be used within an AnalyticsProvider');
   }
@@ -42,13 +42,13 @@ export const useAnalytics = (): UseAnalyticsReturn => {
   useEffect(() => {
     analytics.track('user_interaction', 'ui_interaction', 'component_mounted', {
       component: 'unknown', // This could be enhanced to detect component name
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     return () => {
       analytics.track('user_interaction', 'ui_interaction', 'component_unmounted', {
         component: 'unknown',
-        timestamp: Date.now()
+        timestamp: Date.now(),
       });
     };
   }, [analytics]);
@@ -58,7 +58,7 @@ export const useAnalytics = (): UseAnalyticsReturn => {
     category: EventCategory,
     action: string,
     properties: Record<string, any> = {},
-    options: { label?: string; value?: number; immediate?: boolean } = {}
+    options: { label?: string; value?: number; immediate?: boolean } = {},
   ) => {
     analytics.track(type, category, action, properties, options);
   }, [analytics]);
@@ -72,26 +72,26 @@ export const useAnalytics = (): UseAnalyticsReturn => {
   }, [analytics]);
 
   const trackPluginUsage = useCallback((
-    pluginId: string, 
-    action: string, 
-    properties: Record<string, any> = {}
+    pluginId: string,
+    action: string,
+    properties: Record<string, any> = {},
   ) => {
     analytics.trackPluginUsage(pluginId, action, properties);
   }, [analytics]);
 
   const trackError = useCallback((
-    error: Error, 
-    context: Record<string, any> = {}, 
-    severity: 'low' | 'medium' | 'high' | 'critical' = 'medium'
+    error: Error,
+    context: Record<string, any> = {},
+    severity: 'low' | 'medium' | 'high' | 'critical' = 'medium',
   ) => {
     analytics.trackError(error, context, severity);
     errorTracker.trackError(error, context, severity);
   }, [analytics, errorTracker]);
 
   const trackPerformance = useCallback((
-    metric: string, 
-    value: number, 
-    properties: Record<string, any> = {}
+    metric: string,
+    value: number,
+    properties: Record<string, any> = {},
   ) => {
     analytics.trackPerformance(metric, value, properties);
   }, [analytics]);
@@ -104,9 +104,7 @@ export const useAnalytics = (): UseAnalyticsReturn => {
     analytics.setGlobalProperties(properties);
   }, [analytics]);
 
-  const getSession = useCallback(() => {
-    return analytics.getSession();
-  }, [analytics]);
+  const getSession = useCallback(() => analytics.getSession(), [analytics]);
 
   return {
     track,
@@ -118,7 +116,7 @@ export const useAnalytics = (): UseAnalyticsReturn => {
     setUserId,
     setGlobalProperties,
     getSession,
-    isEnabled: true // This would come from analytics config
+    isEnabled: true, // This would come from analytics config
   };
 };
 
@@ -131,7 +129,7 @@ export const usePageTracking = (pageName: string, properties: Record<string, any
   useEffect(() => {
     trackPageView(pageName, {
       ...properties,
-      entryTime: Date.now()
+      entryTime: Date.now(),
     });
 
     const startTime = Date.now();
@@ -141,7 +139,7 @@ export const usePageTracking = (pageName: string, properties: Record<string, any
       trackPageView(`${pageName}_exit`, {
         ...properties,
         timeOnPage,
-        exitTime: Date.now()
+        exitTime: Date.now(),
       });
     };
   }, [pageName, trackPageView, properties]);
@@ -156,14 +154,14 @@ export const useInteractionTracking = () => {
   const trackClick = useCallback((elementId: string, properties: Record<string, any> = {}) => {
     track('user_interaction', 'ui_interaction', 'click', {
       elementId,
-      ...properties
+      ...properties,
     });
   }, [track]);
 
   const trackFormSubmission = useCallback((formId: string, properties: Record<string, any> = {}) => {
     track('user_interaction', 'ui_interaction', 'form_submit', {
       formId,
-      ...properties
+      ...properties,
     });
   }, [track]);
 
@@ -171,7 +169,7 @@ export const useInteractionTracking = () => {
     track('user_interaction', 'ui_interaction', 'form_error', {
       formId,
       errors,
-      errorCount: Object.keys(errors).length
+      errorCount: Object.keys(errors).length,
     });
   }, [track]);
 
@@ -179,7 +177,7 @@ export const useInteractionTracking = () => {
     track('user_interaction', 'ui_interaction', 'navigation', {
       from,
       to,
-      method
+      method,
     });
   }, [track]);
 
@@ -187,7 +185,7 @@ export const useInteractionTracking = () => {
     track('user_interaction', 'ui_interaction', 'search', {
       query,
       results,
-      ...properties
+      ...properties,
     });
   }, [track]);
 
@@ -196,7 +194,7 @@ export const useInteractionTracking = () => {
     trackFormSubmission,
     trackFormError,
     trackNavigation,
-    trackSearch
+    trackSearch,
   };
 };
 
@@ -211,21 +209,21 @@ export const useCNCTracking = () => {
       axis,
       direction,
       distance,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }, [trackCNCOperation]);
 
   const trackHomeOperation = useCallback((axes: string[]) => {
     trackCNCOperation('home', {
       axes,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }, [trackCNCOperation]);
 
   const trackFileOperation = useCallback((operation: 'upload' | 'download' | 'delete' | 'execute', filename: string) => {
     trackCNCOperation(`file_${operation}`, {
       filename,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }, [trackCNCOperation]);
 
@@ -233,14 +231,14 @@ export const useCNCTracking = () => {
     trackCNCOperation('connection_change', {
       status,
       details,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   }, [trackCNCOperation]);
 
   const trackEmergencyStop = useCallback((reason: string) => {
     trackCNCOperation('emergency_stop', {
       reason,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     }, { immediate: true });
   }, [trackCNCOperation]);
 
@@ -249,7 +247,7 @@ export const useCNCTracking = () => {
     trackHomeOperation,
     trackFileOperation,
     trackConnectionChange,
-    trackEmergencyStop
+    trackEmergencyStop,
   };
 };
 
@@ -262,29 +260,29 @@ export const usePerformanceTracking = () => {
   const measureAsync = useCallback(async <T>(
     operation: string,
     asyncFunction: () => Promise<T>,
-    properties: Record<string, any> = {}
+    properties: Record<string, any> = {},
   ): Promise<T> => {
     const startTime = performance.now();
-    
+
     try {
       const result = await asyncFunction();
       const duration = performance.now() - startTime;
-      
+
       trackPerformance(operation, duration, {
         ...properties,
-        success: true
+        success: true,
       });
-      
+
       return result;
     } catch (error) {
       const duration = performance.now() - startTime;
-      
+
       trackPerformance(operation, duration, {
         ...properties,
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
-      
+
       throw error;
     }
   }, [trackPerformance]);
@@ -292,35 +290,35 @@ export const usePerformanceTracking = () => {
   const measureSync = useCallback(<T>(
     operation: string,
     syncFunction: () => T,
-    properties: Record<string, any> = {}
+    properties: Record<string, any> = {},
   ): T => {
     const startTime = performance.now();
-    
+
     try {
       const result = syncFunction();
       const duration = performance.now() - startTime;
-      
+
       trackPerformance(operation, duration, {
         ...properties,
-        success: true
+        success: true,
       });
-      
+
       return result;
     } catch (error) {
       const duration = performance.now() - startTime;
-      
+
       trackPerformance(operation, duration, {
         ...properties,
         success: false,
-        error: error instanceof Error ? error.message : String(error)
+        error: error instanceof Error ? error.message : String(error),
       });
-      
+
       throw error;
     }
   }, [trackPerformance]);
 
   return {
     measureAsync,
-    measureSync
+    measureSync,
   };
 };

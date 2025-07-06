@@ -1,6 +1,6 @@
 /**
  * Unified Component Exports
- * 
+ *
  * This file provides the main component exports that applications should use.
  * Components are provided through the ComponentProvider system, allowing
  * for seamless switching between different implementations.
@@ -15,15 +15,13 @@ import { useComponents } from '../providers/ComponentProvider';
 /**
  * Hook to get all components from the current provider
  */
-export const useAppComponents = () => {
-  return useComponents();
-};
+export const useAppComponents = () => useComponents();
 
 /**
  * Hook to get a specific component from the current provider
  */
 export const useComponent = <T extends keyof ReturnType<typeof useComponents>>(
-  componentName: T
+  componentName: T,
 ): ReturnType<typeof useComponents>[T] => {
   const components = useComponents();
   return components[componentName];
@@ -154,7 +152,7 @@ export const useCNCComponents = () => ({
  */
 export const useFormComponents = () => {
   const components = useComponents();
-  
+
   return {
     Form: components.Form,
     FormItem: components.FormItem,
@@ -174,7 +172,7 @@ export const useFormComponents = () => {
  */
 export const useLayoutComponents = () => {
   const components = useComponents();
-  
+
   return {
     Layout: components.Layout,
     Header: components.Header,
@@ -189,7 +187,7 @@ export const useLayoutComponents = () => {
  */
 export const useFeedbackComponents = () => {
   const components = useComponents();
-  
+
   return {
     Modal: components.Modal,
     Drawer: components.Drawer,
@@ -206,7 +204,7 @@ export const useFeedbackComponents = () => {
  */
 export const useCNCComponentCollection = () => {
   const components = useComponents();
-  
+
   return {
     StatusIndicator: components.StatusIndicator,
     CoordinateDisplay: components.CoordinateDisplay,
@@ -266,13 +264,13 @@ export { componentVariants } from '../theme/component-styles';
  */
 export const useComponentAvailability = () => {
   const { isImplementationAvailable } = useComponentProvider();
-  
+
   return {
     isAvailable: isImplementationAvailable,
-    checkComponent: (componentName: string) => {
+    checkComponent: (componentName: string) =>
       // This would need to be implemented based on the current provider
-      return true; // Placeholder
-    },
+      true // Placeholder
+    ,
   };
 };
 
@@ -281,7 +279,7 @@ export const useComponentAvailability = () => {
  */
 export const useImplementationInfo = () => {
   const { implementation } = useComponentProvider();
-  
+
   return {
     current: implementation,
     isAntDesign: implementation === 'ant-design',
@@ -295,11 +293,11 @@ export const useImplementationInfo = () => {
  */
 export const useComponentList = () => {
   const components = useComponents();
-  
+
   if (process.env.NODE_ENV !== 'development') {
     return [];
   }
-  
+
   return Object.keys(components) as (keyof typeof components)[];
 };
 

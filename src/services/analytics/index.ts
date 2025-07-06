@@ -19,7 +19,7 @@ export type {
   UserEvent,
   SecurityEvent,
   SystemMetrics,
-  MonitoringDashboard
+  MonitoringDashboard,
 } from './types';
 
 // Configuration

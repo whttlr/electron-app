@@ -10,10 +10,10 @@ import type { ErrorRecoveryHook } from './types';
 export function useErrorRecovery(): ErrorRecoveryHook {
   const [error, setError] = React.useState<Error | null>(null);
   const [isRecovering, setIsRecovering] = React.useState(false);
-  
+
   const recover = React.useCallback(async (strategy: string = 'reset-component') => {
     setIsRecovering(true);
-    
+
     try {
       await ErrorRecovery.executeStrategy(strategy);
       setError(null);
@@ -23,12 +23,12 @@ export function useErrorRecovery(): ErrorRecoveryHook {
       setIsRecovering(false);
     }
   }, []);
-  
+
   const throwError = React.useCallback((error: Error) => {
     setError(error);
     throw error;
   }, []);
-  
+
   return {
     error,
     isRecovering,

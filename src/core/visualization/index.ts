@@ -4,17 +4,17 @@
 export { VisualizationController, visualizationController } from './VisualizationController';
 
 // Visualization types and interfaces
-export type { 
-  Camera3D, 
-  Camera2D, 
-  Light, 
-  SceneObject, 
-  ToolPath, 
+export type {
+  Camera3D,
+  Camera2D,
+  Light,
+  SceneObject,
+  ToolPath,
   ViewportSettings,
   RenderQuality,
   VisualizationState,
   VisualizationEvent,
-  VisualizationEventHandler 
+  VisualizationEventHandler,
 } from './VisualizationController';
 
 // Configuration

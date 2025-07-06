@@ -1,6 +1,6 @@
 /**
  * Offline Synchronization System
- * 
+ *
  * Handles data persistence, conflict resolution, and synchronization
  * when the CNC control application goes offline. Critical for industrial
  * environments where network connectivity may be unreliable.
@@ -33,22 +33,24 @@ export interface SyncOptions {
 // Local database wrapper for IndexedDB
 class LocalDatabase {
   private db: IDBDatabase | null = null;
+
   private dbName = 'cnc-offline-db';
+
   private version = 1;
 
   async initialize(): Promise<void> {
     return new Promise((resolve, reject) => {
       const request = indexedDB.open(this.dbName, this.version);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         this.db = request.result;
         resolve();
       };
-      
+
       request.onupgradeneeded = (event) => {
         const db = (event.target as IDBOpenDBRequest).result;
-        
+
         // Create stores if they don't exist
         if (!db.objectStoreNames.contains('syncQueue')) {
           const syncStore = db.createObjectStore('syncQueue', { keyPath: 'id' });
@@ -56,13 +58,13 @@ class LocalDatabase {
           syncStore.createIndex('type', 'type');
           syncStore.createIndex('priority', 'priority');
         }
-        
+
         if (!db.objectStoreNames.contains('offlineData')) {
           const dataStore = db.createObjectStore('offlineData', { keyPath: 'id' });
           dataStore.createIndex('type', 'type');
           dataStore.createIndex('timestamp', 'timestamp');
         }
-        
+
         if (!db.objectStoreNames.contains('conflicts')) {
           const conflictStore = db.createObjectStore('conflicts', { keyPath: 'id' });
           conflictStore.createIndex('timestamp', 'timestamp');
@@ -73,12 +75,12 @@ class LocalDatabase {
 
   async add(storeName: string, data: any): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.add(data);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve();
     });
@@ -86,12 +88,12 @@ class LocalDatabase {
 
   async put(storeName: string, data: any): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.put(data);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve();
     });
@@ -99,12 +101,12 @@ class LocalDatabase {
 
   async get(storeName: string, id: string): Promise<any> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.get(id);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
     });
@@ -112,12 +114,12 @@ class LocalDatabase {
 
   async getAll(storeName: string): Promise<any[]> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([storeName], 'readonly');
       const store = transaction.objectStore(storeName);
       const request = store.getAll();
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
     });
@@ -125,12 +127,12 @@ class LocalDatabase {
 
   async delete(storeName: string, id: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.delete(id);
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve();
     });
@@ -138,12 +140,12 @@ class LocalDatabase {
 
   async clear(storeName: string): Promise<void> {
     if (!this.db) throw new Error('Database not initialized');
-    
+
     return new Promise((resolve, reject) => {
       const transaction = this.db!.transaction([storeName], 'readwrite');
       const store = transaction.objectStore(storeName);
       const request = store.clear();
-      
+
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve();
     });
@@ -153,9 +155,13 @@ class LocalDatabase {
 // Main offline sync manager
 export class OfflineSyncManager {
   private db: LocalDatabase;
+
   private syncInProgress = false;
+
   private syncQueue: SyncableData[] = [];
+
   private options: Required<SyncOptions>;
+
   private listeners: Set<(event: SyncEvent) => void> = new Set();
 
   constructor(options: SyncOptions = {}) {
@@ -190,11 +196,11 @@ export class OfflineSyncManager {
       // Sort by priority type first
       const aPriority = this.options.priorityTypes.indexOf(a.type);
       const bPriority = this.options.priorityTypes.indexOf(b.type);
-      
+
       if (aPriority !== bPriority) {
         return aPriority - bPriority;
       }
-      
+
       // Then by timestamp
       return a.timestamp - b.timestamp;
     });
@@ -253,7 +259,7 @@ export class OfflineSyncManager {
   // Get offline data
   async getOfflineData(type?: string): Promise<SyncableData[]> {
     const allData = await this.db.getAll('offlineData');
-    return type ? allData.filter(item => item.type === type) : allData;
+    return type ? allData.filter((item) => item.type === type) : allData;
   }
 
   // Start synchronization process
@@ -278,7 +284,7 @@ export class OfflineSyncManager {
 
   private async processSyncQueue(): Promise<void> {
     const batches = this.createBatches(this.syncQueue, this.options.batchSize);
-    
+
     for (const batch of batches) {
       await this.processBatch(batch);
     }
@@ -293,27 +299,26 @@ export class OfflineSyncManager {
   }
 
   private async processBatch(batch: SyncableData[]): Promise<void> {
-    const syncPromises = batch.map(item => this.syncItem(item));
+    const syncPromises = batch.map((item) => this.syncItem(item));
     await Promise.allSettled(syncPromises);
   }
 
   private async syncItem(item: SyncableData): Promise<void> {
     let retryCount = 0;
-    
+
     while (retryCount < this.options.retryAttempts) {
       try {
         await this.performSync(item);
-        
+
         // Remove from queue on success
-        this.syncQueue = this.syncQueue.filter(queueItem => queueItem.id !== item.id);
+        this.syncQueue = this.syncQueue.filter((queueItem) => queueItem.id !== item.id);
         await this.db.delete('syncQueue', item.id);
-        
+
         this.notifyListeners({ type: 'item-synced', data: item });
         return;
-        
       } catch (error) {
         retryCount++;
-        
+
         if (retryCount < this.options.retryAttempts) {
           await this.delay(this.options.retryDelay * retryCount);
         } else {
@@ -326,7 +331,7 @@ export class OfflineSyncManager {
 
   private async performSync(item: SyncableData): Promise<void> {
     const endpoint = this.getEndpointForType(item.type);
-    
+
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -363,7 +368,7 @@ export class OfflineSyncManager {
     };
 
     const resolution = await this.resolveConflict(localItem, serverItem);
-    
+
     // Store conflict information
     await this.db.put('conflicts', {
       id: `conflict-${Date.now()}`,
@@ -381,21 +386,21 @@ export class OfflineSyncManager {
   }
 
   private async resolveConflict(localItem: SyncableData, serverItem: SyncableData): Promise<ConflictResolution> {
-    const strategy = this.options.conflictResolution.strategy;
-    
+    const { strategy } = this.options.conflictResolution;
+
     switch (strategy) {
       case 'server-wins':
         return { strategy: 'server-wins' };
       case 'client-wins':
         return { strategy: 'client-wins' };
       case 'last-modified-wins':
-        return { 
-          strategy: localItem.timestamp > serverItem.timestamp ? 'client-wins' : 'server-wins' 
+        return {
+          strategy: localItem.timestamp > serverItem.timestamp ? 'client-wins' : 'server-wins',
         };
       case 'merge':
-        return { 
+        return {
           strategy: 'merge',
-          resolver: this.options.conflictResolution.resolver 
+          resolver: this.options.conflictResolution.resolver,
         };
       case 'manual':
         return { strategy: 'manual' };
@@ -405,9 +410,9 @@ export class OfflineSyncManager {
   }
 
   private async applyResolution(
-    localItem: SyncableData, 
-    serverItem: SyncableData, 
-    resolution: ConflictResolution
+    localItem: SyncableData,
+    serverItem: SyncableData,
+    resolution: ConflictResolution,
   ): Promise<SyncableData> {
     switch (resolution.strategy) {
       case 'server-wins':
@@ -432,7 +437,7 @@ export class OfflineSyncManager {
       alarm: '/api/alarms',
       log: '/api/logs',
     };
-    
+
     return endpoints[type as keyof typeof endpoints] || '/api/sync';
   }
 
@@ -442,15 +447,15 @@ export class OfflineSyncManager {
     const dataBuffer = encoder.encode(dataString);
     const hashBuffer = await crypto.subtle.digest('SHA-256', dataBuffer);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
   }
 
   private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   }
 
   private notifyListeners(event: SyncEvent): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(event);
       } catch (error) {
@@ -490,7 +495,7 @@ export class OfflineSyncManager {
     syncInProgress: boolean;
     queueSize: number;
     lastSyncTime: number | null;
-  } {
+    } {
     return {
       isOnline: pwaManager.isOnline(),
       syncInProgress: this.syncInProgress,
@@ -501,7 +506,7 @@ export class OfflineSyncManager {
 }
 
 // Sync event types
-export type SyncEvent = 
+export type SyncEvent =
   | { type: 'queued'; data: SyncableData }
   | { type: 'stored'; data: SyncableData }
   | { type: 'sync-started' }

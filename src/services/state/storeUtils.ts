@@ -1,6 +1,6 @@
 /**
  * Store Utilities
- * 
+ *
  * Utility functions for Zustand stores including selectors,
  * subscriptions, and cross-store communication.
  */
@@ -18,40 +18,38 @@ import type { StoreApi } from 'zustand';
 export function useStoreWithSelector<T, U>(
   store: StoreApi<T>,
   selector: (state: T) => U,
-  equalityFn?: (a: U, b: U) => boolean
+  equalityFn?: (a: U, b: U) => boolean,
 ): U {
   const [state, setState] = useState(() => selector(store.getState()));
   const selectorRef = useRef(selector);
   const equalityFnRef = useRef(equalityFn);
   const stateRef = useRef(state);
-  
+
   // Update refs
   selectorRef.current = selector;
   equalityFnRef.current = equalityFn;
   stateRef.current = state;
-  
+
   useEffect(() => {
     const listener = () => {
       const newState = selectorRef.current(store.getState());
       const equalityFn = equalityFnRef.current;
-      
+
       if (!equalityFn) {
         if (Object.is(newState, stateRef.current)) return;
-      } else {
-        if (equalityFn(newState, stateRef.current)) return;
-      }
-      
+      } else if (equalityFn(newState, stateRef.current)) return;
+
       setState(newState);
     };
-    
+
     const unsubscribe = store.subscribe(listener);
-    
+
     // Check if state has changed since initial render
     listener();
-    
+
     return unsubscribe;
   }, [store]);
-  
+
   return state;
 }
 
@@ -61,20 +59,20 @@ export function useStoreWithSelector<T, U>(
 export function createStoreSubscription<T>(
   store: StoreApi<T>,
   listener: (state: T, prevState: T) => void,
-  selector?: (state: T) => any
+  selector?: (state: T) => any,
 ) {
   let prevSelected: any;
-  
+
   const unsubscribe = store.subscribe((state, prevState) => {
     if (selector) {
       const selected = selector(state);
       if (Object.is(selected, prevSelected)) return;
       prevSelected = selected;
     }
-    
+
     listener(state, prevState);
   });
-  
+
   return unsubscribe;
 }
 
@@ -84,15 +82,15 @@ export function createStoreSubscription<T>(
 export function createDebouncedSubscription<T>(
   store: StoreApi<T>,
   listener: (state: T) => void,
-  delay: number = 300
+  delay: number = 300,
 ) {
   let timeoutId: NodeJS.Timeout;
-  
+
   const unsubscribe = store.subscribe((state) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => listener(state), delay);
   });
-  
+
   return () => {
     clearTimeout(timeoutId);
     unsubscribe();
@@ -105,10 +103,10 @@ export function createDebouncedSubscription<T>(
 export function createThrottledSubscription<T>(
   store: StoreApi<T>,
   listener: (state: T) => void,
-  interval: number = 100
+  interval: number = 100,
 ) {
   let lastCall = 0;
-  
+
   const unsubscribe = store.subscribe((state) => {
     const now = Date.now();
     if (now - lastCall >= interval) {
@@ -116,7 +114,7 @@ export function createThrottledSubscription<T>(
       listener(state);
     }
   });
-  
+
   return unsubscribe;
 }
 
@@ -129,21 +127,21 @@ export function createThrottledSubscription<T>(
  */
 export function shallowEqual<T>(a: T, b: T): boolean {
   if (Object.is(a, b)) return true;
-  
+
   if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
     return false;
   }
-  
+
   const keysA = Object.keys(a as any);
   const keysB = Object.keys(b as any);
-  
+
   if (keysA.length !== keysB.length) return false;
-  
+
   for (const key of keysA) {
     if (!Object.prototype.hasOwnProperty.call(b, key)) return false;
     if (!Object.is((a as any)[key], (b as any)[key])) return false;
   }
-  
+
   return true;
 }
 
@@ -153,23 +151,23 @@ export function shallowEqual<T>(a: T, b: T): boolean {
 export function deepEqual<T>(a: T, b: T, maxDepth: number = 3): boolean {
   if (maxDepth <= 0) return Object.is(a, b);
   if (Object.is(a, b)) return true;
-  
+
   if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
     return false;
   }
-  
+
   if (Array.isArray(a) !== Array.isArray(b)) return false;
-  
+
   const keysA = Object.keys(a as any);
   const keysB = Object.keys(b as any);
-  
+
   if (keysA.length !== keysB.length) return false;
-  
+
   for (const key of keysA) {
     if (!Object.prototype.hasOwnProperty.call(b, key)) return false;
     if (!deepEqual((a as any)[key], (b as any)[key], maxDepth - 1)) return false;
   }
-  
+
   return true;
 }
 
@@ -181,7 +179,7 @@ export function deepEqual<T>(a: T, b: T, maxDepth: number = 3): boolean {
  * Combine multiple store selectors into one
  */
 export function combineSelectors<T extends Record<string, any>>(
-  selectors: T
+  selectors: T,
 ): <S>(state: S) => { [K in keyof T]: T[K] extends (state: S) => infer R ? R : never } {
   return (state) => {
     const result = {} as any;
@@ -200,7 +198,7 @@ export function createDerivedSelector<T1, T2, R>(
   selector1: (state: T1) => any,
   store2: StoreApi<T2>,
   selector2: (state: T2) => any,
-  combiner: (value1: any, value2: any) => R
+  combiner: (value1: any, value2: any) => R,
 ): () => R {
   return () => {
     const value1 = selector1(store1.getState());
@@ -257,19 +255,19 @@ export function createEncryptedStorage(secretKey: string) {
     let result = '';
     for (let i = 0; i < text.length; i++) {
       result += String.fromCharCode(
-        text.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length)
+        text.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length),
       );
     }
     return btoa(result);
   };
-  
+
   const decrypt = (encryptedText: string): string => {
     try {
       const text = atob(encryptedText);
       let result = '';
       for (let i = 0; i < text.length; i++) {
         result += String.fromCharCode(
-          text.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length)
+          text.charCodeAt(i) ^ secretKey.charCodeAt(i % secretKey.length),
         );
       }
       return result;
@@ -278,7 +276,7 @@ export function createEncryptedStorage(secretKey: string) {
       return '';
     }
   };
-  
+
   return createStorageAdapter({
     getItem: (key: string) => {
       const encrypted = localStorage.getItem(key);
@@ -301,26 +299,26 @@ export function createEncryptedStorage(secretKey: string) {
  * Create a validator for store state
  */
 export function createStateValidator<T>(
-  schema: Record<string, (value: any) => string | null>
+  schema: Record<string, (value: any) => string | null>,
 ) {
   return (state: T): Record<string, string[]> => {
     const errors: Record<string, string[]> = {};
-    
+
     Object.entries(schema).forEach(([path, validator]) => {
       const value = getNestedValue(state, path);
       const error = validator(value);
-      
+
       if (error) {
         const pathParts = path.split('.');
         const errorKey = pathParts.slice(0, -1).join('.') || 'root';
-        
+
         if (!errors[errorKey]) {
           errors[errorKey] = [];
         }
         errors[errorKey].push(error);
       }
     });
-    
+
     return errors;
   };
 }
@@ -339,24 +337,24 @@ function getNestedValue(obj: any, path: string): any {
 export function createStoreMonitor<T>(store: StoreApi<T>, name: string) {
   let updateCount = 0;
   let lastUpdate = Date.now();
-  
+
   const unsubscribe = store.subscribe(() => {
     updateCount++;
     const now = Date.now();
     const timeSinceLastUpdate = now - lastUpdate;
-    
+
     if (timeSinceLastUpdate < 16) {
       console.warn(`Store ${name} updating too frequently: ${timeSinceLastUpdate}ms since last update`);
     }
-    
+
     lastUpdate = now;
-    
+
     // Log performance every 100 updates
     if (updateCount % 100 === 0) {
       console.log(`Store ${name} performance: ${updateCount} updates`);
     }
   });
-  
+
   return {
     unsubscribe,
     getStats: () => ({ updateCount, lastUpdate }),
@@ -376,22 +374,22 @@ export function createStoreMonitor<T>(store: StoreApi<T>, name: string) {
  */
 class StoreEventBus {
   private listeners: Map<string, Set<(data: any) => void>> = new Map();
-  
+
   subscribe(event: string, listener: (data: any) => void) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, new Set());
     }
     this.listeners.get(event)!.add(listener);
-    
+
     return () => {
       this.listeners.get(event)?.delete(listener);
     };
   }
-  
+
   emit(event: string, data?: any) {
     const listeners = this.listeners.get(event);
     if (listeners) {
-      listeners.forEach(listener => {
+      listeners.forEach((listener) => {
         try {
           listener(data);
         } catch (error) {
@@ -400,7 +398,7 @@ class StoreEventBus {
       });
     }
   }
-  
+
   clear(event?: string) {
     if (event) {
       this.listeners.delete(event);
@@ -421,14 +419,14 @@ export const storeEventBus = new StoreEventBus();
  */
 export function debugStore<T>(store: StoreApi<T>, name: string) {
   if (process.env.NODE_ENV !== 'development') return () => {};
-  
+
   const unsubscribe = store.subscribe((state, prevState) => {
     console.group(`🏪 ${name} Store Update`);
     console.log('Previous State:', prevState);
     console.log('New State:', state);
     console.groupEnd();
   });
-  
+
   return unsubscribe;
 }
 
@@ -438,14 +436,14 @@ export function debugStore<T>(store: StoreApi<T>, name: string) {
 export function createTimeTravelDebugger<T>(store: StoreApi<T>) {
   const history: T[] = [];
   let currentIndex = -1;
-  
+
   const unsubscribe = store.subscribe((state) => {
     // Remove any future states when a new state is added
     history.splice(currentIndex + 1);
     history.push(JSON.parse(JSON.stringify(state)));
     currentIndex = history.length - 1;
   });
-  
+
   return {
     unsubscribe,
     undo: () => {

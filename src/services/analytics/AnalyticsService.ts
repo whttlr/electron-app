@@ -9,32 +9,39 @@ import {
   AnalyticsEvent,
   EventType,
   EventCategory,
-  DeviceInfo
+  DeviceInfo,
 } from './types';
 import { analyticsConfig } from './config';
 
 export class AnalyticsService extends EventEmitter {
   private config: AnalyticsConfig;
+
   private eventQueue: AnalyticsEvent[] = [];
+
   private sessionId: string;
+
   private userId?: string;
+
   private flushTimer?: NodeJS.Timeout;
+
   private retryTimer?: NodeJS.Timeout;
+
   private isOnline = navigator.onLine;
+
   private sequenceCounter = 0;
 
   constructor(config: Partial<AnalyticsConfig> = {}) {
     super();
     this.config = { ...analyticsConfig, ...config };
     this.sessionId = this.generateSessionId();
-    
+
     this.setupEventListeners();
     this.startFlushTimer();
-    
+
     if (this.config.debug) {
       console.log('[Analytics] Service initialized', {
         sessionId: this.sessionId,
-        config: this.config
+        config: this.config,
       });
     }
   }
@@ -51,7 +58,7 @@ export class AnalyticsService extends EventEmitter {
       label?: string;
       value?: number;
       immediate?: boolean;
-    } = {}
+    } = {},
   ): void {
     if (!this.config.enabled) return;
 
@@ -68,12 +75,12 @@ export class AnalyticsService extends EventEmitter {
       value: options.value,
       properties: {
         ...properties,
-        sequence: this.sequenceCounter++
+        sequence: this.sequenceCounter++,
       },
       sessionId: this.sessionId,
       userId: this.userId,
       deviceInfo: this.getDeviceInfo(),
-      context: this.getEventContext()
+      context: this.getEventContext(),
     };
 
     this.addToQueue(event);
@@ -96,7 +103,7 @@ export class AnalyticsService extends EventEmitter {
     this.track('user_interaction', 'ui_interaction', 'page_view', {
       page,
       referrer: document.referrer,
-      ...properties
+      ...properties,
     });
   }
 
@@ -105,11 +112,11 @@ export class AnalyticsService extends EventEmitter {
    */
   trackCNCOperation(
     operation: string,
-    properties: Record<string, any> = {}
+    properties: Record<string, any> = {},
   ): void {
     this.track('user_interaction', 'cnc_control', operation, {
       timestamp: Date.now(),
-      ...properties
+      ...properties,
     });
   }
 
@@ -119,11 +126,11 @@ export class AnalyticsService extends EventEmitter {
   trackPluginUsage(
     pluginId: string,
     action: string,
-    properties: Record<string, any> = {}
+    properties: Record<string, any> = {},
   ): void {
     this.track('user_interaction', 'plugin_system', action, {
       pluginId,
-      ...properties
+      ...properties,
     });
   }
 
@@ -133,11 +140,11 @@ export class AnalyticsService extends EventEmitter {
   trackPerformance(
     metric: string,
     value: number,
-    properties: Record<string, any> = {}
+    properties: Record<string, any> = {},
   ): void {
     this.track('performance', 'system_performance', metric, {
       value,
-      ...properties
+      ...properties,
     }, { value });
   }
 
@@ -147,14 +154,14 @@ export class AnalyticsService extends EventEmitter {
   trackError(
     error: Error,
     context: Record<string, any> = {},
-    severity: 'low' | 'medium' | 'high' | 'critical' = 'medium'
+    severity: 'low' | 'medium' | 'high' | 'critical' = 'medium',
   ): void {
     this.track('error', 'error_tracking', 'error_occurred', {
       message: error.message,
       stack: error.stack,
       name: error.name,
       severity,
-      ...context
+      ...context,
     }, { immediate: severity === 'critical' });
   }
 
@@ -163,10 +170,10 @@ export class AnalyticsService extends EventEmitter {
    */
   setUserId(userId: string): void {
     this.userId = userId;
-    
+
     this.track('user_interaction', 'user_journey', 'user_identified', {
       userId,
-      previousUserId: this.userId
+      previousUserId: this.userId,
     });
   }
 
@@ -177,7 +184,7 @@ export class AnalyticsService extends EventEmitter {
     // Store global properties that will be added to all events
     (this as any).globalProperties = {
       ...(this as any).globalProperties,
-      ...properties
+      ...properties,
     };
   }
 
@@ -193,7 +200,7 @@ export class AnalyticsService extends EventEmitter {
     try {
       await this.sendEvents(events);
       this.emit('events_sent', events);
-      
+
       if (this.config.debug) {
         console.log(`[Analytics] Flushed ${events.length} events`);
       }
@@ -201,7 +208,7 @@ export class AnalyticsService extends EventEmitter {
       // Re-add events to queue for retry
       this.eventQueue.unshift(...events);
       this.scheduleRetry();
-      
+
       this.emit('send_failed', error);
       console.error('[Analytics] Failed to send events:', error);
     }
@@ -237,7 +244,7 @@ export class AnalyticsService extends EventEmitter {
   getSession(): { sessionId: string; userId?: string } {
     return {
       sessionId: this.sessionId,
-      userId: this.userId
+      userId: this.userId,
     };
   }
 
@@ -247,10 +254,10 @@ export class AnalyticsService extends EventEmitter {
   renewSession(): void {
     const oldSessionId = this.sessionId;
     this.sessionId = this.generateSessionId();
-    
+
     this.track('user_interaction', 'user_journey', 'session_renewed', {
       oldSessionId,
-      newSessionId: this.sessionId
+      newSessionId: this.sessionId,
     });
   }
 
@@ -260,10 +267,10 @@ export class AnalyticsService extends EventEmitter {
     // Network status
     window.addEventListener('online', this.handleOnline);
     window.addEventListener('offline', this.handleOffline);
-    
+
     // Page unload - flush remaining events
     window.addEventListener('beforeunload', this.handleBeforeUnload);
-    
+
     // Visibility change - pause/resume tracking
     document.addEventListener('visibilitychange', this.handleVisibilityChange);
   }
@@ -285,10 +292,10 @@ export class AnalyticsService extends EventEmitter {
           events: this.eventQueue,
           meta: {
             sessionId: this.sessionId,
-            timestamp: Date.now()
-          }
+            timestamp: Date.now(),
+          },
         });
-        
+
         navigator.sendBeacon(this.config.endpoint, payload);
       } catch (error) {
         console.error('[Analytics] Failed to send beacon:', error);
@@ -317,7 +324,7 @@ export class AnalyticsService extends EventEmitter {
     if ((this as any).globalProperties) {
       event.properties = {
         ...event.properties,
-        ...(this as any).globalProperties
+        ...(this as any).globalProperties,
       };
     }
 
@@ -336,9 +343,9 @@ export class AnalyticsService extends EventEmitter {
 
   private shouldFlushImmediately(event: AnalyticsEvent): boolean {
     // Flush immediately for critical events
-    return event.type === 'error' || 
-           event.category === 'security_events' ||
-           event.properties.severity === 'critical';
+    return event.type === 'error'
+           || event.category === 'security_events'
+           || event.properties.severity === 'critical';
   }
 
   private async sendEvents(events: AnalyticsEvent[]): Promise<void> {
@@ -353,18 +360,18 @@ export class AnalyticsService extends EventEmitter {
         userId: this.userId,
         timestamp: Date.now(),
         userAgent: navigator.userAgent,
-        version: '1.0.0'
-      }
+        version: '1.0.0',
+      },
     };
 
     const response = await fetch(this.config.endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${this.config.apiKey}`,
-        'X-Analytics-Version': '1.0'
+        Authorization: `Bearer ${this.config.apiKey}`,
+        'X-Analytics-Version': '1.0',
       },
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
@@ -401,7 +408,7 @@ export class AnalyticsService extends EventEmitter {
       orientation: window.innerWidth > window.innerHeight ? 'landscape' : 'portrait',
       connectionType: (navigator as any).connection?.effectiveType || 'unknown',
       isOnline: navigator.onLine,
-      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     };
   }
 
@@ -410,9 +417,9 @@ export class AnalyticsService extends EventEmitter {
       page: window.location.pathname,
       referrer: document.referrer,
       sessionDuration: Date.now() - parseInt(this.sessionId.split('_')[1]),
-      previousEvents: this.eventQueue.slice(-5).map(e => e.action),
+      previousEvents: this.eventQueue.slice(-5).map((e) => e.action),
       cncState: this.getCNCState(),
-      uiState: this.getUIState()
+      uiState: this.getUIState(),
     };
   }
 
@@ -422,7 +429,7 @@ export class AnalyticsService extends EventEmitter {
     return {
       connected: false,
       position: { x: 0, y: 0, z: 0 },
-      status: 'idle'
+      status: 'idle',
     };
   }
 
@@ -430,7 +437,7 @@ export class AnalyticsService extends EventEmitter {
     return {
       theme: document.documentElement.classList.contains('dark') ? 'dark' : 'light',
       layout: window.innerWidth > 768 ? 'desktop' : 'mobile',
-      activePlugins: [] // This would come from plugin service
+      activePlugins: [], // This would come from plugin service
     };
   }
 }

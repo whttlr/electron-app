@@ -1,35 +1,17 @@
 // UI Shared Module - Public API
-
-// Design tokens
-export * from './design-tokens';
+// App-specific shared components and utilities
 
 // Utilities
 export * from './utils';
 
-// Base components
-export * from './Button';
-export * from './Card';
-export * from './Input';
-export * from './Badge';
-export * from './Alert';
-
-// Layout components
-export * from './Container';
-export * from './Grid';
+// App-specific components
 export * from './Sidebar';
-
-// Animation components
-export * from './PageTransition';
-
-// Theme system
 export * from './ThemeProvider';
+export * from './ConnectionModal';
 
-// Re-export commonly used types
-export type { ButtonProps } from './Button';
-export type { InputProps } from './Input';
-export type { BadgeProps } from './Badge';
-export type { ContainerProps } from './Container';
-export type { GridProps, GridItemProps } from './Grid';
+// Error boundary system
+export * from './errorBoundary';
+
+// Re-export app-specific types
 export type { SidebarProps } from './Sidebar';
-export type { PageTransitionProps, SectionTransitionProps, AnimatedCardProps } from './PageTransition';
 export type { CustomThemeProviderProps, ThemeToggleProps } from './ThemeProvider';

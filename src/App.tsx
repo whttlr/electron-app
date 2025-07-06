@@ -7,11 +7,8 @@ import {
 } from 'antd';
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
-
-// Set dayjs locale
-dayjs.locale('en');
 import {
-  DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined,
+  DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined, BookOutlined,
 } from '@ant-design/icons';
 import { PluginProvider, usePlugins } from './services/plugin';
 import { databaseService } from './services/database';
@@ -23,9 +20,11 @@ import PluginsView from './views/Plugins/PluginsView';
 import SettingsView from './views/Settings/SettingsView';
 import ControlsView from './views/Controls/ControlsView';
 import PluginView from './views/Plugin/PluginView';
-import { CustomThemeProvider } from './ui/shared/ThemeProvider';
-import { ComponentProvider } from './ui/providers/ComponentProvider';
+import { StyleGuideView } from './views/StyleGuide';
 import './App.css';
+
+// Set dayjs locale
+dayjs.locale('en');
 
 const { Header, Content, Sider } = Layout;
 
@@ -62,6 +61,11 @@ const AppContent: React.FC = () => {
       key: '/controls',
       icon: <ControlOutlined />,
       label: <Link to="/controls" data-testid="nav-controls">Controls</Link>,
+    },
+    {
+      key: '/style-guide',
+      icon: <BookOutlined />,
+      label: <Link to="/style-guide" data-testid="nav-style-guide">Style Guide</Link>,
     },
     // Add standalone plugin menu items
     ...standalonePlugins.map((plugin) => ({
@@ -128,6 +132,7 @@ const AppContent: React.FC = () => {
             <Routes>
               <Route path="/" element={<DashboardView />} />
               <Route path="/controls" element={<ControlsView />} />
+              <Route path="/style-guide" element={<StyleGuideView />} />
               <Route path="/plugins" element={<PluginsView />} />
               <Route path="/settings" element={<SettingsView />} />
               {/* Dynamic plugin routes */}
@@ -214,11 +219,7 @@ function App() {
       <Router>
         <SettingsProvider>
           <PluginProvider>
-            <ComponentProvider implementation="ant-design">
-              <CustomThemeProvider>
-                <AppContent />
-              </CustomThemeProvider>
-            </ComponentProvider>
+            <AppContent />
           </PluginProvider>
         </SettingsProvider>
       </Router>

@@ -42,6 +42,36 @@
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
   }
+
+  /* Custom button classes for ui-library compatibility */
+  .bt-primary {
+    background: linear-gradient(135deg, #9333ea 0%, #7c3aed 100%);
+    border: 1px solid #8b5cf6;
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 4px 6px -1px rgba(147, 51, 234, 0.3);
+  }
+
+  .btn-secondary {
+    background: linear-gradient(135deg, #374151 0%, #4b5563 100%);
+    border: 1px solid #6b7280;
+    color: #f3f4f6;
+    font-weight: 500;
+  }
+
+  .btn-secondary:hover {
+    background: linear-gradient(135deg, #4b5563 0%, #6b7280 100%);
+    transform: translateY(-1px);
+  }
+
+  /* Badge animations */
+  .badge {
+    transition: all 0.2s ease-in-out;
+  }
+
+  .badge:hover {
+    transform: scale(1.05);
+  }
 }
 
 ::selection {

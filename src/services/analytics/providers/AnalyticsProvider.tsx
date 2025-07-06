@@ -3,7 +3,9 @@
  * Provides analytics, performance monitoring, and error tracking to the entire app
  */
 
-import React, { createContext, useEffect, useState, ReactNode } from 'react';
+import React, {
+  createContext, useEffect, useState, ReactNode,
+} from 'react';
 import { AnalyticsService } from '../AnalyticsService';
 import { PerformanceMonitor } from '../PerformanceMonitor';
 import { ErrorTracker } from '../ErrorTracker';
@@ -32,7 +34,7 @@ export interface AnalyticsProviderProps {
 export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
   children,
   config: customConfig = {},
-  autoStart = true
+  autoStart = true,
 }) => {
   const [services, setServices] = useState<{
     analytics: AnalyticsService;
@@ -45,14 +47,14 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
     const initializeServices = async () => {
       try {
         // Determine configuration based on environment
-        const envConfig = process.env.NODE_ENV === 'development' 
-          ? developmentConfig 
+        const envConfig = process.env.NODE_ENV === 'development'
+          ? developmentConfig
           : productionConfig;
-        
+
         const finalConfig = {
           ...analyticsConfig,
           ...envConfig,
-          ...customConfig
+          ...customConfig,
         };
 
         // Check privacy settings
@@ -72,12 +74,12 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
         if (autoStart && finalConfig.enabled) {
           performanceMonitor.start();
           errorTracker.start();
-          
+
           // Track application start
           analytics.track('system_health', 'system_performance', 'application_started', {
             environment: process.env.NODE_ENV,
             userAgent: navigator.userAgent,
-            timestamp: Date.now()
+            timestamp: Date.now(),
           });
         }
 
@@ -87,10 +89,9 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
         if (finalConfig.debug) {
           console.log('[Analytics] Services initialized', {
             config: finalConfig,
-            services: { analytics, performanceMonitor, errorTracker }
+            services: { analytics, performanceMonitor, errorTracker },
           });
         }
-
       } catch (error) {
         console.error('[Analytics] Failed to initialize services:', error);
         setIsInitialized(false);
@@ -137,7 +138,7 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
         event.reason instanceof Error ? event.reason : new Error(String(event.reason)),
         { type: 'unhandled_promise_rejection' },
         'high',
-        'promise_rejection'
+        'promise_rejection',
       );
     };
 
@@ -165,8 +166,8 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
     config: {
       ...analyticsConfig,
       ...(process.env.NODE_ENV === 'development' ? developmentConfig : productionConfig),
-      ...customConfig
-    }
+      ...customConfig,
+    },
   };
 
   return (
@@ -182,7 +183,7 @@ export const AnalyticsProvider: React.FC<AnalyticsProviderProps> = ({
 function setupServiceIntegration(
   analytics: AnalyticsService,
   performanceMonitor: PerformanceMonitor,
-  errorTracker: ErrorTracker
+  errorTracker: ErrorTracker,
 ): void {
   // Performance alerts trigger analytics events
   performanceMonitor.on('performance_alert', (alert) => {
@@ -190,7 +191,7 @@ function setupServiceIntegration(
       metric: alert.metric,
       value: alert.value,
       threshold: alert.threshold,
-      severity: 'warning'
+      severity: 'warning',
     }, { immediate: true });
   });
 
@@ -198,7 +199,7 @@ function setupServiceIntegration(
   performanceMonitor.on('system_metrics_updated', (metrics) => {
     analytics.track('performance', 'system_performance', 'metrics_updated', {
       ...metrics,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
   });
 
@@ -209,7 +210,7 @@ function setupServiceIntegration(
       severity: error.severity,
       message: error.message,
       fingerprint: error.fingerprint,
-      component: error.context.component
+      component: error.context.component,
     }, { immediate: error.severity === 'critical' });
   });
 
@@ -219,7 +220,7 @@ function setupServiceIntegration(
       type: error.type,
       severity: error.severity,
       message: error.message,
-      fingerprint: error.fingerprint
+      fingerprint: error.fingerprint,
     }, { immediate: true });
   });
 
@@ -231,8 +232,8 @@ function setupServiceIntegration(
       'info',
       {
         type: event.type,
-        properties: event.properties
-      }
+        properties: event.properties,
+      },
     );
   });
 
@@ -242,7 +243,7 @@ function setupServiceIntegration(
       'performance',
       `Metric updated: ${metric.metric} = ${metric.value}`,
       'info',
-      metric
+      metric,
     );
   });
 }
@@ -250,10 +251,8 @@ function setupServiceIntegration(
 /**
  * Factory function to create analytics provider with specific configuration
  */
-export const createAnalyticsProvider = (config: Partial<AnalyticsConfig>) => {
-  return ({ children }: { children: ReactNode }) => (
+export const createAnalyticsProvider = (config: Partial<AnalyticsConfig>) => ({ children }: { children: ReactNode }) => (
     <AnalyticsProvider config={config}>
       {children}
     </AnalyticsProvider>
-  );
-};
+);

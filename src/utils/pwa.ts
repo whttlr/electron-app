@@ -1,6 +1,6 @@
 /**
  * Progressive Web App Utilities
- * 
+ *
  * Utilities for PWA functionality including service worker registration,
  * offline support, push notifications, and app installation.
  */
@@ -84,9 +84,9 @@ const showUpdateAvailableNotification = () => {
       </div>
     </div>
   `;
-  
+
   document.body.appendChild(updateNotification);
-  
+
   // Auto-remove after 10 seconds
   setTimeout(() => {
     dismissUpdate();
@@ -112,6 +112,7 @@ const showUpdateAvailableNotification = () => {
 // Install prompt handling
 export class PWAInstaller {
   private deferredPrompt: any = null;
+
   private installButton: HTMLElement | null = null;
 
   constructor() {
@@ -162,11 +163,11 @@ export class PWAInstaller {
           📱 Install App
         </div>
       `;
-      
+
       this.installButton.addEventListener('click', () => {
         this.installApp();
       });
-      
+
       document.body.appendChild(this.installButton);
     }
   }
@@ -186,15 +187,15 @@ export class PWAInstaller {
 
     this.deferredPrompt.prompt();
     const { outcome } = await this.deferredPrompt.userChoice;
-    
+
     console.log(`User response to install prompt: ${outcome}`);
-    
+
     if (outcome === 'accepted') {
       console.log('User accepted the install prompt');
     } else {
       console.log('User dismissed the install prompt');
     }
-    
+
     this.deferredPrompt = null;
     this.hideInstallButton();
   }
@@ -204,14 +205,15 @@ export class PWAInstaller {
   }
 
   isStandalone(): boolean {
-    return window.matchMedia('(display-mode: standalone)').matches ||
-           (window.navigator as any).standalone === true;
+    return window.matchMedia('(display-mode: standalone)').matches
+           || (window.navigator as any).standalone === true;
   }
 }
 
 // Offline status management
 export class OfflineManager {
   private isOnline = navigator.onLine;
+
   private listeners: Array<(isOnline: boolean) => void> = [];
 
   constructor() {
@@ -234,7 +236,7 @@ export class OfflineManager {
   }
 
   private notifyListeners() {
-    this.listeners.forEach(listener => listener(this.isOnline));
+    this.listeners.forEach((listener) => listener(this.isOnline));
   }
 
   private showOfflineIndicator() {
@@ -259,9 +261,9 @@ export class OfflineManager {
         ⚠️ You are currently offline. Some features may be limited.
       </div>
     `;
-    
+
     document.body.appendChild(offlineIndicator);
-    
+
     // Adjust body padding to account for indicator
     document.body.style.paddingTop = '40px';
   }
@@ -276,7 +278,7 @@ export class OfflineManager {
 
   onStatusChange(listener: (isOnline: boolean) => void) {
     this.listeners.push(listener);
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.listeners.indexOf(listener);
@@ -328,7 +330,7 @@ export class BackgroundSync {
   private setupSyncListener() {
     if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
       // Register for background sync
-      navigator.serviceWorker.ready.then(registration => {
+      navigator.serviceWorker.ready.then((registration) => {
         registration.sync.register('cnc-data-sync');
       });
     }
@@ -341,7 +343,7 @@ export class BackgroundSync {
 
   addToQueue(action: string, data: any): string {
     const id = `sync-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    
+
     this.syncQueue.push({
       id,
       action,
@@ -349,14 +351,14 @@ export class BackgroundSync {
       timestamp: Date.now(),
       retries: 0,
     });
-    
+
     this.saveQueueToStorage();
-    
+
     // Try immediate sync if online
     if (navigator.onLine) {
       this.processSyncQueue();
     }
-    
+
     return id;
   }
 
@@ -364,27 +366,27 @@ export class BackgroundSync {
     if (this.syncQueue.length === 0) return;
 
     const itemsToProcess = [...this.syncQueue];
-    
+
     for (const item of itemsToProcess) {
       try {
         await this.processQueueItem(item);
-        
+
         // Remove successful item from queue
-        this.syncQueue = this.syncQueue.filter(i => i.id !== item.id);
+        this.syncQueue = this.syncQueue.filter((i) => i.id !== item.id);
       } catch (error) {
         console.error('Failed to sync item:', error);
-        
+
         // Increment retry count
         item.retries++;
-        
+
         // Remove items that have failed too many times
         if (item.retries >= 3) {
-          this.syncQueue = this.syncQueue.filter(i => i.id !== item.id);
+          this.syncQueue = this.syncQueue.filter((i) => i.id !== item.id);
           console.warn('Removing failed sync item after 3 retries:', item);
         }
       }
     }
-    
+
     this.saveQueueToStorage();
   }
 
@@ -409,7 +411,7 @@ export class BackgroundSync {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Sync failed: ${response.statusText}`);
     }
@@ -421,7 +423,7 @@ export class BackgroundSync {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Job sync failed: ${response.statusText}`);
     }
@@ -433,7 +435,7 @@ export class BackgroundSync {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       throw new Error(`Settings sync failed: ${response.statusText}`);
     }
@@ -490,13 +492,13 @@ export class PushNotificationManager {
       const subscription = await this.registration.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: this.urlB64ToUint8Array(
-          process.env.REACT_APP_VAPID_PUBLIC_KEY || ''
+          process.env.REACT_APP_VAPID_PUBLIC_KEY || '',
         ),
       });
 
       // Send subscription to server
       await this.sendSubscriptionToServer(subscription);
-      
+
       return subscription;
     } catch (error) {
       console.error('Failed to subscribe to push notifications:', error);
@@ -511,7 +513,7 @@ export class PushNotificationManager {
       .replace(/_/g, '/');
 
     const rawData = window.atob(base64);
-    return new Uint8Array([...rawData].map(char => char.charCodeAt(0)));
+    return new Uint8Array([...rawData].map((char) => char.charCodeAt(0)));
   }
 
   private async sendSubscriptionToServer(subscription: PushSubscription): Promise<void> {
@@ -550,7 +552,7 @@ export class PushNotificationManager {
         error: [200, 100, 200],
         critical: [300, 100, 300, 100, 300],
       };
-      
+
       options.vibrate = vibrationPatterns[severity];
     }
 
@@ -561,22 +563,25 @@ export class PushNotificationManager {
 // Main PWA manager that coordinates all PWA features
 export class PWAManager {
   private installer: PWAInstaller;
+
   private offlineManager: OfflineManager;
+
   private backgroundSync: BackgroundSync;
+
   private pushManager: PushNotificationManager | null = null;
 
   constructor() {
     this.installer = new PWAInstaller();
     this.offlineManager = new OfflineManager();
     this.backgroundSync = new BackgroundSync();
-    
+
     this.initialize();
   }
 
   private async initialize() {
     // Register service worker
     const registration = await registerServiceWorker();
-    
+
     if (registration) {
       this.pushManager = new PushNotificationManager(registration);
     }
@@ -620,7 +625,7 @@ export class PWAManager {
 
   async enablePushNotifications(): Promise<boolean> {
     if (!this.pushManager) return false;
-    
+
     const subscription = await this.pushManager.subscribeToPush();
     return !!subscription;
   }

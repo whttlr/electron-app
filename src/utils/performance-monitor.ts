@@ -1,6 +1,6 @@
 /**
  * Performance Monitoring Utilities
- * 
+ *
  * Comprehensive performance monitoring system for mobile CNC applications.
  * Tracks render times, memory usage, touch responsiveness, and provides
  * optimization recommendations for industrial tablet environments.
@@ -52,14 +52,23 @@ export const defaultThresholds: PerformanceThresholds = {
 
 export class PerformanceMonitor {
   private metrics: PerformanceMetrics[] = [];
+
   private observers: PerformanceObserver[] = [];
+
   private listeners: Set<(alert: PerformanceAlert) => void> = new Set();
+
   private isMonitoring = false;
+
   private rafId: number | null = null;
+
   private thresholds: PerformanceThresholds;
+
   private maxMetricsHistory = 100;
+
   private lastFrameTime = 0;
+
   private frameCount = 0;
+
   private lastFrameRateCheck = 0;
 
   constructor(thresholds: PerformanceThresholds = defaultThresholds) {
@@ -68,7 +77,7 @@ export class PerformanceMonitor {
 
   start(): void {
     if (this.isMonitoring) return;
-    
+
     this.isMonitoring = true;
     this.setupPerformanceObservers();
     this.startFrameRateMonitoring();
@@ -78,7 +87,7 @@ export class PerformanceMonitor {
 
   stop(): void {
     if (!this.isMonitoring) return;
-    
+
     this.isMonitoring = false;
     this.cleanup();
   }
@@ -154,11 +163,11 @@ export class PerformanceMonitor {
       if (!this.isMonitoring) return;
 
       this.frameCount++;
-      
+
       if (timestamp - this.lastFrameRateCheck >= 1000) {
         const frameRate = (this.frameCount * 1000) / (timestamp - this.lastFrameRateCheck);
         this.checkFrameRate(frameRate);
-        
+
         this.frameCount = 0;
         this.lastFrameRateCheck = timestamp;
       }
@@ -174,13 +183,13 @@ export class PerformanceMonitor {
       if (!this.isMonitoring) return;
 
       if ('memory' in performance) {
-        const memory = (performance as any).memory;
+        const { memory } = (performance as any);
         const memoryUsage = {
           used: memory.usedJSHeapSize,
           total: memory.totalJSHeapSize,
           percentage: (memory.usedJSHeapSize / memory.totalJSHeapSize) * 100,
         };
-        
+
         this.checkMemoryUsage(memoryUsage);
       }
 
@@ -227,7 +236,7 @@ export class PerformanceMonitor {
     const result = operation();
     const endTime = performance.now();
     const renderTime = endTime - startTime;
-    
+
     this.checkRenderTime(renderTime);
     return result;
   }
@@ -237,7 +246,7 @@ export class PerformanceMonitor {
     const result = await operation();
     const endTime = performance.now();
     const duration = endTime - startTime;
-    
+
     this.checkRenderTime(duration);
     return result;
   }
@@ -468,7 +477,7 @@ export class PerformanceMonitor {
     };
 
     this.metrics.push(metric);
-    
+
     // Keep only recent metrics
     if (this.metrics.length > this.maxMetricsHistory) {
       this.metrics = this.metrics.slice(-this.maxMetricsHistory);
@@ -476,7 +485,7 @@ export class PerformanceMonitor {
   }
 
   private emitAlert(alert: PerformanceAlert): void {
-    this.listeners.forEach(listener => {
+    this.listeners.forEach((listener) => {
       try {
         listener(alert);
       } catch (error) {
@@ -491,7 +500,7 @@ export class PerformanceMonitor {
       this.rafId = null;
     }
 
-    this.observers.forEach(observer => {
+    this.observers.forEach((observer) => {
       try {
         observer.disconnect();
       } catch (error) {
@@ -517,8 +526,8 @@ export class PerformanceMonitor {
 
   getAverageMetrics(timeWindow = 30000): Partial<PerformanceMetrics> {
     const cutoff = Date.now() - timeWindow;
-    const recentMetrics = this.metrics.filter(m => m.timestamp > cutoff);
-    
+    const recentMetrics = this.metrics.filter((m) => m.timestamp > cutoff);
+
     if (recentMetrics.length === 0) return {};
 
     const averages = recentMetrics.reduce(
@@ -530,21 +539,23 @@ export class PerformanceMonitor {
         batteryDrain: acc.batteryDrain + metric.batteryDrain,
         memoryPercentage: acc.memoryPercentage + metric.memoryUsage.percentage,
       }),
-      { frameRate: 0, renderTime: 0, touchLatency: 0, networkLatency: 0, batteryDrain: 0, memoryPercentage: 0 }
+      {
+        frameRate: 0, renderTime: 0, touchLatency: 0, networkLatency: 0, batteryDrain: 0, memoryPercentage: 0,
+      },
     );
 
     const count = recentMetrics.length;
-    
+
     return {
       frameRate: averages.frameRate / count,
       renderTime: averages.renderTime / count,
       touchLatency: averages.touchLatency / count,
       networkLatency: averages.networkLatency / count,
       batteryDrain: averages.batteryDrain / count,
-      memoryUsage: { 
-        used: 0, 
-        total: 0, 
-        percentage: averages.memoryPercentage / count 
+      memoryUsage: {
+        used: 0,
+        total: 0,
+        percentage: averages.memoryPercentage / count,
       },
     };
   }
@@ -574,7 +585,7 @@ export const usePerformanceMonitor = () => {
     performanceMonitor.start();
 
     const unsubscribeAlert = performanceMonitor.onAlert((alert) => {
-      setAlerts(prev => [...prev.slice(-9), alert]); // Keep last 10 alerts
+      setAlerts((prev) => [...prev.slice(-9), alert]); // Keep last 10 alerts
     });
 
     const interval = setInterval(() => {

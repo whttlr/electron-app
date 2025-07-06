@@ -5,7 +5,8 @@ import {
 import {
   ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined,
 } from '@ant-design/icons';
-import { PluginRenderer, WorkingAreaPreview, MachineDisplay2D } from '../../components';
+import { WorkingAreaPreview, MachineDisplay2D } from '@whttlr/ui-core';
+import { PluginRenderer } from '../../components';
 import { useMachineConfig, useStateConfig } from '../../services/config/useConfig';
 
 const { Title } = Typography;

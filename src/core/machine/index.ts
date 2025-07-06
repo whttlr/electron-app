@@ -4,12 +4,12 @@
 export { MachineController, machineController } from './MachineController';
 
 // Machine types and interfaces
-export type { 
-  MachineState, 
-  MachineCommand, 
-  CommandResponse, 
+export type {
+  MachineState,
+  MachineCommand,
+  CommandResponse,
   MachineEvent,
-  MachineEventHandler 
+  MachineEventHandler,
 } from './MachineController';
 
 // Configuration

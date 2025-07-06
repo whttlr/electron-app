@@ -1,12 +1,14 @@
 /**
  * Mobile Performance Optimizer
- * 
+ *
  * Specialized performance optimization utilities for mobile CNC control interfaces.
  * Focuses on touch responsiveness, battery efficiency, and smooth animations
  * in industrial tablet environments.
  */
 
-import React, { useEffect, useRef, useCallback, useMemo } from 'react';
+import React, {
+  useEffect, useRef, useCallback, useMemo,
+} from 'react';
 import { performanceMonitor } from './performance-monitor';
 
 // Optimization strategies
@@ -42,7 +44,7 @@ export const createOptimizedTouchHandler = (
     debounce?: number;
     throttle?: number;
     enableHaptic?: boolean;
-  } = {}
+  } = {},
 ) => {
   const {
     passive = true,
@@ -56,7 +58,7 @@ export const createOptimizedTouchHandler = (
 
   const optimizedHandler = (event: TouchEvent) => {
     const startTime = performance.now();
-    
+
     if (enableHaptic && 'vibrate' in navigator) {
       navigator.vibrate(50);
     }
@@ -98,16 +100,20 @@ export const createOptimizedTouchHandler = (
 // Memory-efficient list virtualization
 export class VirtualizedList<T> {
   private items: T[];
+
   private containerHeight: number;
+
   private itemHeight: number;
+
   private overscan: number;
+
   private scrollTop: number = 0;
 
   constructor(
     items: T[],
     containerHeight: number,
     itemHeight: number,
-    overscan: number = 5
+    overscan: number = 5,
   ) {
     this.items = items;
     this.containerHeight = containerHeight;
@@ -120,7 +126,7 @@ export class VirtualizedList<T> {
     const start = Math.max(0, Math.floor(this.scrollTop / this.itemHeight) - this.overscan);
     const end = Math.min(
       this.items.length - 1,
-      start + visibleCount + this.overscan * 2
+      start + visibleCount + this.overscan * 2,
     );
 
     return { start, end, total: this.items.length };
@@ -150,8 +156,11 @@ export class VirtualizedList<T> {
 // Battery-aware animation manager
 export class BatteryAwareAnimationManager {
   private activeAnimations = new Set<string>();
+
   private maxConcurrentAnimations: number;
+
   private batteryLevel: number = 1;
+
   private powerSaveMode: boolean = false;
 
   constructor(maxConcurrentAnimations: number = 3) {
@@ -169,7 +178,7 @@ export class BatteryAwareAnimationManager {
         battery.addEventListener('levelchange', () => {
           this.batteryLevel = battery.level;
           this.powerSaveMode = battery.level < 0.2;
-          
+
           if (this.powerSaveMode) {
             this.reduceAnimations();
           }
@@ -208,10 +217,10 @@ export class BatteryAwareAnimationManager {
   private reduceAnimations(): void {
     // Cancel non-essential animations when battery is low
     const nonEssentialAnimations = Array.from(this.activeAnimations).filter(
-      id => !id.startsWith('critical-') && !id.startsWith('emergency-')
+      (id) => !id.startsWith('critical-') && !id.startsWith('emergency-'),
     );
 
-    nonEssentialAnimations.forEach(id => {
+    nonEssentialAnimations.forEach((id) => {
       this.endAnimation(id);
     });
   }
@@ -221,7 +230,7 @@ export class BatteryAwareAnimationManager {
     maxCount: number;
     batteryLevel: number;
     powerSaveMode: boolean;
-  } {
+    } {
     return {
       activeCount: this.activeAnimations.size,
       maxCount: this.maxConcurrentAnimations,
@@ -239,10 +248,10 @@ export class ImageOptimizer {
     imageSrc: string,
     maxWidth: number,
     maxHeight: number,
-    quality: number = 0.8
+    quality: number = 0.8,
   ): Promise<string> {
     const cacheKey = `${imageSrc}-${maxWidth}-${maxHeight}-${quality}`;
-    
+
     if (this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!;
     }
@@ -250,7 +259,7 @@ export class ImageOptimizer {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      
+
       img.onload = () => {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d')!;
@@ -260,7 +269,7 @@ export class ImageOptimizer {
           img.width,
           img.height,
           maxWidth,
-          maxHeight
+          maxHeight,
         );
 
         canvas.width = width;
@@ -283,7 +292,7 @@ export class ImageOptimizer {
     originalWidth: number,
     originalHeight: number,
     maxWidth: number,
-    maxHeight: number
+    maxHeight: number,
   ): { width: number; height: number } {
     const widthRatio = maxWidth / originalWidth;
     const heightRatio = maxHeight / originalHeight;
@@ -316,7 +325,7 @@ export const useOptimizedCallback = <T extends (...args: any[]) => any>(
   options: {
     debounce?: number;
     throttle?: number;
-  } = {}
+  } = {},
 ): T => {
   const { debounce = 0, throttle = 0 } = options;
   const lastCall = useRef(0);
@@ -341,15 +350,13 @@ export const useOptimizedCallback = <T extends (...args: any[]) => any>(
         execute();
       }
     },
-    [callback, debounce, throttle, ...deps]
+    [callback, debounce, throttle, ...deps],
   ) as T;
 
-  useEffect(() => {
-    return () => {
-      if (timeoutId.current) {
-        clearTimeout(timeoutId.current);
-      }
-    };
+  useEffect(() => () => {
+    if (timeoutId.current) {
+      clearTimeout(timeoutId.current);
+    }
   }, []);
 
   return optimizedCallback;
@@ -359,11 +366,11 @@ export const useVirtualizedList = <T>(
   items: T[],
   containerHeight: number,
   itemHeight: number,
-  overscan: number = 5
+  overscan: number = 5,
 ) => {
   const virtualizer = useMemo(
     () => new VirtualizedList(items, containerHeight, itemHeight, overscan),
-    [items, containerHeight, itemHeight, overscan]
+    [items, containerHeight, itemHeight, overscan],
   );
 
   const [scrollTop, setScrollTop] = React.useState(0);
@@ -375,7 +382,7 @@ export const useVirtualizedList = <T>(
       virtualizer.updateScrollTop(newScrollTop);
     },
     [virtualizer],
-    { throttle: 16 } // 60fps
+    { throttle: 16 }, // 60fps
   );
 
   const visibleItems = useMemo(() => {
@@ -394,15 +401,15 @@ export const useVirtualizedList = <T>(
 
 export const useBatteryAwareAnimation = (
   animationId: string,
-  animationManager?: BatteryAwareAnimationManager
+  animationManager?: BatteryAwareAnimationManager,
 ) => {
   const manager = useMemo(
     () => animationManager || new BatteryAwareAnimationManager(),
-    [animationManager]
+    [animationManager],
   );
 
   const [canAnimate, setCanAnimate] = React.useState(
-    manager.canStartAnimation(animationId)
+    manager.canStartAnimation(animationId),
   );
 
   const startAnimation = useCallback(() => {
@@ -416,10 +423,8 @@ export const useBatteryAwareAnimation = (
     setCanAnimate(manager.canStartAnimation(animationId));
   }, [manager, animationId]);
 
-  useEffect(() => {
-    return () => {
-      manager.endAnimation(animationId);
-    };
+  useEffect(() => () => {
+    manager.endAnimation(animationId);
   }, [manager, animationId]);
 
   return {
@@ -434,7 +439,7 @@ export const useImageOptimization = (
   src: string,
   maxWidth: number,
   maxHeight: number,
-  quality: number = 0.8
+  quality: number = 0.8,
 ) => {
   const [optimizedSrc, setOptimizedSrc] = React.useState<string>(src);
   const [isLoading, setIsLoading] = React.useState(false);
@@ -472,7 +477,7 @@ export const useImageOptimization = (
 export const usePerformanceOptimization = (config: Partial<OptimizationConfig> = {}) => {
   const fullConfig = useMemo(
     () => ({ ...defaultOptimizationConfig, ...config }),
-    [config]
+    [config],
   );
 
   const [performanceData, setPerformanceData] = React.useState({

@@ -1,13 +1,12 @@
 /**
  * UI State Store
- * 
+ *
  * Zustand store for UI state management including theme, modals,
  * notifications, and responsive layout state.
  */
 
 import create from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
-import { persist } from 'zustand/middleware';
+import { subscribeWithSelector, persist } from 'zustand/middleware';
 // import { immer } from 'zustand/middleware';
 import type {
   UIState,
@@ -22,7 +21,7 @@ import type {
 export interface UIStore {
   // UI State
   ui: UIState;
-  
+
   // Modal Management
   modals: {
     [modalId: string]: {
@@ -31,7 +30,7 @@ export interface UIStore {
       options?: any;
     };
   };
-  
+
   // Drawer/Sidebar State
   drawers: {
     [drawerId: string]: {
@@ -40,12 +39,12 @@ export interface UIStore {
       placement?: 'left' | 'right' | 'top' | 'bottom';
     };
   };
-  
+
   // Loading States
   loading: {
     [key: string]: boolean;
   };
-  
+
   // Toast/Message Queue
   toasts: Array<{
     id: string;
@@ -55,48 +54,48 @@ export interface UIStore {
     duration?: number;
     timestamp: number;
   }>;
-  
+
   // Actions
   setTheme: (theme: 'light' | 'dark' | 'auto') => void;
   toggleSidebar: () => void;
   setSidebarCollapsed: (collapsed: boolean) => void;
   setActiveView: (view: string) => void;
   updateViewport: (viewport: Partial<UIState['viewport']>) => void;
-  
+
   // Modal Actions
   openModal: (modalId: string, data?: any, options?: any) => void;
   closeModal: (modalId: string) => void;
   closeAllModals: () => void;
   isModalOpen: (modalId: string) => boolean;
   getModalData: (modalId: string) => any;
-  
+
   // Drawer Actions
   openDrawer: (drawerId: string, options?: { width?: number; placement?: 'left' | 'right' | 'top' | 'bottom' }) => void;
   closeDrawer: (drawerId: string) => void;
   toggleDrawer: (drawerId: string) => void;
   isDrawerOpen: (drawerId: string) => boolean;
-  
+
   // Loading Actions
   setLoading: (key: string, loading: boolean) => void;
   isLoading: (key: string) => boolean;
-  
+
   // Toast Actions
   showToast: (type: 'success' | 'error' | 'warning' | 'info', title: string, message?: string, duration?: number) => string;
   hideToast: (toastId: string) => void;
   clearToasts: () => void;
-  
+
   // Notification Actions
   updateNotificationSettings: (settings: Partial<NotificationState>) => void;
-  
+
   // Tour Actions
   startTour: () => void;
   endTour: () => void;
   setTourStep: (step: number) => void;
   markTourCompleted: (tourId: string) => void;
-  
+
   // Responsive Actions
   handleResize: () => void;
-  
+
   reset: () => void;
 }
 
@@ -149,11 +148,11 @@ export const useUIStore = create<UIStore>()((
         drawers: {},
         loading: {},
         toasts: [],
-        
+
         // Theme Actions
         setTheme: (theme) => set((state) => {
           state.ui.theme = theme;
-          
+
           // Apply theme to document
           if (typeof window !== 'undefined') {
             const root = document.documentElement;
@@ -165,33 +164,33 @@ export const useUIStore = create<UIStore>()((
             }
           }
         }),
-        
+
         toggleSidebar: () => set((state) => {
           state.ui.sidebarCollapsed = !state.ui.sidebarCollapsed;
         }),
-        
+
         setSidebarCollapsed: (collapsed) => set((state) => {
           state.ui.sidebarCollapsed = collapsed;
         }),
-        
+
         setActiveView: (view) => set((state) => {
           state.ui.activeView = view;
         }),
-        
+
         updateViewport: (viewport) => set((state) => {
           Object.assign(state.ui.viewport, viewport);
-          
+
           // Update responsive flags
-          const width = state.ui.viewport.width;
+          const { width } = state.ui.viewport;
           state.ui.viewport.isMobile = width < 768;
           state.ui.viewport.isTablet = width >= 768 && width < 1024;
-          
+
           // Auto-collapse sidebar on mobile
           if (state.ui.viewport.isMobile && !state.ui.sidebarCollapsed) {
             state.ui.sidebarCollapsed = true;
           }
         }),
-        
+
         // Modal Actions
         openModal: (modalId, data, options) => set((state) => {
           state.modals[modalId] = {
@@ -199,42 +198,42 @@ export const useUIStore = create<UIStore>()((
             data,
             options,
           };
-          
+
           // Add to modal stack
           if (!state.ui.modalStack.includes(modalId)) {
             state.ui.modalStack.push(modalId);
           }
         }),
-        
+
         closeModal: (modalId) => set((state) => {
           if (state.modals[modalId]) {
             state.modals[modalId].isOpen = false;
           }
-          
+
           // Remove from modal stack
           const index = state.ui.modalStack.indexOf(modalId);
           if (index !== -1) {
             state.ui.modalStack.splice(index, 1);
           }
         }),
-        
+
         closeAllModals: () => set((state) => {
-          Object.keys(state.modals).forEach(modalId => {
+          Object.keys(state.modals).forEach((modalId) => {
             state.modals[modalId].isOpen = false;
           });
           state.ui.modalStack = [];
         }),
-        
+
         isModalOpen: (modalId) => {
           const state = get();
           return state.modals[modalId]?.isOpen || false;
         },
-        
+
         getModalData: (modalId) => {
           const state = get();
           return state.modals[modalId]?.data;
         },
-        
+
         // Drawer Actions
         openDrawer: (drawerId, options = {}) => set((state) => {
           state.drawers[drawerId] = {
@@ -243,13 +242,13 @@ export const useUIStore = create<UIStore>()((
             placement: options.placement || 'right',
           };
         }),
-        
+
         closeDrawer: (drawerId) => set((state) => {
           if (state.drawers[drawerId]) {
             state.drawers[drawerId].isOpen = false;
           }
         }),
-        
+
         toggleDrawer: (drawerId) => set((state) => {
           if (state.drawers[drawerId]) {
             state.drawers[drawerId].isOpen = !state.drawers[drawerId].isOpen;
@@ -261,12 +260,12 @@ export const useUIStore = create<UIStore>()((
             };
           }
         }),
-        
+
         isDrawerOpen: (drawerId) => {
           const state = get();
           return state.drawers[drawerId]?.isOpen || false;
         },
-        
+
         // Loading Actions
         setLoading: (key, loading) => set((state) => {
           if (loading) {
@@ -275,16 +274,16 @@ export const useUIStore = create<UIStore>()((
             delete state.loading[key];
           }
         }),
-        
+
         isLoading: (key) => {
           const state = get();
           return state.loading[key] || false;
         },
-        
+
         // Toast Actions
         showToast: (type, title, message, duration = 4000) => {
           const toastId = `toast-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-          
+
           set((state) => {
             state.toasts.push({
               id: toastId,
@@ -294,57 +293,57 @@ export const useUIStore = create<UIStore>()((
               duration,
               timestamp: Date.now(),
             });
-            
+
             // Keep only latest 10 toasts
             if (state.toasts.length > 10) {
               state.toasts = state.toasts.slice(-10);
             }
           });
-          
+
           // Auto-remove toast after duration
           if (duration > 0) {
             setTimeout(() => {
               get().hideToast(toastId);
             }, duration);
           }
-          
+
           return toastId;
         },
-        
+
         hideToast: (toastId) => set((state) => {
-          state.toasts = state.toasts.filter(toast => toast.id !== toastId);
+          state.toasts = state.toasts.filter((toast) => toast.id !== toastId);
         }),
-        
+
         clearToasts: () => set((state) => {
           state.toasts = [];
         }),
-        
+
         // Notification Actions
         updateNotificationSettings: (settings) => set((state) => {
           Object.assign(state.ui.notificationSettings, settings);
         }),
-        
+
         // Tour Actions
         startTour: () => set((state) => {
           state.ui.tour.isActive = true;
           state.ui.tour.currentStep = 0;
         }),
-        
+
         endTour: () => set((state) => {
           state.ui.tour.isActive = false;
           state.ui.tour.currentStep = 0;
         }),
-        
+
         setTourStep: (step) => set((state) => {
           state.ui.tour.currentStep = step;
         }),
-        
+
         markTourCompleted: (tourId) => set((state) => {
           if (!state.ui.tour.completed.includes(tourId)) {
             state.ui.tour.completed.push(tourId);
           }
         }),
-        
+
         // Responsive Actions
         handleResize: () => {
           if (typeof window !== 'undefined') {
@@ -354,7 +353,7 @@ export const useUIStore = create<UIStore>()((
             });
           }
         },
-        
+
         reset: () => set((state) => {
           state.ui = initialUIState;
           state.modals = {};
@@ -362,25 +361,26 @@ export const useUIStore = create<UIStore>()((
           state.loading = {};
           state.toasts = [];
         }),
-      })),
-      {
-        name: 'ui-store',
-        storage: localStorage,
-        partialize: (state) => ({
-          ui: {
-            theme: state.ui.theme,
-            sidebarCollapsed: state.ui.sidebarCollapsed,
-            activeView: state.ui.activeView,
-            notificationSettings: state.ui.notificationSettings,
-            tour: {
-              completed: state.ui.tour.completed,
-            },
+      }),
+    ),
+    {
+      name: 'ui-store',
+      storage: localStorage,
+      partialize: (state) => ({
+        ui: {
+          theme: state.ui.theme,
+          sidebarCollapsed: state.ui.sidebarCollapsed,
+          activeView: state.ui.activeView,
+          notificationSettings: state.ui.notificationSettings,
+          tour: {
+            completed: state.ui.tour.completed,
           },
-        }),
-        version: 1,
-      }
-    )
-  ));
+        },
+      }),
+      version: 1,
+    },
+  )
+));
 
 // ============================================================================
 // STORE SELECTORS
@@ -411,9 +411,9 @@ export const uiSelectors = {
 
 export const applyTheme = (theme: 'light' | 'dark' | 'auto') => {
   if (typeof window === 'undefined') return;
-  
+
   const root = document.documentElement;
-  
+
   if (theme === 'auto') {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     root.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
@@ -431,7 +431,7 @@ useUIStore.subscribe(
   (state) => state.ui.theme,
   (theme) => {
     applyTheme(theme);
-  }
+  },
 );
 
 // Auto-close modals on mobile when sidebar opens
@@ -442,7 +442,7 @@ useUIStore.subscribe(
       // Close all modals when sidebar opens on mobile
       useUIStore.getState().closeAllModals();
     }
-  }
+  },
 );
 
 // Handle window resize
@@ -450,9 +450,9 @@ if (typeof window !== 'undefined') {
   const handleResize = () => {
     useUIStore.getState().handleResize();
   };
-  
+
   window.addEventListener('resize', handleResize);
-  
+
   // Handle theme changes
   const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
   const handleThemeChange = (e: MediaQueryListEvent) => {
@@ -461,7 +461,7 @@ if (typeof window !== 'undefined') {
       applyTheme('auto');
     }
   };
-  
+
   mediaQuery.addEventListener('change', handleThemeChange);
 }
 

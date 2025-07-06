@@ -1,6 +1,6 @@
 /**
  * WorkspaceController - Working area and dimensions management
- * 
+ *
  * This controller manages the workspace boundaries, material settings,
  * fixture management, and measurement tools for the CNC working area.
  */
@@ -96,33 +96,33 @@ export interface WorkspaceState {
   // Physical workspace
   dimensions: WorkspaceDimensions;
   origin: WorkspaceOrigin;
-  
+
   // Grid and visual aids
   grid: WorkspaceGrid;
   showAxes: boolean;
   showDimensions: boolean;
-  
+
   // Materials
   materials: Material[];
   activeMaterial: string | null;
-  
+
   // Fixtures and workholding
   fixtures: Fixture[];
-  
+
   // Tools
   tools: Tool[];
   activeTool: string | null;
-  
+
   // Measurements
   measurements: MeasurementTool[];
   measurementMode: boolean;
-  
+
   // Workspace bounds and safety
   bounds: {
     min: { x: number; y: number; z: number };
     max: { x: number; y: number; z: number };
   };
-  
+
   // Collision detection
   collisionDetection: {
     enabled: boolean;
@@ -130,7 +130,7 @@ export interface WorkspaceState {
     checkFixtures: boolean;
     checkMaterial: boolean;
   };
-  
+
   // Visualization settings
   visualization: {
     showMaterial: boolean;
@@ -139,14 +139,14 @@ export interface WorkspaceState {
     showBounds: boolean;
     transparency: number;
   };
-  
+
   // Units and precision
   units: 'mm' | 'inch';
   precision: number;
 }
 
 // Event types for workspace
-export type WorkspaceEvent = 
+export type WorkspaceEvent =
   | { type: 'dimensions_changed'; data: { dimensions: WorkspaceDimensions } }
   | { type: 'material_added'; data: { material: Material } }
   | { type: 'material_removed'; data: { materialId: string } }
@@ -164,8 +164,11 @@ export type WorkspaceEventHandler = (event: WorkspaceEvent) => void;
  */
 export class WorkspaceController {
   private state: WorkspaceState;
+
   private config: WorkspaceConfig;
+
   private eventHandlers: Map<string, Set<WorkspaceEventHandler>> = new Map();
+
   private isInitialized = false;
 
   constructor(config: WorkspaceConfig = workspaceConfig) {
@@ -181,10 +184,10 @@ export class WorkspaceController {
     try {
       // Set up default workspace
       this.setupDefaultWorkspace();
-      
+
       // Initialize collision detection
       this.initializeCollisionDetection();
-      
+
       this.isInitialized = true;
       console.log('WorkspaceController initialized successfully');
     } catch (error) {
@@ -198,13 +201,13 @@ export class WorkspaceController {
    */
   setDimensions(dimensions: WorkspaceDimensions): void {
     this.state.dimensions = { ...dimensions };
-    
+
     // Update bounds based on origin
     this.updateWorkspaceBounds();
-    
+
     // Emit dimensions changed event
     this.emit('dimensions_changed', { dimensions });
-    
+
     console.log(`Workspace dimensions set to: ${dimensions.width}x${dimensions.height}x${dimensions.depth}mm`);
   }
 
@@ -213,10 +216,10 @@ export class WorkspaceController {
    */
   setOrigin(origin: WorkspaceOrigin): void {
     this.state.origin = { ...origin };
-    
+
     // Update bounds based on new origin
     this.updateWorkspaceBounds();
-    
+
     console.log(`Workspace origin set to: ${origin.x}, ${origin.y}, ${origin.z}`);
   }
 
@@ -226,22 +229,22 @@ export class WorkspaceController {
   addMaterial(material: Omit<Material, 'id'>): string {
     const newMaterial: Material = {
       id: this.generateId('material'),
-      ...material
+      ...material,
     };
-    
+
     this.state.materials.push(newMaterial);
-    
+
     // Set as active if it's the first material
     if (this.state.materials.length === 1) {
       this.state.activeMaterial = newMaterial.id;
     }
-    
+
     // Check for collisions
     this.checkCollisions();
-    
+
     // Emit material added event
     this.emit('material_added', { material: newMaterial });
-    
+
     return newMaterial.id;
   }
 
@@ -249,21 +252,21 @@ export class WorkspaceController {
    * Remove material from workspace
    */
   removeMaterial(materialId: string): boolean {
-    const index = this.state.materials.findIndex(m => m.id === materialId);
+    const index = this.state.materials.findIndex((m) => m.id === materialId);
     if (index === -1) {
       return false;
     }
-    
+
     this.state.materials.splice(index, 1);
-    
+
     // Update active material if needed
     if (this.state.activeMaterial === materialId) {
       this.state.activeMaterial = this.state.materials.length > 0 ? this.state.materials[0].id : null;
     }
-    
+
     // Emit material removed event
     this.emit('material_removed', { materialId });
-    
+
     return true;
   }
 
@@ -273,17 +276,17 @@ export class WorkspaceController {
   addFixture(fixture: Omit<Fixture, 'id'>): string {
     const newFixture: Fixture = {
       id: this.generateId('fixture'),
-      ...fixture
+      ...fixture,
     };
-    
+
     this.state.fixtures.push(newFixture);
-    
+
     // Check for collisions
     this.checkCollisions();
-    
+
     // Emit fixture added event
     this.emit('fixture_added', { fixture: newFixture });
-    
+
     return newFixture.id;
   }
 
@@ -291,16 +294,16 @@ export class WorkspaceController {
    * Remove fixture from workspace
    */
   removeFixture(fixtureId: string): boolean {
-    const index = this.state.fixtures.findIndex(f => f.id === fixtureId);
+    const index = this.state.fixtures.findIndex((f) => f.id === fixtureId);
     if (index === -1) {
       return false;
     }
-    
+
     this.state.fixtures.splice(index, 1);
-    
+
     // Emit fixture removed event
     this.emit('fixture_removed', { fixtureId });
-    
+
     return true;
   }
 
@@ -308,21 +311,21 @@ export class WorkspaceController {
    * Set active tool
    */
   setActiveTool(toolId: string): boolean {
-    const tool = this.state.tools.find(t => t.id === toolId);
+    const tool = this.state.tools.find((t) => t.id === toolId);
     if (!tool) {
       return false;
     }
-    
+
     // Deactivate other tools
-    this.state.tools.forEach(t => {
+    this.state.tools.forEach((t) => {
       t.isActive = t.id === toolId;
     });
-    
+
     this.state.activeTool = toolId;
-    
+
     // Emit tool changed event
     this.emit('tool_changed', { tool });
-    
+
     return true;
   }
 
@@ -332,16 +335,16 @@ export class WorkspaceController {
   addTool(tool: Omit<Tool, 'id'>): string {
     const newTool: Tool = {
       id: this.generateId('tool'),
-      ...tool
+      ...tool,
     };
-    
+
     this.state.tools.push(newTool);
-    
+
     // Set as active if it's the first tool
     if (this.state.tools.length === 1) {
       this.setActiveTool(newTool.id);
     }
-    
+
     return newTool.id;
   }
 
@@ -349,19 +352,19 @@ export class WorkspaceController {
    * Update tool position
    */
   updateToolPosition(toolId: string, position: { x: number; y: number; z: number }): boolean {
-    const tool = this.state.tools.find(t => t.id === toolId);
+    const tool = this.state.tools.find((t) => t.id === toolId);
     if (!tool) {
       return false;
     }
-    
+
     tool.position = { ...position };
-    
+
     // Check for collisions
     this.checkCollisions();
-    
+
     // Emit tool changed event
     this.emit('tool_changed', { tool });
-    
+
     return true;
   }
 
@@ -372,14 +375,14 @@ export class WorkspaceController {
     const newMeasurement: MeasurementTool = {
       id: this.generateId('measurement'),
       timestamp: new Date(),
-      ...measurement
+      ...measurement,
     };
-    
+
     this.state.measurements.push(newMeasurement);
-    
+
     // Emit measurement added event
     this.emit('measurement_added', { measurement: newMeasurement });
-    
+
     return newMeasurement.id;
   }
 
@@ -387,11 +390,11 @@ export class WorkspaceController {
    * Remove measurement
    */
   removeMeasurement(measurementId: string): boolean {
-    const index = this.state.measurements.findIndex(m => m.id === measurementId);
+    const index = this.state.measurements.findIndex((m) => m.id === measurementId);
     if (index === -1) {
       return false;
     }
-    
+
     this.state.measurements.splice(index, 1);
     return true;
   }
@@ -403,7 +406,7 @@ export class WorkspaceController {
     const dx = point2.x - point1.x;
     const dy = point2.y - point1.y;
     const dz = point2.z - point1.z;
-    
+
     return Math.sqrt(dx * dx + dy * dy + dz * dz);
   }
 
@@ -412,10 +415,10 @@ export class WorkspaceController {
    */
   isWithinBounds(point: { x: number; y: number; z: number }): boolean {
     const { min, max } = this.state.bounds;
-    
-    return point.x >= min.x && point.x <= max.x &&
-           point.y >= min.y && point.y <= max.y &&
-           point.z >= min.z && point.z <= max.z;
+
+    return point.x >= min.x && point.x <= max.x
+           && point.y >= min.y && point.y <= max.y
+           && point.z >= min.z && point.z <= max.z;
   }
 
   /**
@@ -425,20 +428,20 @@ export class WorkspaceController {
     if (!this.state.collisionDetection.enabled) {
       return false;
     }
-    
+
     const toolRadius = toolDiameter / 2;
-    
+
     // Check fixture collisions
     if (this.state.collisionDetection.checkFixtures) {
       for (const fixture of this.state.fixtures) {
         if (!fixture.isActive) continue;
-        
+
         if (this.isPositionInBounds(position, toolRadius, fixture.position, fixture.dimensions)) {
           return true;
         }
       }
     }
-    
+
     // Check material collisions
     if (this.state.collisionDetection.checkMaterial) {
       for (const material of this.state.materials) {
@@ -447,7 +450,7 @@ export class WorkspaceController {
         }
       }
     }
-    
+
     return false;
   }
 
@@ -470,7 +473,7 @@ export class WorkspaceController {
    */
   getActiveMaterial(): Material | null {
     if (!this.state.activeMaterial) return null;
-    return this.state.materials.find(m => m.id === this.state.activeMaterial) || null;
+    return this.state.materials.find((m) => m.id === this.state.activeMaterial) || null;
   }
 
   /**
@@ -478,7 +481,7 @@ export class WorkspaceController {
    */
   getActiveTool(): Tool | null {
     if (!this.state.activeTool) return null;
-    return this.state.tools.find(t => t.id === this.state.activeTool) || null;
+    return this.state.tools.find((t) => t.id === this.state.activeTool) || null;
   }
 
   /**
@@ -518,13 +521,13 @@ export class WorkspaceController {
   async dispose(): Promise<void> {
     // Clear event handlers
     this.eventHandlers.clear();
-    
+
     // Reset state
     this.state.measurements = [];
     this.state.materials = [];
     this.state.fixtures = [];
     this.state.tools = [];
-    
+
     this.isInitialized = false;
     console.log('WorkspaceController disposed');
   }
@@ -542,7 +545,7 @@ export class WorkspaceController {
         color: this.config.workingArea.grid.color,
         majorColor: this.config.workingArea.grid.majorColor,
         opacity: 1,
-        showLabels: true
+        showLabels: true,
       },
       showAxes: true,
       showDimensions: this.config.measurement.showDimensions,
@@ -555,34 +558,34 @@ export class WorkspaceController {
       measurementMode: false,
       bounds: {
         min: { x: 0, y: 0, z: 0 },
-        max: { 
+        max: {
           x: this.config.workingArea.defaultDimensions.width,
           y: this.config.workingArea.defaultDimensions.height,
-          z: this.config.workingArea.defaultDimensions.depth
-        }
+          z: this.config.workingArea.defaultDimensions.depth,
+        },
       },
       collisionDetection: {
         enabled: true,
         safetyMargin: 5,
         checkFixtures: true,
-        checkMaterial: false
+        checkMaterial: false,
       },
       visualization: {
         showMaterial: true,
         showFixtures: this.config.fixtures.showFixtures,
         showGrid: this.config.workingArea.grid.enabled,
         showBounds: true,
-        transparency: 0.8
+        transparency: 0.8,
       },
       units: this.config.measurement.units,
-      precision: this.config.measurement.precision
+      precision: this.config.measurement.precision,
     };
   }
 
   private initializeEventHandlers(): void {
-    const events = ['dimensions_changed', 'material_added', 'material_removed', 'fixture_added', 
-                   'fixture_removed', 'tool_changed', 'measurement_added', 'collision_detected', 'bounds_exceeded'];
-    events.forEach(event => {
+    const events = ['dimensions_changed', 'material_added', 'material_removed', 'fixture_added',
+      'fixture_removed', 'tool_changed', 'measurement_added', 'collision_detected', 'bounds_exceeded'];
+    events.forEach((event) => {
       this.eventHandlers.set(event, new Set());
     });
   }
@@ -602,8 +605,8 @@ export class WorkspaceController {
         flutes: 2,
         material: 'carbide',
         maxRpm: 20000,
-        maxFeedRate: 2000
-      }
+        maxFeedRate: 2000,
+      },
     });
 
     // Set initial bounds
@@ -618,12 +621,15 @@ export class WorkspaceController {
 
   private updateWorkspaceBounds(): void {
     const { dimensions, origin } = this.state;
-    
+
     // Calculate bounds based on origin
-    let minX = 0, maxX = dimensions.width;
-    let minY = 0, maxY = dimensions.height;
-    let minZ = 0, maxZ = dimensions.depth;
-    
+    let minX = 0; let
+      maxX = dimensions.width;
+    let minY = 0; let
+      maxY = dimensions.height;
+    let minZ = 0; let
+      maxZ = dimensions.depth;
+
     // Adjust for origin
     if (origin.x === 'center') {
       minX = -dimensions.width / 2;
@@ -632,7 +638,7 @@ export class WorkspaceController {
       minX = -dimensions.width;
       maxX = 0;
     }
-    
+
     if (origin.y === 'center') {
       minY = -dimensions.height / 2;
       maxY = dimensions.height / 2;
@@ -640,7 +646,7 @@ export class WorkspaceController {
       minY = -dimensions.height;
       maxY = 0;
     }
-    
+
     if (origin.z === 'center') {
       minZ = -dimensions.depth / 2;
       maxZ = dimensions.depth / 2;
@@ -648,50 +654,53 @@ export class WorkspaceController {
       minZ = -dimensions.depth;
       maxZ = 0;
     }
-    
+
     this.state.bounds = {
       min: { x: minX, y: minY, z: minZ },
-      max: { x: maxX, y: maxY, z: maxZ }
+      max: { x: maxX, y: maxY, z: maxZ },
     };
   }
 
   private checkCollisions(): void {
     if (!this.state.collisionDetection.enabled) return;
-    
+
     const collisions: string[] = [];
-    
+
     // Check tool-fixture collisions
     const activeTool = this.getActiveTool();
     if (activeTool) {
       for (const fixture of this.state.fixtures) {
         if (!fixture.isActive) continue;
-        
+
         if (this.checkCollisionAtPosition(activeTool.position, activeTool.diameter)) {
           collisions.push(`${activeTool.name} - ${fixture.name}`);
         }
       }
     }
-    
+
     // Emit collision events
     if (collisions.length > 0) {
       this.emit('collision_detected', {
         type: 'tool-fixture',
-        objects: collisions
+        objects: collisions,
       });
     }
   }
 
-  private isPositionInBounds(position: { x: number; y: number; z: number }, radius: number, 
-                            objectPosition: { x: number; y: number; z: number }, 
-                            objectDimensions: WorkspaceDimensions): boolean {
+  private isPositionInBounds(
+    position: { x: number; y: number; z: number },
+    radius: number,
+    objectPosition: { x: number; y: number; z: number },
+    objectDimensions: WorkspaceDimensions,
+  ): boolean {
     const margin = this.state.collisionDetection.safetyMargin + radius;
-    
-    return position.x + margin >= objectPosition.x &&
-           position.x - margin <= objectPosition.x + objectDimensions.width &&
-           position.y + margin >= objectPosition.y &&
-           position.y - margin <= objectPosition.y + objectDimensions.height &&
-           position.z + margin >= objectPosition.z &&
-           position.z - margin <= objectPosition.z + objectDimensions.depth;
+
+    return position.x + margin >= objectPosition.x
+           && position.x - margin <= objectPosition.x + objectDimensions.width
+           && position.y + margin >= objectPosition.y
+           && position.y - margin <= objectPosition.y + objectDimensions.height
+           && position.z + margin >= objectPosition.z
+           && position.z - margin <= objectPosition.z + objectDimensions.depth;
   }
 
   private generateId(prefix: string): string {
@@ -701,7 +710,7 @@ export class WorkspaceController {
   private emit(event: string, data: any): void {
     const handlers = this.eventHandlers.get(event);
     if (handlers) {
-      handlers.forEach(handler => {
+      handlers.forEach((handler) => {
         try {
           handler({ type: event, data } as WorkspaceEvent);
         } catch (error) {

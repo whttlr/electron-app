@@ -1,6 +1,6 @@
 /**
  * Browser Compatibility Testing Utilities
- * 
+ *
  * Comprehensive browser compatibility detection and polyfill management
  * for CNC control interfaces across different browsers and devices.
  * Ensures consistent functionality in industrial environments.
@@ -65,6 +65,7 @@ export interface CompatibilityIssue {
 
 export class BrowserCompatibilityDetector {
   private userAgent: string;
+
   private capabilities: BrowserCapabilities | null = null;
 
   constructor() {
@@ -133,12 +134,14 @@ export class BrowserCompatibilityDetector {
     else if (ua.includes('Android')) platform = 'Android';
     else if (ua.includes('iOS')) platform = 'iOS';
 
-    return { name, version, engine, platform, mobile };
+    return {
+      name, version, engine, platform, mobile,
+    };
   }
 
   private detectHardwareCapabilities(): Pick<BrowserCapabilities, 'touch' | 'webgl'> {
     const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
+
     let webgl = false;
     try {
       const canvas = document.createElement('canvas');
@@ -161,9 +164,9 @@ export class BrowserCompatibilityDetector {
       deviceOrientation: 'DeviceOrientationEvent' in window,
       battery: 'getBattery' in navigator,
       vibration: 'vibrate' in navigator,
-      fullscreen: 'requestFullscreen' in document.documentElement || 
-                  'webkitRequestFullscreen' in document.documentElement ||
-                  'mozRequestFullScreen' in document.documentElement,
+      fullscreen: 'requestFullscreen' in document.documentElement
+                  || 'webkitRequestFullscreen' in document.documentElement
+                  || 'mozRequestFullScreen' in document.documentElement,
       notifications: 'Notification' in window,
       clipboard: 'clipboard' in navigator,
       webUSB: 'usb' in navigator,
@@ -386,13 +389,13 @@ export class BrowserCompatibilityDetector {
     supportLevel: 'excellent' | 'good' | 'fair' | 'poor';
     issues: CompatibilityIssue[];
     recommendations: string[];
-  } {
+    } {
     const capabilities = this.detectCapabilities();
     const issues = this.analyzeCompatibility();
 
-    const criticalIssues = issues.filter(i => i.severity === 'critical').length;
-    const highIssues = issues.filter(i => i.severity === 'high').length;
-    const mediumIssues = issues.filter(i => i.severity === 'medium').length;
+    const criticalIssues = issues.filter((i) => i.severity === 'critical').length;
+    const highIssues = issues.filter((i) => i.severity === 'high').length;
+    const mediumIssues = issues.filter((i) => i.severity === 'medium').length;
 
     let supportLevel: 'excellent' | 'good' | 'fair' | 'poor';
     if (criticalIssues === 0 && highIssues === 0 && mediumIssues <= 2) {
@@ -435,7 +438,7 @@ export class BrowserCompatibilityDetector {
       recommendations.push('Consider upgrading to a more recent browser version');
     }
 
-    if (issues.some(i => i.severity === 'critical')) {
+    if (issues.some((i) => i.severity === 'critical')) {
       recommendations.push('Critical compatibility issues detected - some features will not work');
     }
 
@@ -497,8 +500,8 @@ export class PolyfillLoader {
     ];
 
     const loadPromises = polyfills
-      .filter(p => p.condition && !this.loadedPolyfills.has(p.name))
-      .map(p => this.loadPolyfill(p.name, p.url));
+      .filter((p) => p.condition && !this.loadedPolyfills.has(p.name))
+      .map((p) => this.loadPolyfill(p.name, p.url));
 
     await Promise.all(loadPromises);
   }
@@ -531,47 +534,45 @@ export const testBrowserFeatures = (): Promise<{
   performanceGood: boolean;
   storageWorking: boolean;
   networkStable: boolean;
-}> => {
-  return new Promise((resolve) => {
-    const results = {
-      touchSupport: false,
-      performanceGood: false,
-      storageWorking: false,
-      networkStable: false,
-    };
+}> => new Promise((resolve) => {
+  const results = {
+    touchSupport: false,
+    performanceGood: false,
+    storageWorking: false,
+    networkStable: false,
+  };
 
-    // Test touch support
-    results.touchSupport = 'ontouchstart' in window;
+  // Test touch support
+  results.touchSupport = 'ontouchstart' in window;
 
-    // Test performance
-    const start = performance.now();
-    for (let i = 0; i < 100000; i++) {
-      Math.random();
-    }
-    const end = performance.now();
-    results.performanceGood = (end - start) < 50;
+  // Test performance
+  const start = performance.now();
+  for (let i = 0; i < 100000; i++) {
+    Math.random();
+  }
+  const end = performance.now();
+  results.performanceGood = (end - start) < 50;
 
-    // Test storage
-    try {
-      localStorage.setItem('test', 'test');
-      localStorage.removeItem('test');
-      results.storageWorking = true;
-    } catch (e) {
-      results.storageWorking = false;
-    }
+  // Test storage
+  try {
+    localStorage.setItem('test', 'test');
+    localStorage.removeItem('test');
+    results.storageWorking = true;
+  } catch (e) {
+    results.storageWorking = false;
+  }
 
-    // Test network (simple connectivity check)
-    fetch('/favicon.ico', { method: 'HEAD', cache: 'no-cache' })
-      .then(() => {
-        results.networkStable = true;
-        resolve(results);
-      })
-      .catch(() => {
-        results.networkStable = false;
-        resolve(results);
-      });
-  });
-};
+  // Test network (simple connectivity check)
+  fetch('/favicon.ico', { method: 'HEAD', cache: 'no-cache' })
+    .then(() => {
+      results.networkStable = true;
+      resolve(results);
+    })
+    .catch(() => {
+      results.networkStable = false;
+      resolve(results);
+    });
+});
 
 // React hook for browser compatibility
 export const useBrowserCompatibility = () => {

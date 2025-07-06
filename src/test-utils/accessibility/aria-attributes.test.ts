@@ -3,11 +3,13 @@
  * Tests for proper ARIA implementation and semantic markup
  */
 
-import { renderWithProviders } from '../index';
 import React from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button, Input, Switch, Checkbox, Radio } from 'antd';
+import {
+  Button, Input, Switch, Checkbox, Radio,
+} from 'antd';
+import { renderWithProviders } from '../index';
 import { setupA11yTests } from './setup';
 import { screenReaderHelpers } from './helpers';
 
@@ -19,27 +21,27 @@ describe('ARIA Attributes and Roles', () => {
   it('should have proper ARIA labels and descriptions', () => {
     const { container } = renderWithProviders(
       React.createElement('div', {}, [
-        React.createElement('label', { 
+        React.createElement('label', {
           key: 'label',
-          htmlFor: 'email-input' 
+          htmlFor: 'email-input',
         }, 'Email Address'),
         React.createElement(Input, {
           key: 'input',
           id: 'email-input',
           type: 'email',
           placeholder: 'Enter your email',
-          'aria-describedby': 'help-text'
+          'aria-describedby': 'help-text',
         }),
         React.createElement('div', {
           key: 'help',
           id: 'help-text',
-          className: 'help-text'
+          className: 'help-text',
         }, 'We will use this email to send you updates'),
         React.createElement(Button, {
           key: 'button',
-          'aria-label': 'Submit email address form'
-        }, 'Submit')
-      ])
+          'aria-label': 'Submit email address form',
+        }, 'Submit'),
+      ]),
     );
 
     const input = container.querySelector('#email-input');
@@ -53,30 +55,30 @@ describe('ARIA Attributes and Roles', () => {
 
   it('should handle dynamic ARIA state changes', async () => {
     const user = userEvent.setup();
-    
+
     const ExpandableSection = () => {
       const [isExpanded, setIsExpanded] = React.useState(false);
-      
+
       return React.createElement('div', {}, [
         React.createElement('button', {
           key: 'toggle',
           'aria-expanded': isExpanded,
           'aria-controls': 'expandable-content',
           onClick: () => setIsExpanded(!isExpanded),
-          'data-testid': 'toggle-button'
+          'data-testid': 'toggle-button',
         }, `${isExpanded ? 'Collapse' : 'Expand'} Section`),
-        
+
         React.createElement('div', {
           key: 'content',
           id: 'expandable-content',
           'aria-hidden': !isExpanded,
-          style: { display: isExpanded ? 'block' : 'none' }
-        }, 'This content can be expanded or collapsed')
+          style: { display: isExpanded ? 'block' : 'none' },
+        }, 'This content can be expanded or collapsed'),
       ]);
     };
 
     const { container } = renderWithProviders(React.createElement(ExpandableSection));
-    
+
     const toggleButton = screen.getByTestId('toggle-button');
     const content = container.querySelector('#expandable-content');
 
@@ -86,13 +88,13 @@ describe('ARIA Attributes and Roles', () => {
 
     // Click to expand
     await user.click(toggleButton);
-    
+
     expect(toggleButton).toHaveAttribute('aria-expanded', 'true');
     expect(content).toHaveAttribute('aria-hidden', 'false');
 
     // Click to collapse
     await user.click(toggleButton);
-    
+
     expect(toggleButton).toHaveAttribute('aria-expanded', 'false');
     expect(content).toHaveAttribute('aria-hidden', 'true');
   });
@@ -103,40 +105,40 @@ describe('ARIA Attributes and Roles', () => {
         React.createElement('div', {
           key: 'tablist',
           role: 'tablist',
-          'aria-label': 'Main navigation tabs'
+          'aria-label': 'Main navigation tabs',
         }, [
           React.createElement('button', {
             key: 'tab1',
             role: 'tab',
             'aria-selected': 'true',
             'aria-controls': 'panel1',
-            id: 'tab1'
+            id: 'tab1',
           }, 'Tab 1'),
           React.createElement('button', {
             key: 'tab2',
             role: 'tab',
             'aria-selected': 'false',
             'aria-controls': 'panel2',
-            id: 'tab2'
-          }, 'Tab 2')
+            id: 'tab2',
+          }, 'Tab 2'),
         ]),
-        
+
         React.createElement('div', {
           key: 'panel1',
           role: 'tabpanel',
           'aria-labelledby': 'tab1',
-          id: 'panel1'
+          id: 'panel1',
         }, 'Content for tab 1'),
-        
+
         React.createElement('div', {
           key: 'panel2',
           role: 'tabpanel',
           'aria-labelledby': 'tab2',
           id: 'panel2',
           'aria-hidden': 'true',
-          style: { display: 'none' }
-        }, 'Content for tab 2')
-      ])
+          style: { display: 'none' },
+        }, 'Content for tab 2'),
+      ]),
     );
 
     const tablist = container.querySelector('[role="tablist"]');
@@ -152,11 +154,11 @@ describe('ARIA Attributes and Roles', () => {
 
   it('should handle form validation with ARIA', async () => {
     const user = userEvent.setup();
-    
+
     const ValidationForm = () => {
       const [email, setEmail] = React.useState('');
       const [error, setError] = React.useState('');
-      
+
       const validateEmail = (value: string) => {
         if (!value.includes('@')) {
           setError('Please enter a valid email address');
@@ -166,9 +168,9 @@ describe('ARIA Attributes and Roles', () => {
       };
 
       return React.createElement('form', {}, [
-        React.createElement('label', { 
+        React.createElement('label', {
           key: 'label',
-          htmlFor: 'email' 
+          htmlFor: 'email',
         }, 'Email Address'),
         React.createElement(Input, {
           key: 'input',
@@ -181,19 +183,19 @@ describe('ARIA Attributes and Roles', () => {
           },
           'aria-invalid': !!error,
           'aria-describedby': error ? 'email-error' : undefined,
-          'data-testid': 'email-input'
+          'data-testid': 'email-input',
         }),
         error && React.createElement('div', {
           key: 'error',
           id: 'email-error',
           role: 'alert',
-          'aria-live': 'polite'
-        }, error)
+          'aria-live': 'polite',
+        }, error),
       ]);
     };
 
     const { container } = renderWithProviders(React.createElement(ValidationForm));
-    
+
     const emailInput = screen.getByTestId('email-input');
 
     // Initial state - no error
@@ -202,11 +204,11 @@ describe('ARIA Attributes and Roles', () => {
 
     // Enter invalid email
     await user.type(emailInput, 'invalid-email');
-    
+
     await waitFor(() => {
       expect(emailInput).toHaveAttribute('aria-invalid', 'true');
       expect(emailInput).toHaveAttribute('aria-describedby', 'email-error');
-      
+
       const errorElement = container.querySelector('#email-error');
       expect(errorElement).toBeInTheDocument();
       expect(errorElement).toHaveAttribute('role', 'alert');
@@ -216,7 +218,7 @@ describe('ARIA Attributes and Roles', () => {
     // Enter valid email
     await user.clear(emailInput);
     await user.type(emailInput, 'valid@email.com');
-    
+
     await waitFor(() => {
       expect(emailInput).toHaveAttribute('aria-invalid', 'false');
       expect(container.querySelector('#email-error')).not.toBeInTheDocument();
@@ -225,7 +227,7 @@ describe('ARIA Attributes and Roles', () => {
 
   it('should handle interactive widget states', async () => {
     const user = userEvent.setup();
-    
+
     const InteractiveWidgets = () => {
       const [switchChecked, setSwitchChecked] = React.useState(false);
       const [checkboxChecked, setCheckboxChecked] = React.useState(false);
@@ -239,33 +241,33 @@ describe('ARIA Attributes and Roles', () => {
             checked: switchChecked,
             onChange: setSwitchChecked,
             'aria-label': 'Toggle notifications',
-            'data-testid': 'notification-switch'
-          })
+            'data-testid': 'notification-switch',
+          }),
         ]),
-        
+
         React.createElement('div', { key: 'checkbox-group' }, [
           React.createElement(Checkbox, {
             checked: checkboxChecked,
             onChange: (e) => setCheckboxChecked(e.target.checked),
-            'data-testid': 'terms-checkbox'
-          }, 'I agree to the terms and conditions')
+            'data-testid': 'terms-checkbox',
+          }, 'I agree to the terms and conditions'),
         ]),
-        
+
         React.createElement(Radio.Group, {
           key: 'radio-group',
           value: radioValue,
           onChange: (e) => setRadioValue(e.target.value),
-          'aria-label': 'Choose payment method'
+          'aria-label': 'Choose payment method',
         }, [
           React.createElement(Radio, { key: 'r1', value: 'option1' }, 'Credit Card'),
           React.createElement(Radio, { key: 'r2', value: 'option2' }, 'PayPal'),
-          React.createElement(Radio, { key: 'r3', value: 'option3' }, 'Bank Transfer')
-        ])
+          React.createElement(Radio, { key: 'r3', value: 'option3' }, 'Bank Transfer'),
+        ]),
       ]);
     };
 
     const { container } = renderWithProviders(React.createElement(InteractiveWidgets));
-    
+
     const notificationSwitch = screen.getByTestId('notification-switch');
     const termsCheckbox = screen.getByTestId('terms-checkbox');
     const radioGroup = container.querySelector('[role="radiogroup"]');
@@ -279,13 +281,13 @@ describe('ARIA Attributes and Roles', () => {
 
     // Test checkbox ARIA states
     expect(termsCheckbox).toHaveAttribute('aria-checked', 'false');
-    
+
     await user.click(termsCheckbox);
     expect(termsCheckbox).toHaveAttribute('aria-checked', 'true');
 
     // Test radio group ARIA
     expect(radioGroup).toHaveAttribute('aria-label', 'Choose payment method');
-    
+
     const radioButtons = container.querySelectorAll('[role="radio"]');
     expect(radioButtons[0]).toHaveAttribute('aria-checked', 'true');
     expect(radioButtons[1]).toHaveAttribute('aria-checked', 'false');
@@ -294,55 +296,55 @@ describe('ARIA Attributes and Roles', () => {
   it('should provide proper landmark navigation', () => {
     const { container } = renderWithProviders(
       React.createElement('div', {}, [
-        React.createElement('header', { 
+        React.createElement('header', {
           key: 'header',
-          role: 'banner' 
+          role: 'banner',
         }, [
           React.createElement('h1', {}, 'CNC Control Application'),
-          React.createElement('nav', { 
+          React.createElement('nav', {
             'aria-label': 'Main navigation',
-            role: 'navigation'
+            role: 'navigation',
           }, [
             React.createElement('ul', {}, [
               React.createElement('li', { key: '1' }, React.createElement('a', { href: '/' }, 'Home')),
-              React.createElement('li', { key: '2' }, React.createElement('a', { href: '/controls' }, 'Controls'))
-            ])
-          ])
+              React.createElement('li', { key: '2' }, React.createElement('a', { href: '/controls' }, 'Controls')),
+            ]),
+          ]),
         ]),
-        
-        React.createElement('main', { 
+
+        React.createElement('main', {
           key: 'main',
           role: 'main',
-          'aria-labelledby': 'main-heading'
+          'aria-labelledby': 'main-heading',
         }, [
           React.createElement('h2', { id: 'main-heading' }, 'Machine Controls'),
-          React.createElement('section', { 
-            'aria-labelledby': 'status-heading'
+          React.createElement('section', {
+            'aria-labelledby': 'status-heading',
           }, [
             React.createElement('h3', { id: 'status-heading' }, 'Machine Status'),
-            React.createElement('p', {}, 'Current status information')
-          ])
+            React.createElement('p', {}, 'Current status information'),
+          ]),
         ]),
-        
-        React.createElement('aside', { 
+
+        React.createElement('aside', {
           key: 'sidebar',
           role: 'complementary',
-          'aria-label': 'Additional information'
+          'aria-label': 'Additional information',
         }, [
           React.createElement('h3', {}, 'Quick Actions'),
           React.createElement('ul', {}, [
             React.createElement('li', { key: '1' }, 'Emergency Stop'),
-            React.createElement('li', { key: '2' }, 'Home Machine')
-          ])
+            React.createElement('li', { key: '2' }, 'Home Machine'),
+          ]),
         ]),
-        
-        React.createElement('footer', { 
+
+        React.createElement('footer', {
           key: 'footer',
-          role: 'contentinfo'
+          role: 'contentinfo',
         }, [
-          React.createElement('p', {}, '© 2024 CNC Control')
-        ])
-      ])
+          React.createElement('p', {}, '© 2024 CNC Control'),
+        ]),
+      ]),
     );
 
     // Check for proper landmark roles

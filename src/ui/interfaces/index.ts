@@ -1,9 +1,9 @@
 /**
  * Component Interface Definitions
- * 
+ *
  * These interfaces define stable APIs for all UI components that will remain
  * consistent regardless of the underlying implementation (Ant Design, Headless UI, etc.)
- * 
+ *
  * Key Principles:
  * 1. Framework-agnostic - don't expose implementation-specific props
  * 2. Semantic naming - use meaningful names over technical ones
@@ -11,13 +11,15 @@
  * 4. Type-safe - full TypeScript support
  */
 
-import { ReactNode, HTMLAttributes, ButtonHTMLAttributes, InputHTMLAttributes } from 'react';
-import type { 
-  ButtonVariants, 
-  CardVariants, 
-  BadgeVariants, 
-  InputVariants, 
-  AlertVariants 
+import {
+  ReactNode, HTMLAttributes, ButtonHTMLAttributes, InputHTMLAttributes,
+} from 'react';
+import type {
+  ButtonVariants,
+  CardVariants,
+  BadgeVariants,
+  InputVariants,
+  AlertVariants,
 } from '../theme/component-styles';
 
 // ============================================================================
@@ -54,7 +56,7 @@ export interface InteractiveComponentProps extends BaseComponentProps {
 // BUTTON INTERFACE
 // ============================================================================
 
-export interface ButtonProps extends InteractiveComponentProps, 
+export interface ButtonProps extends InteractiveComponentProps,
   Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type' | 'disabled'> {
   /** Visual style variant */
   variant?: ButtonVariants['variant'];
@@ -76,7 +78,7 @@ export interface ButtonProps extends InteractiveComponentProps,
 // CARD INTERFACE
 // ============================================================================
 
-export interface CardProps extends BaseComponentProps, 
+export interface CardProps extends BaseComponentProps,
   Omit<HTMLAttributes<HTMLDivElement>, 'title'> {
   /** Card visual variant */
   variant?: CardVariants['variant'];
@@ -468,19 +470,19 @@ export interface JogControlProps extends BaseComponentProps {
 // All interfaces are already exported above - no need for duplicate exports
 
 // Component prop type unions for utilities
-export type ComponentProps = 
-  | ButtonProps 
-  | CardProps 
-  | BadgeProps 
-  | InputProps 
-  | AlertProps 
-  | FormProps 
+export type ComponentProps =
+  | ButtonProps
+  | CardProps
+  | BadgeProps
+  | InputProps
+  | AlertProps
+  | FormProps
   | TableProps;
 
 // Size variants union
 export type SizeVariant = 'sm' | 'md' | 'lg';
 
-// State variants union  
+// State variants union
 export type StateVariant = 'default' | 'error' | 'success' | 'warning';
 
 // Layout variants union

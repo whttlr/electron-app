@@ -4,20 +4,24 @@
  */
 
 import { EventEmitter } from 'events';
-import { 
-  ErrorEvent, 
-  ErrorType, 
-  ErrorSeverity, 
-  ErrorContext, 
-  Breadcrumb 
+import {
+  ErrorEvent,
+  ErrorType,
+  ErrorSeverity,
+  ErrorContext,
+  Breadcrumb,
 } from './types';
 import { errorSeverityLevels } from './config';
 
 export class ErrorTracker extends EventEmitter {
   private breadcrumbs: Breadcrumb[] = [];
+
   private errorCounts: Map<string, number> = new Map();
+
   private isTracking = false;
+
   private maxBreadcrumbs = 100;
+
   private sessionId: string;
 
   constructor(sessionId: string) {
@@ -31,7 +35,7 @@ export class ErrorTracker extends EventEmitter {
    */
   start(): void {
     if (this.isTracking) return;
-    
+
     this.isTracking = true;
     this.addBreadcrumb('system', 'Error tracking started', 'info');
     this.emit('tracking_started');
@@ -42,7 +46,7 @@ export class ErrorTracker extends EventEmitter {
    */
   stop(): void {
     if (!this.isTracking) return;
-    
+
     this.isTracking = false;
     this.addBreadcrumb('system', 'Error tracking stopped', 'info');
     this.emit('tracking_stopped');
@@ -55,7 +59,7 @@ export class ErrorTracker extends EventEmitter {
     error: Error | string,
     context: Partial<ErrorContext> = {},
     severity: ErrorSeverity = 'medium',
-    type: ErrorType = 'javascript'
+    type: ErrorType = 'javascript',
   ): void {
     if (!this.isTracking) return;
 
@@ -69,11 +73,11 @@ export class ErrorTracker extends EventEmitter {
   trackCNCError(
     message: string,
     cncState: any,
-    severity: ErrorSeverity = 'high'
+    severity: ErrorSeverity = 'high',
   ): void {
     this.trackError(new Error(message), {
       cncState,
-      component: 'cnc_controller'
+      component: 'cnc_controller',
     }, severity, 'cnc_communication');
   }
 
@@ -84,14 +88,14 @@ export class ErrorTracker extends EventEmitter {
     error: Error,
     pluginId: string,
     pluginContext: any,
-    severity: ErrorSeverity = 'medium'
+    severity: ErrorSeverity = 'medium',
   ): void {
     this.trackError(error, {
       component: 'plugin_system',
       pluginContext: {
         pluginId,
-        ...pluginContext
-      }
+        ...pluginContext,
+      },
     }, severity, 'plugin_error');
   }
 
@@ -102,11 +106,11 @@ export class ErrorTracker extends EventEmitter {
     error: Error,
     component: string,
     userAction: string,
-    severity: ErrorSeverity = 'low'
+    severity: ErrorSeverity = 'low',
   ): void {
     this.trackError(error, {
       component,
-      userAction
+      userAction,
     }, severity, 'ui_error');
   }
 
@@ -117,12 +121,12 @@ export class ErrorTracker extends EventEmitter {
     url: string,
     status: number,
     response: string,
-    severity: ErrorSeverity = 'medium'
+    severity: ErrorSeverity = 'medium',
   ): void {
     this.trackError(new Error(`Network error: ${status} - ${response}`), {
       component: 'network',
       action: 'request_failed',
-      networkDetails: { url, status, response }
+      networkDetails: { url, status, response },
     }, severity, 'network');
   }
 
@@ -133,11 +137,11 @@ export class ErrorTracker extends EventEmitter {
     field: string,
     value: any,
     validationRule: string,
-    severity: ErrorSeverity = 'low'
+    severity: ErrorSeverity = 'low',
   ): void {
     this.trackError(new Error(`Validation failed: ${field} - ${validationRule}`), {
       component: 'validation',
-      validationDetails: { field, value, rule: validationRule }
+      validationDetails: { field, value, rule: validationRule },
     }, severity, 'validation');
   }
 
@@ -148,14 +152,14 @@ export class ErrorTracker extends EventEmitter {
     category: string,
     message: string,
     level: 'info' | 'warning' | 'error' = 'info',
-    data?: Record<string, any>
+    data?: Record<string, any>,
   ): void {
     const breadcrumb: Breadcrumb = {
       timestamp: Date.now(),
       category,
       message,
       level,
-      data
+      data,
     };
 
     this.breadcrumbs.push(breadcrumb);
@@ -177,7 +181,7 @@ export class ErrorTracker extends EventEmitter {
     errorsBySeverity: Record<ErrorSeverity, number>;
     topErrors: Array<{ fingerprint: string; count: number; lastSeen: number }>;
     errorRate: number;
-  } {
+    } {
     const totalErrors = Array.from(this.errorCounts.values())
       .reduce((sum, count) => sum + count, 0);
 
@@ -189,14 +193,14 @@ export class ErrorTracker extends EventEmitter {
       plugin_error: 0,
       ui_error: 0,
       validation: 0,
-      security: 0
+      security: 0,
     };
 
     const errorsBySeverity: Record<ErrorSeverity, number> = {
       low: 0,
       medium: 0,
       high: 0,
-      critical: 0
+      critical: 0,
     };
 
     // This would be populated from actual error events
@@ -206,7 +210,7 @@ export class ErrorTracker extends EventEmitter {
       .map(([fingerprint, count]) => ({
         fingerprint,
         count,
-        lastSeen: Date.now() // This would be actual last seen time
+        lastSeen: Date.now(), // This would be actual last seen time
       }))
       .sort((a, b) => b.count - a.count)
       .slice(0, 10);
@@ -216,7 +220,7 @@ export class ErrorTracker extends EventEmitter {
       errorsByType,
       errorsBySeverity,
       topErrors,
-      errorRate: totalErrors / (Date.now() - parseInt(this.sessionId.split('_')[1])) * 60000 // errors per minute
+      errorRate: totalErrors / (Date.now() - parseInt(this.sessionId.split('_')[1])) * 60000, // errors per minute
     };
   }
 
@@ -241,10 +245,10 @@ export class ErrorTracker extends EventEmitter {
   private setupErrorHandlers(): void {
     // JavaScript errors
     window.addEventListener('error', this.handleJavaScriptError);
-    
+
     // Unhandled promise rejections
     window.addEventListener('unhandledrejection', this.handlePromiseRejection);
-    
+
     // Console errors (optional)
     this.interceptConsoleError();
   }
@@ -255,7 +259,7 @@ export class ErrorTracker extends EventEmitter {
     const error = event.error || new Error(event.message);
     const context: ErrorContext = {
       component: 'javascript',
-      action: 'script_error'
+      action: 'script_error',
     };
 
     this.trackError(error, context, 'high', 'javascript');
@@ -264,13 +268,13 @@ export class ErrorTracker extends EventEmitter {
   private handlePromiseRejection = (event: PromiseRejectionEvent): void => {
     if (!this.isTracking) return;
 
-    const error = event.reason instanceof Error 
-      ? event.reason 
+    const error = event.reason instanceof Error
+      ? event.reason
       : new Error(String(event.reason));
 
     const context: ErrorContext = {
       component: 'promise',
-      action: 'unhandled_rejection'
+      action: 'unhandled_rejection',
     };
 
     this.trackError(error, context, 'high', 'promise_rejection');
@@ -278,16 +282,14 @@ export class ErrorTracker extends EventEmitter {
 
   private interceptConsoleError(): void {
     const originalError = console.error;
-    
+
     console.error = (...args: any[]) => {
       if (this.isTracking) {
-        const message = args.map(arg => 
-          typeof arg === 'string' ? arg : JSON.stringify(arg)
-        ).join(' ');
-        
+        const message = args.map((arg) => (typeof arg === 'string' ? arg : JSON.stringify(arg))).join(' ');
+
         this.addBreadcrumb('console', `Console error: ${message}`, 'error');
       }
-      
+
       originalError.apply(console, args);
     };
   }
@@ -296,11 +298,11 @@ export class ErrorTracker extends EventEmitter {
     error: Error | string,
     context: Partial<ErrorContext>,
     severity: ErrorSeverity,
-    type: ErrorType
+    type: ErrorType,
   ): ErrorEvent {
     const errorObj = error instanceof Error ? error : new Error(error);
     const fingerprint = this.generateFingerprint(errorObj, type);
-    
+
     return {
       id: this.generateErrorId(),
       timestamp: Date.now(),
@@ -321,11 +323,11 @@ export class ErrorTracker extends EventEmitter {
         pluginContext: context.pluginContext,
         userAction: context.userAction,
         deviceState: this.getDeviceState(),
-        ...context
+        ...context,
       },
       breadcrumbs: [...this.breadcrumbs],
       tags: this.generateTags(type, severity, context),
-      fingerprint
+      fingerprint,
     };
   }
 
@@ -341,8 +343,8 @@ export class ErrorTracker extends EventEmitter {
       'error',
       {
         severity: errorEvent.severity,
-        fingerprint: errorEvent.fingerprint
-      }
+        fingerprint: errorEvent.fingerprint,
+      },
     );
 
     // Check if error should trigger immediate alert
@@ -365,7 +367,7 @@ export class ErrorTracker extends EventEmitter {
       type,
       error.name,
       error.message,
-      this.getStackTraceSignature(error.stack || '')
+      this.getStackTraceSignature(error.stack || ''),
     ];
 
     return btoa(components.join('|')).replace(/[^a-zA-Z0-9]/g, '').substring(0, 16);
@@ -375,14 +377,14 @@ export class ErrorTracker extends EventEmitter {
     // Extract meaningful parts of stack trace for fingerprinting
     const lines = stack.split('\n').slice(0, 3); // Top 3 stack frames
     return lines
-      .map(line => line.replace(/:\d+:\d+/g, '')) // Remove line numbers
+      .map((line) => line.replace(/:\d+:\d+/g, '')) // Remove line numbers
       .join('|');
   }
 
   private generateTags(
     type: ErrorType,
     severity: ErrorSeverity,
-    context: Partial<ErrorContext>
+    context: Partial<ErrorContext>,
   ): Record<string, string> {
     return {
       type,
@@ -390,18 +392,18 @@ export class ErrorTracker extends EventEmitter {
       component: context.component || 'unknown',
       browser: this.getBrowserName(),
       platform: navigator.platform,
-      environment: process.env.NODE_ENV || 'production'
+      environment: process.env.NODE_ENV || 'production',
     };
   }
 
   private getBrowserName(): string {
-    const userAgent = navigator.userAgent;
-    
+    const { userAgent } = navigator;
+
     if (userAgent.includes('Chrome')) return 'chrome';
     if (userAgent.includes('Firefox')) return 'firefox';
     if (userAgent.includes('Safari')) return 'safari';
     if (userAgent.includes('Edge')) return 'edge';
-    
+
     return 'unknown';
   }
 
@@ -417,15 +419,15 @@ export class ErrorTracker extends EventEmitter {
       memory: (performance as any).memory ? {
         used: (performance as any).memory.usedJSHeapSize,
         total: (performance as any).memory.totalJSHeapSize,
-        limit: (performance as any).memory.jsHeapSizeLimit
-      } : undefined
+        limit: (performance as any).memory.jsHeapSizeLimit,
+      } : undefined,
     };
   }
 
   private shouldAlert(errorEvent: ErrorEvent): boolean {
     const severityConfig = errorSeverityLevels[errorEvent.severity];
     const count = this.errorCounts.get(errorEvent.fingerprint) || 1;
-    
+
     return count >= severityConfig.threshold;
   }
 

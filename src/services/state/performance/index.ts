@@ -1,16 +1,17 @@
 /**
  * Performance Service Module
- * 
+ *
  * Zustand store for performance metrics, monitoring, optimization,
  * and system resource tracking.
  */
 
 import create from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
-import { persist } from 'zustand/middleware';
+import { subscribeWithSelector, persist } from 'zustand/middleware';
 // import { immer } from 'zustand/middleware';
 import type { PerformanceStore } from './types';
-import { initialMetrics, defaultThresholds, defaultOptimizations, defaultStatistics } from './defaults';
+import {
+  initialMetrics, defaultThresholds, defaultOptimizations, defaultStatistics,
+} from './defaults';
 import { createPerformanceActions } from './actions';
 import { createPerformanceHelpers } from './helpers';
 import { setupPerformanceSubscriptions } from './subscriptions';
@@ -34,28 +35,29 @@ export const usePerformanceStore = create<PerformanceStore>()((
         lastUpdate: null,
         optimizations: defaultOptimizations,
         statistics: defaultStatistics,
-        
+
         // Actions
         ...createPerformanceActions(set, get),
-        
+
         // Helper Methods
         ...createPerformanceHelpers(get),
-        
+
         // Reset method
         reset: createPerformanceHelpers(get).reset(set),
-      })),
-      {
-        name: 'performance-store',
-        storage: localStorage,
-        partialize: (state) => ({
-          alertThresholds: state.alertThresholds,
-          optimizations: state.optimizations,
-          alerts: state.alerts.filter(a => !a.resolved), // Only persist unresolved alerts
-        }),
-        version: 1,
-      }
-    )
-  ));
+      }),
+    ),
+    {
+      name: 'performance-store',
+      storage: localStorage,
+      partialize: (state) => ({
+        alertThresholds: state.alertThresholds,
+        optimizations: state.optimizations,
+        alerts: state.alerts.filter((a) => !a.resolved), // Only persist unresolved alerts
+      }),
+      version: 1,
+    },
+  )
+));
 
 // Setup subscriptions
 setupPerformanceSubscriptions(usePerformanceStore);

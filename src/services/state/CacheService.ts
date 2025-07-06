@@ -1,6 +1,6 @@
 /**
  * Cache Manager
- * 
+ *
  * Advanced caching system with memory management, persistence,
  * and intelligent cache strategies for CNC application data.
  */
@@ -13,7 +13,9 @@ import type { CacheEntry, CacheConfig, CacheMetrics } from './types';
 
 export class CacheManager {
   private cache: Map<string, CacheEntry> = new Map();
+
   private config: CacheConfig;
+
   private metrics: CacheMetrics = {
     hits: 0,
     misses: 0,
@@ -22,8 +24,9 @@ export class CacheManager {
     entryCount: 0,
     hitRate: 0,
   };
+
   private cleanupTimer?: NodeJS.Timeout;
-  
+
   constructor(config: Partial<CacheConfig> = {}) {
     this.config = {
       maxSize: config.maxSize || 50, // MB
@@ -31,22 +34,22 @@ export class CacheManager {
       maxEntries: config.maxEntries || 1000,
       evictionPolicy: config.evictionPolicy || 'lru',
     };
-    
+
     this.startCleanupTimer();
   }
-  
+
   /**
    * Get item from cache
    */
   get<T = any>(key: string): T | null {
     const entry = this.cache.get(key);
-    
+
     if (!entry) {
       this.metrics.misses++;
       this.updateHitRate();
       return null;
     }
-    
+
     // Check if entry is expired
     if (Date.now() > entry.expiry.getTime()) {
       this.delete(key);
@@ -54,17 +57,17 @@ export class CacheManager {
       this.updateHitRate();
       return null;
     }
-    
+
     // Update access info for LRU/LFU
     entry.lastAccess = new Date();
     entry.accessCount++;
-    
+
     this.metrics.hits++;
     this.updateHitRate();
-    
+
     return entry.data as T;
   }
-  
+
   /**
    * Set item in cache
    */
@@ -72,10 +75,10 @@ export class CacheManager {
     const now = new Date();
     const expiry = new Date(now.getTime() + (ttl || this.config.maxAge));
     const size = this.calculateSize(data);
-    
+
     // Check if we need to evict entries
     this.ensureCapacity(size);
-    
+
     const entry: CacheEntry<T> = {
       data,
       timestamp: now,
@@ -84,11 +87,11 @@ export class CacheManager {
       lastAccess: now,
       size,
     };
-    
+
     this.cache.set(key, entry);
     this.updateMetrics();
   }
-  
+
   /**
    * Delete item from cache
    */
@@ -99,23 +102,23 @@ export class CacheManager {
     }
     return deleted;
   }
-  
+
   /**
    * Check if key exists in cache
    */
   has(key: string): boolean {
     const entry = this.cache.get(key);
     if (!entry) return false;
-    
+
     // Check if expired
     if (Date.now() > entry.expiry.getTime()) {
       this.delete(key);
       return false;
     }
-    
+
     return true;
   }
-  
+
   /**
    * Clear all cache entries
    */
@@ -123,55 +126,55 @@ export class CacheManager {
     this.cache.clear();
     this.updateMetrics();
   }
-  
+
   /**
    * Get cache metrics
    */
   getMetrics(): CacheMetrics {
     return { ...this.metrics };
   }
-  
+
   /**
    * Get all cache keys
    */
   keys(): string[] {
     return Array.from(this.cache.keys());
   }
-  
+
   /**
    * Get cache size in MB
    */
   getSize(): number {
     return this.metrics.size;
   }
-  
+
   /**
    * Get number of entries
    */
   getEntryCount(): number {
     return this.cache.size;
   }
-  
+
   /**
    * Manually trigger cleanup
    */
   cleanup(): void {
     const now = Date.now();
     const keysToDelete: string[] = [];
-    
+
     for (const [key, entry] of this.cache.entries()) {
       if (now > entry.expiry.getTime()) {
         keysToDelete.push(key);
       }
     }
-    
-    keysToDelete.forEach(key => this.delete(key));
-    
+
+    keysToDelete.forEach((key) => this.delete(key));
+
     if (keysToDelete.length > 0) {
       console.log(`🗑️ Cache cleanup: removed ${keysToDelete.length} expired entries`);
     }
   }
-  
+
   /**
    * Export cache data for persistence
    */
@@ -188,19 +191,19 @@ export class CacheManager {
       metrics: this.metrics,
       config: this.config,
     };
-    
+
     return JSON.stringify(exportData, null, 2);
   }
-  
+
   /**
    * Import cache data from persistence
    */
   import(data: string): void {
     try {
       const importData = JSON.parse(data);
-      
+
       this.clear();
-      
+
       if (importData.entries) {
         importData.entries.forEach((item: any) => {
           const entry: CacheEntry = {
@@ -211,22 +214,21 @@ export class CacheManager {
             lastAccess: new Date(item.lastAccess || item.timestamp),
             size: item.size || 0,
           };
-          
+
           // Only import non-expired entries
           if (Date.now() < entry.expiry.getTime()) {
             this.cache.set(item.key, entry);
           }
         });
       }
-      
+
       this.updateMetrics();
       console.log(`💾 Cache import: loaded ${this.cache.size} entries`);
-      
     } catch (error) {
       console.error('Failed to import cache data:', error);
     }
   }
-  
+
   /**
    * Destroy cache manager
    */
@@ -236,47 +238,47 @@ export class CacheManager {
       clearInterval(this.cleanupTimer);
     }
   }
-  
+
   // Private methods
-  
+
   private calculateSize(data: any): number {
     // Rough estimate of object size in bytes
     const str = JSON.stringify(data);
     return new Blob([str]).size / (1024 * 1024); // Convert to MB
   }
-  
+
   private updateMetrics(): void {
     let totalSize = 0;
     for (const entry of this.cache.values()) {
       totalSize += entry.size;
     }
-    
+
     this.metrics.size = totalSize;
     this.metrics.entryCount = this.cache.size;
     this.updateHitRate();
   }
-  
+
   private updateHitRate(): void {
     const total = this.metrics.hits + this.metrics.misses;
     this.metrics.hitRate = total > 0 ? (this.metrics.hits / total) * 100 : 0;
   }
-  
+
   private ensureCapacity(newEntrySize: number): void {
     // Check max entries
     if (this.cache.size >= this.config.maxEntries) {
       this.evictEntries(1);
     }
-    
+
     // Check max size
     while (this.metrics.size + newEntrySize > this.config.maxSize && this.cache.size > 0) {
       this.evictEntries(1);
     }
   }
-  
+
   private evictEntries(count: number): void {
     const entries = Array.from(this.cache.entries());
     let toEvict: string[] = [];
-    
+
     switch (this.config.evictionPolicy) {
       case 'lru':
         // Least recently used
@@ -285,7 +287,7 @@ export class CacheManager {
           .slice(0, count)
           .map(([key]) => key);
         break;
-        
+
       case 'lfu':
         // Least frequently used
         toEvict = entries
@@ -293,7 +295,7 @@ export class CacheManager {
           .slice(0, count)
           .map(([key]) => key);
         break;
-        
+
       case 'fifo':
         // First in, first out
         toEvict = entries
@@ -302,15 +304,15 @@ export class CacheManager {
           .map(([key]) => key);
         break;
     }
-    
-    toEvict.forEach(key => {
+
+    toEvict.forEach((key) => {
       this.cache.delete(key);
       this.metrics.evictions++;
     });
-    
+
     this.updateMetrics();
   }
-  
+
   private startCleanupTimer(): void {
     // Run cleanup every 5 minutes
     this.cleanupTimer = setInterval(() => {
@@ -374,17 +376,17 @@ export function createCachedFunction<TArgs extends any[], TReturn>(
   fn: (...args: TArgs) => Promise<TReturn>,
   cacheInstance: CacheManager,
   keyGenerator?: (...args: TArgs) => string,
-  ttl?: number
+  ttl?: number,
 ) {
   return async (...args: TArgs): Promise<TReturn> => {
     const key = keyGenerator ? keyGenerator(...args) : JSON.stringify(args);
-    
+
     // Try to get from cache first
     const cached = cacheInstance.get<TReturn>(key);
     if (cached !== null) {
       return cached;
     }
-    
+
     // Execute function and cache result
     try {
       const result = await fn(...args);
@@ -403,24 +405,24 @@ export function createCachedFunction<TArgs extends any[], TReturn>(
 export function Cached(
   cacheInstance: CacheManager,
   keyPrefix?: string,
-  ttl?: number
+  ttl?: number,
 ) {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
-    
+
     descriptor.value = async function (...args: any[]) {
       const key = `${keyPrefix || target.constructor.name}.${propertyKey}:${JSON.stringify(args)}`;
-      
+
       const cached = cacheInstance.get(key);
       if (cached !== null) {
         return cached;
       }
-      
+
       const result = await originalMethod.apply(this, args);
       cacheInstance.set(key, result, ttl);
       return result;
     };
-    
+
     return descriptor;
   };
 }
@@ -431,21 +433,19 @@ export function Cached(
 export function invalidateCache(cacheInstance: CacheManager, pattern: string | RegExp): number {
   const keys = cacheInstance.keys();
   let deletedCount = 0;
-  
-  keys.forEach(key => {
+
+  keys.forEach((key) => {
     if (typeof pattern === 'string') {
       if (key.includes(pattern)) {
         cacheInstance.delete(key);
         deletedCount++;
       }
-    } else {
-      if (pattern.test(key)) {
-        cacheInstance.delete(key);
-        deletedCount++;
-      }
+    } else if (pattern.test(key)) {
+      cacheInstance.delete(key);
+      deletedCount++;
     }
   });
-  
+
   return deletedCount;
 }
 
@@ -454,10 +454,10 @@ export function invalidateCache(cacheInstance: CacheManager, pattern: string | R
  */
 export async function warmCache<T>(
   cacheInstance: CacheManager,
-  dataSources: Array<{ key: string; loader: () => Promise<T>; ttl?: number }>
+  dataSources: Array<{ key: string; loader: () => Promise<T>; ttl?: number }>,
 ): Promise<void> {
   console.log(`🔥 Warming cache with ${dataSources.length} entries...`);
-  
+
   const promises = dataSources.map(async ({ key, loader, ttl }) => {
     try {
       const data = await loader();
@@ -466,7 +466,7 @@ export async function warmCache<T>(
       console.warn(`Failed to warm cache for key ${key}:`, error);
     }
   });
-  
+
   await Promise.all(promises);
   console.log('✅ Cache warming complete');
 }
@@ -506,22 +506,22 @@ export function clearAllCaches(): void {
 if (typeof window !== 'undefined') {
   setInterval(() => {
     const stats = getCacheStatistics();
-    
+
     // Log statistics periodically
     if (process.env.NODE_ENV === 'development') {
       console.log('📊 Cache Statistics:', stats);
     }
-    
+
     // Warn if cache size is getting large
     if (stats.total.size > 80) {
       console.warn('⚠️ Cache size is getting large:', stats.total.size, 'MB');
     }
-    
+
     // Clean up caches if memory is low
     if ('memory' in performance) {
       const mem = (performance as any).memory;
       const memoryUsagePercent = (mem.usedJSHeapSize / mem.jsHeapSizeLimit) * 100;
-      
+
       if (memoryUsagePercent > 85) {
         console.warn('⚠️ High memory usage detected, clearing caches');
         clearAllCaches();

@@ -1,6 +1,6 @@
 /**
  * MobileControlsView Component
- * 
+ *
  * Mobile-optimized CNC control interface designed for tablets and phones.
  * Features touch-optimized controls, adaptive layouts, and industrial-grade
  * usability for shop floor environments.
@@ -8,19 +8,15 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/utils/cn';
-import { useResponsive } from '@/ui/theme/responsive';
-import { TouchJogControls } from '@/ui/components/TouchOptimized/TouchJogControls';
-import { TouchButton } from '@/ui/components/TouchOptimized/TouchButton';
-import { MobileNavigationBar } from '@/ui/components/MobileNavigation/MobileNavigationBar';
 import { pwaManager } from '@/utils/pwa';
-import { 
-  Play, 
-  Pause, 
-  Square, 
-  AlertTriangle, 
-  Wifi, 
-  WifiOff, 
-  Battery, 
+import {
+  Play,
+  Pause,
+  Square,
+  AlertTriangle,
+  Wifi,
+  WifiOff,
+  Battery,
   Signal,
   Eye,
   EyeOff,
@@ -29,8 +25,12 @@ import {
   Home,
   Target,
   Gauge,
-  Activity
+  Activity,
 } from 'lucide-react';
+import { useResponsive } from '@/ui/theme/responsive';
+import { TouchJogControls } from '@/ui/components/TouchOptimized/TouchJogControls';
+import { TouchButton } from '@/ui/components/TouchOptimized/TouchButton';
+import { MobileNavigationBar } from '@/ui/components/MobileNavigation/MobileNavigationBar';
 
 interface MachineStatus {
   connected: boolean;
@@ -100,7 +100,9 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
     connected: false,
     state: 'idle',
     position: { x: 0, y: 0, z: 0 },
-    workingArea: { width: 300, height: 300, depth: 100, units: 'mm' },
+    workingArea: {
+      width: 300, height: 300, depth: 100, units: 'mm',
+    },
     feedRate: 1000,
     spindleSpeed: 12000,
   };
@@ -120,7 +122,7 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
         try {
           const battery = await (navigator as any).getBattery();
           setBatteryLevel(battery.level);
-          
+
           battery.addEventListener('levelchange', () => {
             setBatteryLevel(battery.level);
           });
@@ -174,7 +176,7 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
   }, [onStopJob, vibrate]);
 
   // Status indicator component
-  const StatusIndicator: React.FC<{ 
+  const StatusIndicator: React.FC<{
     status: 'connected' | 'disconnected' | 'error' | 'warning';
     label: string;
     value?: string | number;
@@ -185,7 +187,7 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
         status === 'connected' && 'bg-green-500 animate-pulse',
         status === 'disconnected' && 'bg-red-500',
         status === 'error' && 'bg-red-500 animate-pulse',
-        status === 'warning' && 'bg-yellow-500 animate-pulse'
+        status === 'warning' && 'bg-yellow-500 animate-pulse',
       )} />
       <div className="flex-1 min-w-0">
         <div className="text-xs text-gray-400">{label}</div>
@@ -217,7 +219,7 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
           <div className="flex items-center gap-1">
             <div className={cn(
               'w-2 h-2 rounded-full',
-              status.connected ? 'bg-green-400' : 'bg-red-400'
+              status.connected ? 'bg-green-400' : 'bg-red-400',
             )} />
             <span className="text-xs text-gray-400">
               {status.connected ? 'Connected' : 'Disconnected'}
@@ -230,7 +232,7 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
           {batteryLevel !== null && (
             <div className="flex items-center gap-1">
               <Battery size={16} className={cn(
-                batteryLevel > 0.2 ? 'text-green-400' : 'text-red-400'
+                batteryLevel > 0.2 ? 'text-green-400' : 'text-red-400',
               )} />
               <span className="text-xs text-gray-400">
                 {Math.round(batteryLevel * 100)}%
@@ -317,7 +319,7 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
             <TouchButton
               variant="secondary"
               size="md"
-              onClick={() => {/* Set work origin */}}
+              onClick={() => { /* Set work origin */ }}
               disabled={!status.connected}
               icon={<Target size={16} />}
             >
@@ -413,7 +415,7 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
                   <span className="text-white">{status.currentJob.progress}%</span>
                 </div>
                 <div className="w-full bg-gray-700 rounded-full h-2">
-                  <div 
+                  <div
                     className="bg-blue-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${status.currentJob.progress}%` }}
                   />
@@ -456,7 +458,7 @@ export const MobileControlsView: React.FC<MobileControlsViewProps> = ({
           <TouchButton
             variant="primary"
             size="md"
-            onClick={() => {/* Open job loader */}}
+            onClick={() => { /* Open job loader */ }}
             disabled={!status.connected}
           >
             Load Job

@@ -3,11 +3,13 @@
  * Tests for screen reader compatibility and announcements
  */
 
-import { renderWithProviders } from '../index';
 import React from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Button, Alert, Progress, Spin } from 'antd';
+import {
+  Button, Alert, Progress, Spin,
+} from 'antd';
+import { renderWithProviders } from '../index';
 import { setupA11yTests } from './setup';
 import { screenReaderHelpers } from './helpers';
 
@@ -22,31 +24,31 @@ describe('Screen Reader Support', () => {
         React.createElement('img', {
           key: 'logo',
           src: '/logo.png',
-          alt: 'CNC Control Application Logo'
+          alt: 'CNC Control Application Logo',
         }),
-        
+
         React.createElement('button', {
           key: 'icon-button',
-          'aria-label': 'Close dialog'
+          'aria-label': 'Close dialog',
         }, '×'),
-        
+
         React.createElement('div', {
           key: 'status',
           role: 'status',
-          'aria-live': 'polite'
+          'aria-live': 'polite',
         }, 'Machine is currently running'),
-        
+
         React.createElement('span', {
           key: 'sr-only',
-          className: 'sr-only'
+          className: 'sr-only',
         }, 'This text is only for screen readers'),
-        
+
         React.createElement(Progress, {
           key: 'progress',
           percent: 75,
-          'aria-label': 'Job completion progress: 75%'
-        })
-      ])
+          'aria-label': 'Job completion progress: 75%',
+        }),
+      ]),
     );
 
     const img = container.querySelector('img');
@@ -72,29 +74,29 @@ describe('Screen Reader Support', () => {
             setMessage('Status updated successfully');
             setMessageType('polite');
           },
-          'data-testid': 'update-polite'
+          'data-testid': 'update-polite',
         }, 'Update Status (Polite)'),
-        
+
         React.createElement('button', {
           key: 'update-assertive',
           onClick: () => {
             setMessage('Critical error occurred!');
             setMessageType('assertive');
           },
-          'data-testid': 'update-assertive'
+          'data-testid': 'update-assertive',
         }, 'Update Status (Assertive)'),
-        
+
         React.createElement('div', {
           key: 'live-region',
           'aria-live': messageType,
           'aria-atomic': 'true',
-          'data-testid': 'live-region'
-        }, message)
+          'data-testid': 'live-region',
+        }, message),
       ]);
     };
 
     const { container } = renderWithProviders(React.createElement(LiveRegionExample));
-    
+
     const updatePoliteButton = screen.getByTestId('update-polite');
     const updateAssertiveButton = screen.getByTestId('update-assertive');
     const liveRegion = screen.getByTestId('live-region');
@@ -105,7 +107,7 @@ describe('Screen Reader Support', () => {
 
     // Update with polite announcement
     await userEvent.click(updatePoliteButton);
-    
+
     await waitFor(() => {
       expect(liveRegion).toHaveTextContent('Status updated successfully');
       expect(liveRegion).toHaveAttribute('aria-live', 'polite');
@@ -113,7 +115,7 @@ describe('Screen Reader Support', () => {
 
     // Update with assertive announcement
     await userEvent.click(updateAssertiveButton);
-    
+
     await waitFor(() => {
       expect(liveRegion).toHaveTextContent('Critical error occurred!');
       expect(liveRegion).toHaveAttribute('aria-live', 'assertive');
@@ -126,44 +128,46 @@ describe('Screen Reader Support', () => {
         React.createElement('table', {
           key: 'data-table',
           'aria-label': 'CNC Job Queue',
-          'aria-describedby': 'table-description'
+          'aria-describedby': 'table-description',
         }, [
-          React.createElement('caption', { id: 'table-description' }, 
-            'Table showing current CNC jobs with status and progress information'
+          React.createElement(
+            'caption',
+            { id: 'table-description' },
+            'Table showing current CNC jobs with status and progress information',
           ),
           React.createElement('thead', {}, [
             React.createElement('tr', {}, [
               React.createElement('th', { scope: 'col' }, 'Job Name'),
               React.createElement('th', { scope: 'col' }, 'Status'),
               React.createElement('th', { scope: 'col' }, 'Progress'),
-              React.createElement('th', { scope: 'col' }, 'Actions')
-            ])
+              React.createElement('th', { scope: 'col' }, 'Actions'),
+            ]),
           ]),
           React.createElement('tbody', {}, [
             React.createElement('tr', {}, [
               React.createElement('td', {}, 'Part_001.gcode'),
-              React.createElement('td', {}, React.createElement('span', { 
-                'aria-label': 'Status: Running' 
+              React.createElement('td', {}, React.createElement('span', {
+                'aria-label': 'Status: Running',
               }, 'Running')),
               React.createElement('td', {}, React.createElement(Progress, {
                 percent: 65,
-                'aria-label': 'Progress: 65% complete'
+                'aria-label': 'Progress: 65% complete',
               })),
               React.createElement('td', {}, [
-                React.createElement('button', { 
-                  'aria-label': 'Pause job Part_001.gcode' 
+                React.createElement('button', {
+                  'aria-label': 'Pause job Part_001.gcode',
                 }, 'Pause'),
-                React.createElement('button', { 
-                  'aria-label': 'Cancel job Part_001.gcode' 
-                }, 'Cancel')
-              ])
-            ])
-          ])
+                React.createElement('button', {
+                  'aria-label': 'Cancel job Part_001.gcode',
+                }, 'Cancel'),
+              ]),
+            ]),
+          ]),
         ]),
-        
+
         React.createElement('form', {
           key: 'job-form',
-          'aria-labelledby': 'form-heading'
+          'aria-labelledby': 'form-heading',
         }, [
           React.createElement('h3', { id: 'form-heading' }, 'Add New Job'),
           React.createElement('fieldset', {}, [
@@ -173,15 +177,15 @@ describe('Screen Reader Support', () => {
               id: 'job-file',
               type: 'file',
               accept: '.gcode,.nc',
-              'aria-describedby': 'file-help'
+              'aria-describedby': 'file-help',
             }),
             React.createElement('div', {
               id: 'file-help',
-              className: 'help-text'
-            }, 'Select a G-code file (.gcode or .nc format)')
-          ])
-        ])
-      ])
+              className: 'help-text',
+            }, 'Select a G-code file (.gcode or .nc format)'),
+          ]),
+        ]),
+      ]),
     );
 
     const table = container.querySelector('table');
@@ -193,7 +197,7 @@ describe('Screen Reader Support', () => {
     expect(table).toHaveAttribute('aria-label', 'CNC Job Queue');
     expect(table).toHaveAttribute('aria-describedby', 'table-description');
     expect(caption).toHaveAttribute('id', 'table-description');
-    
+
     expect(form).toHaveAttribute('aria-labelledby', 'form-heading');
     expect(fieldset).toBeInTheDocument();
     expect(legend).toHaveTextContent('Job Configuration');
@@ -201,7 +205,7 @@ describe('Screen Reader Support', () => {
     // Check for proper action button labels
     const pauseButton = container.querySelector('[aria-label="Pause job Part_001.gcode"]');
     const cancelButton = container.querySelector('[aria-label="Cancel job Part_001.gcode"]');
-    
+
     expect(pauseButton).toBeInTheDocument();
     expect(cancelButton).toBeInTheDocument();
   });
@@ -214,7 +218,7 @@ describe('Screen Reader Support', () => {
       const startLoading = async () => {
         setIsLoading(true);
         setLoadedContent('');
-        
+
         // Simulate API call
         setTimeout(() => {
           setIsLoading(false);
@@ -227,36 +231,38 @@ describe('Screen Reader Support', () => {
           key: 'load-button',
           onClick: startLoading,
           disabled: isLoading,
-          'data-testid': 'load-content'
+          'data-testid': 'load-content',
         }, isLoading ? 'Loading...' : 'Load Content'),
-        
-        React.createElement('div', {
-          key: 'status-region',
-          role: 'status',
-          'aria-live': 'polite',
-          'aria-atomic': 'true',
-          'data-testid': 'status-region'
-        }, 
-          isLoading 
-            ? 'Loading content, please wait...' 
-            : loadedContent
+
+        React.createElement(
+          'div',
+          {
+            key: 'status-region',
+            role: 'status',
+            'aria-live': 'polite',
+            'aria-atomic': 'true',
+            'data-testid': 'status-region',
+          },
+          isLoading
+            ? 'Loading content, please wait...'
+            : loadedContent,
         ),
-        
+
         isLoading && React.createElement(Spin, {
           key: 'spinner',
-          'aria-label': 'Content loading in progress'
+          'aria-label': 'Content loading in progress',
         }),
-        
+
         React.createElement('div', {
           key: 'content-area',
           'aria-busy': isLoading,
-          'data-testid': 'content-area'
-        }, loadedContent || 'No content loaded')
+          'data-testid': 'content-area',
+        }, loadedContent || 'No content loaded'),
       ]);
     };
 
     const { container } = renderWithProviders(React.createElement(LoadingExample));
-    
+
     const loadButton = screen.getByTestId('load-content');
     const statusRegion = screen.getByTestId('status-region');
     const contentArea = screen.getByTestId('content-area');
@@ -301,22 +307,22 @@ describe('Screen Reader Support', () => {
         React.createElement('button', {
           key: 'trigger-error',
           onClick: triggerError,
-          'data-testid': 'trigger-error'
+          'data-testid': 'trigger-error',
         }, 'Trigger Error'),
-        
+
         React.createElement('button', {
           key: 'clear-error',
           onClick: clearError,
-          'data-testid': 'clear-error'
+          'data-testid': 'clear-error',
         }, 'Clear Error'),
-        
+
         error && React.createElement('div', {
           key: 'error-announcement',
           role: 'alert',
           'aria-live': 'assertive',
-          'data-testid': 'error-announcement'
+          'data-testid': 'error-announcement',
         }, error),
-        
+
         showAlert && React.createElement(Alert, {
           key: 'error-alert',
           message: 'Error',
@@ -325,13 +331,13 @@ describe('Screen Reader Support', () => {
           showIcon: true,
           closable: true,
           onClose: clearError,
-          'aria-label': `Error: ${error}`
-        })
+          'aria-label': `Error: ${error}`,
+        }),
       ]);
     };
 
     const { container } = renderWithProviders(React.createElement(ErrorExample));
-    
+
     const triggerButton = screen.getByTestId('trigger-error');
     const clearButton = screen.getByTestId('clear-error');
 
@@ -363,32 +369,32 @@ describe('Screen Reader Support', () => {
           key: 'skip-nav',
           href: '#main-content',
           className: 'skip-link',
-          'data-testid': 'skip-to-main'
+          'data-testid': 'skip-to-main',
         }, 'Skip to main content'),
-        
+
         React.createElement('a', {
           key: 'skip-controls',
           href: '#cnc-controls',
           className: 'skip-link',
-          'data-testid': 'skip-to-controls'
+          'data-testid': 'skip-to-controls',
         }, 'Skip to CNC controls'),
-        
+
         React.createElement('header', { key: 'header' }, [
-          React.createElement('nav', {}, 'Navigation menu with many links...')
+          React.createElement('nav', {}, 'Navigation menu with many links...'),
         ]),
-        
+
         React.createElement('main', {
           key: 'main',
           id: 'main-content',
-          tabIndex: -1
+          tabIndex: -1,
         }, [
           React.createElement('h1', {}, 'Main Content Area'),
           React.createElement('section', {
             id: 'cnc-controls',
-            tabIndex: -1
-          }, 'CNC Control Interface')
-        ])
-      ])
+            tabIndex: -1,
+          }, 'CNC Control Interface'),
+        ]),
+      ]),
     );
 
     const skipToMain = screen.getByTestId('skip-to-main');

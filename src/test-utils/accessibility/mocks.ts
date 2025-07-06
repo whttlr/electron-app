@@ -10,42 +10,44 @@ export const mockA11yComponents = {
     'button',
     {
       'aria-label': 'Accessible button',
-      ...props
+      ...props,
     },
-    children
+    children,
   ),
 
   AccessibleInput: ({ label, error, ...props }: any) => React.createElement(
     'div',
     {},
     React.createElement('label', { htmlFor: 'input-id' }, label),
-    React.createElement('input', { 
+    React.createElement('input', {
       id: 'input-id',
       'aria-invalid': !!error,
       'aria-describedby': error ? 'error-id' : undefined,
-      ...props 
+      ...props,
     }),
-    error && React.createElement('div', { 
-      id: 'error-id', 
+    error && React.createElement('div', {
+      id: 'error-id',
       role: 'alert',
-      'aria-live': 'polite'
-    }, error)
+      'aria-live': 'polite',
+    }, error),
   ),
 
-  AccessibleModal: ({ isOpen, onClose, children, ...props }: any) => {
+  AccessibleModal: ({
+    isOpen, onClose, children, ...props
+  }: any) => {
     if (!isOpen) return null;
-    
+
     return React.createElement(
       'div',
       {
         role: 'dialog',
         'aria-modal': 'true',
         'aria-labelledby': 'modal-title',
-        ...props
+        ...props,
       },
       React.createElement('h2', { id: 'modal-title' }, 'Modal Title'),
       children,
-      React.createElement('button', { onClick: onClose }, 'Close')
+      React.createElement('button', { onClick: onClose }, 'Close'),
     );
   },
 
@@ -60,10 +62,10 @@ export const mockA11yComponents = {
         top: 'auto',
         width: '1px',
         height: '1px',
-        overflow: 'hidden'
-      }
+        overflow: 'hidden',
+      },
     },
-    children
+    children,
   ),
 
   LiveRegion: ({ children, politeness = 'polite' }: any) => React.createElement(
@@ -76,11 +78,11 @@ export const mockA11yComponents = {
         left: '-10000px',
         width: '1px',
         height: '1px',
-        overflow: 'hidden'
-      }
+        overflow: 'hidden',
+      },
     },
-    children
-  )
+    children,
+  ),
 };
 
 export const a11yTestData = {
@@ -91,23 +93,23 @@ export const a11yTestData = {
         type: 'email',
         label: 'Email Address',
         required: true,
-        placeholder: 'Enter your email'
+        placeholder: 'Enter your email',
       },
       {
         id: 'password',
         type: 'password',
         label: 'Password',
         required: true,
-        placeholder: 'Enter your password'
+        placeholder: 'Enter your password',
       },
       {
         id: 'confirm-password',
         type: 'password',
         label: 'Confirm Password',
         required: true,
-        placeholder: 'Confirm your password'
-      }
-    ]
+        placeholder: 'Confirm your password',
+      },
+    ],
   },
 
   navigationMenu: {
@@ -116,8 +118,8 @@ export const a11yTestData = {
       { id: 'dashboard', label: 'Dashboard', href: '/dashboard' },
       { id: 'controls', label: 'CNC Controls', href: '/controls' },
       { id: 'jobs', label: 'Jobs', href: '/jobs' },
-      { id: 'settings', label: 'Settings', href: '/settings' }
-    ]
+      { id: 'settings', label: 'Settings', href: '/settings' },
+    ],
   },
 
   colorContrastPairs: [
@@ -125,42 +127,42 @@ export const a11yTestData = {
     { background: '#ffffff', text: '#767676', ratio: 4.54 }, // WCAG AA minimum
     { background: '#ffffff', text: '#959595', ratio: 3.0 }, // WCAG AA large text
     { background: '#000000', text: '#ffffff', ratio: 21 }, // Perfect contrast
-    { background: '#333333', text: '#ffffff', ratio: 12.63 }
+    { background: '#333333', text: '#ffffff', ratio: 12.63 },
   ],
 
   ariaExamples: {
     button: {
       'aria-label': 'Close dialog',
       'aria-expanded': 'false',
-      'aria-pressed': 'false'
+      'aria-pressed': 'false',
     },
     input: {
       'aria-label': 'Search products',
       'aria-required': 'true',
       'aria-invalid': 'false',
-      'aria-describedby': 'search-help'
+      'aria-describedby': 'search-help',
     },
     navigation: {
-      'role': 'navigation',
-      'aria-label': 'Main navigation'
+      role: 'navigation',
+      'aria-label': 'Main navigation',
     },
     dialog: {
-      'role': 'dialog',
+      role: 'dialog',
       'aria-modal': 'true',
       'aria-labelledby': 'dialog-title',
-      'aria-describedby': 'dialog-description'
-    }
+      'aria-describedby': 'dialog-description',
+    },
   },
 
   keyboardShortcuts: {
-    'Escape': 'Close modal or dialog',
-    'Enter': 'Activate button or submit form',
-    'Space': 'Activate button or toggle checkbox',
-    'Tab': 'Move to next focusable element',
+    Escape: 'Close modal or dialog',
+    Enter: 'Activate button or submit form',
+    Space: 'Activate button or toggle checkbox',
+    Tab: 'Move to next focusable element',
     'Shift+Tab': 'Move to previous focusable element',
     'Arrow Keys': 'Navigate within component (menus, tabs, etc.)',
-    'Home': 'Move to first item',
-    'End': 'Move to last item'
+    Home: 'Move to first item',
+    End: 'Move to last item',
   },
 
   screenReaderText: {
@@ -170,6 +172,6 @@ export const a11yTestData = {
     navigation: 'Navigation menu, use arrow keys to navigate',
     form: 'Form fields, use tab to navigate between fields',
     table: 'Data table with sortable columns',
-    chart: 'Chart showing performance data over time'
-  }
+    chart: 'Chart showing performance data over time',
+  },
 };

@@ -23,37 +23,34 @@ export const expectA11yCompliance = {
 
   toHaveProperColorContrast(element: HTMLElement, minimumRatio: number = 4.5) {
     const styles = getComputedStyle(element);
-    const color = styles.color;
-    const backgroundColor = styles.backgroundColor;
-    
+    const { color } = styles;
+    const { backgroundColor } = styles;
+
     // This is a simplified check - in practice you'd use a proper contrast calculation
     const hasGoodContrast = color !== backgroundColor;
-    
+
     return {
-      message: () => 
-        hasGoodContrast 
-          ? `Expected element to have poor color contrast`
-          : `Expected element to have color contrast ratio of at least ${minimumRatio}`,
+      message: () => (hasGoodContrast
+        ? 'Expected element to have poor color contrast'
+        : `Expected element to have color contrast ratio of at least ${minimumRatio}`),
       pass: hasGoodContrast,
     };
   },
 
   toHaveAccessibleName(element: HTMLElement) {
-    const accessibleName = 
-      element.getAttribute('aria-label') ||
-      element.getAttribute('aria-labelledby') ||
-      element.textContent ||
-      element.getAttribute('title') ||
-      element.getAttribute('alt');
+    const accessibleName = element.getAttribute('aria-label')
+      || element.getAttribute('aria-labelledby')
+      || element.textContent
+      || element.getAttribute('title')
+      || element.getAttribute('alt');
 
     return {
-      message: () => 
-        accessibleName 
-          ? 'Expected element to not have an accessible name'
-          : 'Expected element to have an accessible name',
+      message: () => (accessibleName
+        ? 'Expected element to not have an accessible name'
+        : 'Expected element to have an accessible name'),
       pass: !!accessibleName,
     };
-  }
+  },
 };
 
 export const expectKeyboardNavigation = {
@@ -73,14 +70,13 @@ export const expectKeyboardNavigation = {
   },
 
   toBeFocusable(element: HTMLElement) {
-    const isFocusable = element.tabIndex >= 0 || 
-      ['INPUT', 'BUTTON', 'SELECT', 'TEXTAREA', 'A'].includes(element.tagName);
+    const isFocusable = element.tabIndex >= 0
+      || ['INPUT', 'BUTTON', 'SELECT', 'TEXTAREA', 'A'].includes(element.tagName);
 
     return {
-      message: () => 
-        isFocusable 
-          ? 'Expected element to not be focusable'
-          : 'Expected element to be focusable',
+      message: () => (isFocusable
+        ? 'Expected element to not be focusable'
+        : 'Expected element to be focusable'),
       pass: isFocusable,
     };
   },
@@ -88,20 +84,18 @@ export const expectKeyboardNavigation = {
   toHaveVisibleFocusIndicator(element: HTMLElement) {
     element.focus();
     const styles = getComputedStyle(element);
-    
-    const hasFocusIndicator = 
-      styles.outline !== 'none' && styles.outline !== '0' ||
-      styles.boxShadow !== 'none' ||
-      styles.borderColor !== 'transparent';
+
+    const hasFocusIndicator = styles.outline !== 'none' && styles.outline !== '0'
+      || styles.boxShadow !== 'none'
+      || styles.borderColor !== 'transparent';
 
     return {
-      message: () => 
-        hasFocusIndicator 
-          ? 'Expected element to not have a visible focus indicator'
-          : 'Expected element to have a visible focus indicator when focused',
+      message: () => (hasFocusIndicator
+        ? 'Expected element to not have a visible focus indicator'
+        : 'Expected element to have a visible focus indicator when focused'),
       pass: hasFocusIndicator,
     };
-  }
+  },
 };
 
 export const expectScreenReaderSupport = {
@@ -125,52 +119,46 @@ export const expectScreenReaderSupport = {
     const hasCorrectRole = role === expectedRole;
 
     return {
-      message: () => 
-        hasCorrectRole 
-          ? `Expected element to not have role "${expectedRole}"`
-          : `Expected element to have role "${expectedRole}", got "${role}"`,
+      message: () => (hasCorrectRole
+        ? `Expected element to not have role "${expectedRole}"`
+        : `Expected element to have role "${expectedRole}", got "${role}"`),
       pass: hasCorrectRole,
     };
   },
 
   toBeAccessibleToScreenReaders(element: HTMLElement) {
-    const isHidden = 
-      element.getAttribute('aria-hidden') === 'true' ||
-      element.style.display === 'none' ||
-      element.style.visibility === 'hidden';
+    const isHidden = element.getAttribute('aria-hidden') === 'true'
+      || element.style.display === 'none'
+      || element.style.visibility === 'hidden';
 
-    const hasAccessibleContent = 
-      element.getAttribute('aria-label') ||
-      element.getAttribute('aria-labelledby') ||
-      element.textContent?.trim() ||
-      element.getAttribute('alt') ||
-      element.getAttribute('title');
+    const hasAccessibleContent = element.getAttribute('aria-label')
+      || element.getAttribute('aria-labelledby')
+      || element.textContent?.trim()
+      || element.getAttribute('alt')
+      || element.getAttribute('title');
 
     const isAccessible = !isHidden && !!hasAccessibleContent;
 
     return {
-      message: () => 
-        isAccessible 
-          ? 'Expected element to not be accessible to screen readers'
-          : 'Expected element to be accessible to screen readers',
+      message: () => (isAccessible
+        ? 'Expected element to not be accessible to screen readers'
+        : 'Expected element to be accessible to screen readers'),
       pass: isAccessible,
     };
   },
 
   toAnnounceChanges(element: HTMLElement) {
-    const hasLiveRegion = 
-      element.getAttribute('aria-live') ||
-      element.getAttribute('role') === 'status' ||
-      element.getAttribute('role') === 'alert';
+    const hasLiveRegion = element.getAttribute('aria-live')
+      || element.getAttribute('role') === 'status'
+      || element.getAttribute('role') === 'alert';
 
     return {
-      message: () => 
-        hasLiveRegion 
-          ? 'Expected element to not announce changes'
-          : 'Expected element to announce changes to screen readers',
+      message: () => (hasLiveRegion
+        ? 'Expected element to not announce changes'
+        : 'Expected element to announce changes to screen readers'),
       pass: !!hasLiveRegion,
     };
-  }
+  },
 };
 
 // Extend Jest with custom matchers

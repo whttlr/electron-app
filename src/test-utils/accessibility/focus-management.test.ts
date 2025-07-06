@@ -3,11 +3,11 @@
  * Tests for focus management, trapping, and restoration
  */
 
-import { renderWithProviders } from '../index';
 import React from 'react';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Modal, Button, Input } from 'antd';
+import { renderWithProviders } from '../index';
 import { setupA11yTests } from './setup';
 import { focusTestHelpers } from './helpers';
 
@@ -18,7 +18,7 @@ describe('Focus Management', () => {
 
   it('should manage focus correctly in modals', async () => {
     const user = userEvent.setup();
-    
+
     const ModalExample = () => {
       const [isOpen, setIsOpen] = React.useState(false);
 
@@ -26,38 +26,38 @@ describe('Focus Management', () => {
         React.createElement('button', {
           key: 'trigger',
           onClick: () => setIsOpen(true),
-          'data-testid': 'open-modal'
+          'data-testid': 'open-modal',
         }, 'Open Modal'),
-        
+
         React.createElement('input', {
           key: 'background-input',
           type: 'text',
           placeholder: 'Background input',
-          'data-testid': 'background-input'
+          'data-testid': 'background-input',
         }),
-        
+
         React.createElement(Modal, {
           key: 'modal',
           open: isOpen,
           onCancel: () => setIsOpen(false),
           title: 'Focus Test Modal',
-          'data-testid': 'test-modal'
+          'data-testid': 'test-modal',
         }, [
           React.createElement(Input, {
             key: 'modal-input',
             placeholder: 'Modal input',
-            'data-testid': 'modal-input'
+            'data-testid': 'modal-input',
           }),
           React.createElement('button', {
             key: 'modal-button',
-            'data-testid': 'modal-button'
-          }, 'Modal Button')
-        ])
+            'data-testid': 'modal-button',
+          }, 'Modal Button'),
+        ]),
       ]);
     };
 
     const { container } = renderWithProviders(React.createElement(ModalExample));
-    
+
     const openButton = screen.getByTestId('open-modal');
     const backgroundInput = screen.getByTestId('background-input');
 
@@ -67,7 +67,7 @@ describe('Focus Management', () => {
 
     // Open modal
     await user.click(openButton);
-    
+
     await waitFor(() => {
       const modal = screen.getByTestId('test-modal');
       expect(modal).toBeInTheDocument();
@@ -76,10 +76,8 @@ describe('Focus Management', () => {
     // Focus should move to modal content
     await waitFor(() => {
       const modalElements = container.querySelectorAll('[data-testid^="modal-"]');
-      const focusableInModal = Array.from(modalElements).filter(el => 
-        el.tabIndex >= 0 || ['INPUT', 'BUTTON', 'SELECT', 'TEXTAREA'].includes(el.tagName)
-      );
-      
+      const focusableInModal = Array.from(modalElements).filter((el) => el.tabIndex >= 0 || ['INPUT', 'BUTTON', 'SELECT', 'TEXTAREA'].includes(el.tagName));
+
       expect(focusableInModal.length).toBeGreaterThan(0);
     });
 
@@ -89,7 +87,7 @@ describe('Focus Management', () => {
 
   it('should restore focus after modal closes', async () => {
     const user = userEvent.setup();
-    
+
     const FocusRestorationExample = () => {
       const [isOpen, setIsOpen] = React.useState(false);
       const triggerRef = React.useRef<HTMLButtonElement>(null);
@@ -107,23 +105,23 @@ describe('Focus Management', () => {
           key: 'before',
           type: 'text',
           placeholder: 'Input before modal',
-          'data-testid': 'input-before'
+          'data-testid': 'input-before',
         }),
-        
+
         React.createElement('button', {
           key: 'trigger',
           ref: triggerRef,
           onClick: () => setIsOpen(true),
-          'data-testid': 'modal-trigger'
+          'data-testid': 'modal-trigger',
         }, 'Open Modal'),
-        
+
         React.createElement('input', {
           key: 'after',
           type: 'text',
           placeholder: 'Input after modal',
-          'data-testid': 'input-after'
+          'data-testid': 'input-after',
         }),
-        
+
         React.createElement(Modal, {
           key: 'modal',
           open: isOpen,
@@ -133,29 +131,29 @@ describe('Focus Management', () => {
             React.createElement(Button, {
               key: 'cancel',
               onClick: handleClose,
-              'data-testid': 'modal-cancel'
+              'data-testid': 'modal-cancel',
             }, 'Cancel'),
             React.createElement(Button, {
               key: 'confirm',
               type: 'primary',
               onClick: handleClose,
-              'data-testid': 'modal-confirm'
-            }, 'Confirm')
-          ]
-        }, 'Modal content for focus restoration test')
+              'data-testid': 'modal-confirm',
+            }, 'Confirm'),
+          ],
+        }, 'Modal content for focus restoration test'),
       ]);
     };
 
     renderWithProviders(React.createElement(FocusRestorationExample));
-    
+
     const trigger = screen.getByTestId('modal-trigger');
-    
+
     // Focus trigger and open modal
     trigger.focus();
     expect(document.activeElement).toBe(trigger);
-    
+
     await user.click(trigger);
-    
+
     await waitFor(() => {
       expect(screen.getByText('Focus Restoration Test')).toBeInTheDocument();
     });
@@ -163,7 +161,7 @@ describe('Focus Management', () => {
     // Close modal
     const cancelButton = screen.getByTestId('modal-cancel');
     await user.click(cancelButton);
-    
+
     await waitFor(() => {
       expect(screen.queryByText('Focus Restoration Test')).not.toBeInTheDocument();
     });
@@ -176,7 +174,7 @@ describe('Focus Management', () => {
 
   it('should implement focus trap in modals', async () => {
     const user = userEvent.setup();
-    
+
     const FocusTrapExample = () => {
       const [isOpen, setIsOpen] = React.useState(true);
 
@@ -184,32 +182,32 @@ describe('Focus Management', () => {
         open: isOpen,
         onCancel: () => setIsOpen(false),
         title: 'Focus Trap Test',
-        'data-testid': 'focus-trap-modal'
+        'data-testid': 'focus-trap-modal',
       }, [
         React.createElement(Input, {
           key: 'first-input',
           placeholder: 'First input',
-          'data-testid': 'first-input'
+          'data-testid': 'first-input',
         }),
         React.createElement(Input, {
           key: 'second-input',
           placeholder: 'Second input',
-          'data-testid': 'second-input'
+          'data-testid': 'second-input',
         }),
         React.createElement('button', {
           key: 'modal-button',
-          'data-testid': 'modal-button'
+          'data-testid': 'modal-button',
         }, 'Modal Button'),
         React.createElement('a', {
           key: 'modal-link',
           href: '#',
-          'data-testid': 'modal-link'
-        }, 'Modal Link')
+          'data-testid': 'modal-link',
+        }, 'Modal Link'),
       ]);
     };
 
     const { container } = renderWithProviders(React.createElement(FocusTrapExample));
-    
+
     await waitFor(() => {
       expect(screen.getByTestId('focus-trap-modal')).toBeInTheDocument();
     });
@@ -217,7 +215,7 @@ describe('Focus Management', () => {
     // Get all focusable elements in modal
     const modal = container.querySelector('.ant-modal-content');
     const focusableElements = modal?.querySelectorAll(
-      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
     );
 
     expect(focusableElements?.length).toBeGreaterThan(1);
@@ -263,33 +261,33 @@ describe('Focus Management', () => {
         React.createElement('button', {
           key: 'focus-input',
           onClick: focusInput,
-          'data-testid': 'focus-input-btn'
+          'data-testid': 'focus-input-btn',
         }, 'Focus Input'),
-        
+
         React.createElement('button', {
           key: 'focus-button',
           onClick: focusButton,
-          'data-testid': 'focus-button-btn'
+          'data-testid': 'focus-button-btn',
         }, 'Focus Button'),
-        
+
         React.createElement('input', {
           key: 'target-input',
           ref: inputRef,
           type: 'text',
           placeholder: 'Target input',
-          'data-testid': 'target-input'
+          'data-testid': 'target-input',
         }),
-        
+
         React.createElement('button', {
           key: 'target-button',
           ref: buttonRef,
-          'data-testid': 'target-button'
-        }, 'Target Button')
+          'data-testid': 'target-button',
+        }, 'Target Button'),
       ]);
     };
 
     renderWithProviders(React.createElement(ProgrammaticFocusExample));
-    
+
     const focusInputBtn = screen.getByTestId('focus-input-btn');
     const focusButtonBtn = screen.getByTestId('focus-button-btn');
     const targetInput = screen.getByTestId('target-input');
@@ -306,10 +304,9 @@ describe('Focus Management', () => {
 
   it('should handle focus indicators properly', async () => {
     const user = userEvent.setup();
-    
-    const FocusIndicatorExample = () => {
-      return React.createElement('div', {}, [
-        React.createElement('style', { key: 'styles' }, `
+
+    const FocusIndicatorExample = () => React.createElement('div', {}, [
+      React.createElement('style', { key: 'styles' }, `
           .focus-visible {
             outline: 2px solid #007acc;
             outline-offset: 2px;
@@ -319,29 +316,28 @@ describe('Focus Management', () => {
             outline: none;
           }
         `),
-        
-        React.createElement('button', {
-          key: 'default-focus',
-          'data-testid': 'default-focus'
-        }, 'Default Focus'),
-        
-        React.createElement('button', {
-          key: 'custom-focus',
-          className: 'custom-focus',
-          'data-testid': 'custom-focus'
-        }, 'Custom Focus'),
-        
-        React.createElement('input', {
-          key: 'input-focus',
-          type: 'text',
-          placeholder: 'Input with focus',
-          'data-testid': 'input-focus'
-        })
-      ]);
-    };
+
+      React.createElement('button', {
+        key: 'default-focus',
+        'data-testid': 'default-focus',
+      }, 'Default Focus'),
+
+      React.createElement('button', {
+        key: 'custom-focus',
+        className: 'custom-focus',
+        'data-testid': 'custom-focus',
+      }, 'Custom Focus'),
+
+      React.createElement('input', {
+        key: 'input-focus',
+        type: 'text',
+        placeholder: 'Input with focus',
+        'data-testid': 'input-focus',
+      }),
+    ]);
 
     renderWithProviders(React.createElement(FocusIndicatorExample));
-    
+
     const defaultButton = screen.getByTestId('default-focus');
     const customButton = screen.getByTestId('custom-focus');
     const input = screen.getByTestId('input-focus');
@@ -349,7 +345,7 @@ describe('Focus Management', () => {
     // Test default focus indicator
     await user.tab();
     expect(document.activeElement).toBe(defaultButton);
-    
+
     const defaultStyles = getComputedStyle(defaultButton);
     expect(defaultStyles.outline).not.toBe('none');
 
@@ -364,37 +360,37 @@ describe('Focus Management', () => {
 
   it('should skip hidden and disabled elements', async () => {
     const user = userEvent.setup();
-    
+
     const { container } = renderWithProviders(
       React.createElement('div', {}, [
         React.createElement('button', {
           key: 'btn1',
-          'data-testid': 'button-1'
+          'data-testid': 'button-1',
         }, 'Button 1'),
-        
+
         React.createElement('button', {
           key: 'btn2',
           disabled: true,
-          'data-testid': 'button-2'
+          'data-testid': 'button-2',
         }, 'Disabled Button'),
-        
+
         React.createElement('button', {
           key: 'btn3',
           style: { display: 'none' },
-          'data-testid': 'button-3'
+          'data-testid': 'button-3',
         }, 'Hidden Button'),
-        
+
         React.createElement('button', {
           key: 'btn4',
           'aria-hidden': 'true',
-          'data-testid': 'button-4'
+          'data-testid': 'button-4',
         }, 'ARIA Hidden Button'),
-        
+
         React.createElement('button', {
           key: 'btn5',
-          'data-testid': 'button-5'
-        }, 'Button 5')
-      ])
+          'data-testid': 'button-5',
+        }, 'Button 5'),
+      ]),
     );
 
     const button1 = screen.getByTestId('button-1');

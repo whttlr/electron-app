@@ -8,10 +8,10 @@ import type { PerformanceMetrics, PerformanceAlert } from '../types';
 export interface PerformanceStore {
   // Current Metrics
   currentMetrics: PerformanceMetrics;
-  
+
   // Historical Data
   metricsHistory: Array<PerformanceMetrics & { timestamp: Date }>;
-  
+
   // Alerts and Monitoring
   alerts: PerformanceAlert[];
   alertThresholds: {
@@ -21,12 +21,12 @@ export interface PerformanceStore {
     rendering: { warning: number; critical: number };
     machine: { warning: number; critical: number };
   };
-  
+
   // Monitoring State
   isMonitoring: boolean;
   monitoringInterval: number;
   lastUpdate: Date | null;
-  
+
   // Optimization Flags
   optimizations: {
     enableVirtualization: boolean;
@@ -36,7 +36,7 @@ export interface PerformanceStore {
     enableBatching: boolean;
     lowPowerMode: boolean;
   };
-  
+
   // Statistics
   statistics: {
     averageCpu: number;
@@ -46,7 +46,7 @@ export interface PerformanceStore {
     uptimeSeconds: number;
     startTime: Date | null;
   };
-  
+
   // Actions
   updateMetrics: (metrics: Partial<PerformanceMetrics>) => void;
   startMonitoring: (interval?: number) => void;
@@ -65,7 +65,7 @@ export interface PerformanceStore {
     recommendations: string[];
     alerts: PerformanceAlert[];
   };
-  
+
   reset: () => void;
 }
 

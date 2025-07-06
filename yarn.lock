@@ -4651,6 +4651,49 @@
   resolved "https://registry.npmjs.org/@whttlr/plugin-types/-/plugin-types-1.0.1.tgz"
   integrity sha512-9uICujj5RClLJtutBLbP8YtMNR1wn+vYTQPM/TFKtWx1o0UhcsckP50Na9KWM4l/avbfDcqwSOpE2W9C8LSbdQ==
 
+"@whttlr/ui-adapters@file:../ui-library/packages/adapters":
+  version "0.0.0"
+  resolved "file:../ui-library/packages/adapters"
+  dependencies:
+    "@whttlr/ui-core" "workspace:*"
+    "@whttlr/ui-theme" "workspace:*"
+
+"@whttlr/ui-core@file:../ui-library/packages/core":
+  version "0.0.0"
+  resolved "file:../ui-library/packages/core"
+  dependencies:
+    "@ant-design/icons" "^5.0.0"
+    "@radix-ui/react-slot" "^1.0.2"
+    "@react-three/drei" "^9.122.0"
+    "@react-three/fiber" "^8.18.0"
+    "@types/three" "^0.178.0"
+    "@whttlr/ui-theme" "workspace:*"
+    antd "^5.0.0"
+    class-variance-authority "^0.7.0"
+    framer-motion "^10.0.0"
+    lucide-react "^0.263.1"
+    react-router-dom "^6.0.0"
+    recharts "^2.8.0"
+    three "^0.160.1"
+
+"@whttlr/ui-testing@file:../ui-library/packages/testing":
+  version "0.0.0"
+  resolved "file:../ui-library/packages/testing"
+  dependencies:
+    "@whttlr/ui-core" "workspace:*"
+    "@whttlr/ui-theme" "workspace:*"
+    axe-core "^4.7.0"
+    react-router-dom "^6.8.0"
+  optionalDependencies:
+    html2canvas "^1.4.1"
+
+"@whttlr/ui-theme@file:../ui-library/packages/theme":
+  version "0.0.0"
+  resolved "file:../ui-library/packages/theme"
+  dependencies:
+    clsx "^2.0.0"
+    tailwind-merge "^2.0.0"
+
 "@xmldom/xmldom@^0.8.8":
   version "0.8.10"
   resolved "https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-0.8.10.tgz"

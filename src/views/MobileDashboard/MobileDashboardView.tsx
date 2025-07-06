@@ -1,6 +1,6 @@
 /**
  * MobileDashboardView Component
- * 
+ *
  * Mobile-optimized dashboard for CNC control systems. Features adaptive
  * layouts, touch-optimized interactions, and industrial-grade monitoring
  * capabilities for tablets and mobile devices.
@@ -8,9 +8,6 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { cn } from '@/utils/cn';
-import { useResponsive } from '@/ui/theme/responsive';
-import { OrientationAdapter } from '@/ui/components/OrientationAdapter/OrientationAdapter';
-import { TouchButton } from '@/ui/components/TouchOptimized/TouchButton';
 import { pwaManager } from '@/utils/pwa';
 import { offlineSyncManager } from '@/utils/offline-sync';
 import {
@@ -35,6 +32,9 @@ import {
   Target,
   MoreHorizontal,
 } from 'lucide-react';
+import { useResponsive } from '@/ui/theme/responsive';
+import { OrientationAdapter } from '@/ui/components/OrientationAdapter/OrientationAdapter';
+import { TouchButton } from '@/ui/components/TouchOptimized/TouchButton';
 
 interface DashboardMetrics {
   machineStatus: {
@@ -128,7 +128,9 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
       uptime: 0,
       lastUpdate: Date.now(),
     },
-    position: { x: 0, y: 0, z: 0, units: 'mm' },
+    position: {
+      x: 0, y: 0, z: 0, units: 'mm',
+    },
     performance: {
       feedRate: 0,
       spindleSpeed: 0,
@@ -204,7 +206,7 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
     const diff = Date.now() - timestamp;
     const minutes = Math.floor(diff / 60000);
     const hours = Math.floor(minutes / 60);
-    
+
     if (hours > 0) return `${hours}h ${minutes % 60}m ago`;
     if (minutes > 0) return `${minutes}m ago`;
     return 'Just now';
@@ -215,7 +217,7 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    
+
     if (hours > 0) return `${hours}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     return `${minutes}:${secs.toString().padStart(2, '0')}`;
   }, []);
@@ -235,9 +237,11 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
       onClick: () => void;
       variant?: 'primary' | 'secondary' | 'warning' | 'error';
     };
-  }> = ({ id, title, icon, value, subtitle, status = 'info', expandable, children, action }) => {
+  }> = ({
+    id, title, icon, value, subtitle, status = 'info', expandable, children, action,
+  }) => {
     const isExpanded = expandedCard === id;
-    
+
     const statusColors = {
       success: 'border-green-500/30 bg-green-500/10',
       warning: 'border-yellow-500/30 bg-yellow-500/10',
@@ -250,9 +254,9 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
         'bg-gray-800 rounded-lg border-2 transition-all duration-200',
         statusColors[status],
         expandable && 'cursor-pointer',
-        isExpanded && 'ring-2 ring-blue-400'
+        isExpanded && 'ring-2 ring-blue-400',
       )}>
-        <div 
+        <div
           className="p-4"
           onClick={expandable ? () => setExpandedCard(isExpanded ? null : id) : undefined}
         >
@@ -267,7 +271,7 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
                 )}
               </div>
             </div>
-            
+
             {expandable && (
               <MoreHorizontal size={16} className="text-gray-400" />
             )}
@@ -347,7 +351,7 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
       id="alerts"
       title="System Alerts"
       icon={<AlertTriangle className={cn(
-        currentMetrics.alerts.length > 0 ? 'text-red-400' : 'text-green-400'
+        currentMetrics.alerts.length > 0 ? 'text-red-400' : 'text-green-400',
       )} />}
       value={currentMetrics.alerts.length}
       subtitle={currentMetrics.alerts.length > 0 ? 'Issues detected' : 'All systems normal'}
@@ -360,7 +364,7 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
             <AlertTriangle size={14} className={cn(
               alert.type === 'error' && 'text-red-400',
               alert.type === 'warning' && 'text-yellow-400',
-              alert.type === 'info' && 'text-blue-400'
+              alert.type === 'info' && 'text-blue-400',
             )} />
             <div className="flex-1 min-w-0">
               <p className="text-sm text-white">{alert.message}</p>
@@ -415,13 +419,13 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
           currentMetrics.machineStatus.state === 'running' && 'text-green-400',
           currentMetrics.machineStatus.state === 'idle' && 'text-blue-400',
           currentMetrics.machineStatus.state === 'alarm' && 'text-red-400',
-          currentMetrics.machineStatus.state === 'error' && 'text-red-400'
+          currentMetrics.machineStatus.state === 'error' && 'text-red-400',
         )} />}
         value={currentMetrics.machineStatus.state.toUpperCase()}
         subtitle={`Uptime: ${formatDuration(currentMetrics.machineStatus.uptime)}`}
         status={
-          currentMetrics.machineStatus.state === 'running' ? 'success' :
-          currentMetrics.machineStatus.state === 'idle' ? 'info' : 'error'
+          currentMetrics.machineStatus.state === 'running' ? 'success'
+            : currentMetrics.machineStatus.state === 'idle' ? 'info' : 'error'
         }
         action={
           currentMetrics.machineStatus.state === 'alarm' || currentMetrics.machineStatus.state === 'error'
@@ -443,7 +447,7 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
         >
           <div className="space-y-3">
             <div className="w-full bg-gray-700 rounded-full h-2">
-              <div 
+              <div
                 className="bg-green-400 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${currentMetrics.currentJob.progress}%` }}
               />
@@ -557,7 +561,7 @@ export const MobileDashboardView: React.FC<MobileDashboardViewProps> = ({
           icon={<Activity className={cn(
             currentMetrics.machineStatus.state === 'running' && 'text-green-400',
             currentMetrics.machineStatus.state === 'idle' && 'text-blue-400',
-            currentMetrics.machineStatus.state === 'alarm' && 'text-red-400'
+            currentMetrics.machineStatus.state === 'alarm' && 'text-red-400',
           )} />}
           value={currentMetrics.machineStatus.state.toUpperCase()}
           subtitle={`Uptime: ${formatDuration(currentMetrics.machineStatus.uptime)}`}

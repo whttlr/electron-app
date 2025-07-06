@@ -12,7 +12,7 @@ export const a11yConfig = {
       'aria-required-attr': { enabled: true },
       'focus-order-semantics': { enabled: true },
       'landmark-one-main': { enabled: true },
-      'region': { enabled: true },
+      region: { enabled: true },
       'skip-link': { enabled: true },
     },
     tags: ['wcag2a', 'wcag2aa', 'wcag21aa'],

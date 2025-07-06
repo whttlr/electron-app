@@ -1,6 +1,6 @@
 /**
  * Accessibility Testing Suite - Legacy Export
- * 
+ *
  * This file now re-exports from the modular accessibility test structure.
  * Use individual test imports for better organization.
  */
@@ -21,14 +21,14 @@ export * from './accessibility/mocks';
 
 /**
  * @deprecated Use individual test file imports instead:
- * 
+ *
  * ```typescript
  * import './accessibility/basic-components.test';
  * import './accessibility/keyboard-navigation.test';
  * ```
- * 
+ *
  * Or use specific utilities:
- * 
+ *
  * ```typescript
  * import { setupA11yTests, axeTestHelpers } from '@/test-utils/accessibility';
  * ```

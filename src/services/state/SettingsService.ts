@@ -1,13 +1,12 @@
 /**
  * Settings Store
- * 
+ *
  * Zustand store for application and machine settings with persistence,
  * validation, and configuration management.
  */
 
 import create from 'zustand';
-import { subscribeWithSelector } from 'zustand/middleware';
-import { persist } from 'zustand/middleware';
+import { subscribeWithSelector, persist } from 'zustand/middleware';
 // import { immer } from 'zustand/middleware';
 import type {
   AppSettings,
@@ -24,29 +23,29 @@ import type {
 export interface SettingsStore {
   // Settings State
   settings: AppSettings;
-  
+
   // Configuration Status
   isLoaded: boolean;
   lastSaved: Date | null;
   hasUnsavedChanges: boolean;
-  
+
   // Validation
   validationErrors: Record<string, string[]>;
-  
+
   // Actions
   updateGeneralSettings: (settings: Partial<AppSettings['general']>) => void;
   updateMachineSettings: (settings: Partial<MachineSettings>) => void;
   updateUISettings: (settings: Partial<AppSettings['ui']>) => void;
   updatePerformanceSettings: (settings: Partial<AppSettings['performance']>) => void;
   updateSecuritySettings: (settings: Partial<AppSettings['security']>) => void;
-  
+
   // Specific Machine Settings
   updateWorkingArea: (area: WorkingArea) => void;
   updateMovementSettings: (settings: Partial<MachineSettings['movement']>) => void;
   updateSafetySettings: (settings: Partial<MachineSettings['safety']>) => void;
   updateCalibrationSettings: (settings: Partial<MachineSettings['calibration']>) => void;
   updateConnectionSettings: (settings: Partial<MachineSettings['connection']>) => void;
-  
+
   // Validation and Persistence
   validateSettings: () => boolean;
   saveSettings: () => Promise<void>;
@@ -54,13 +53,13 @@ export interface SettingsStore {
   resetToDefaults: () => void;
   exportSettings: () => string;
   importSettings: (settingsJson: string) => Promise<void>;
-  
+
   // Utility Actions
   getSetting: <T = any>(path: string) => T | undefined;
   setSetting: (path: string, value: any) => void;
   getValidationErrors: (path?: string) => string[];
   clearValidationErrors: (path?: string) => void;
-  
+
   reset: () => void;
 }
 
@@ -178,9 +177,7 @@ const validationRules = {
 // UTILITY FUNCTIONS
 // ============================================================================
 
-const getNestedValue = (obj: any, path: string): any => {
-  return path.split('.').reduce((current, key) => current?.[key], obj);
-};
+const getNestedValue = (obj: any, path: string): any => path.split('.').reduce((current, key) => current?.[key], obj);
 
 const setNestedValue = (obj: any, path: string, value: any): void => {
   const keys = path.split('.');
@@ -206,107 +203,107 @@ export const useSettingsStore = create<SettingsStore>()((
         lastSaved: null,
         hasUnsavedChanges: false,
         validationErrors: {},
-        
+
         // Settings Update Actions
         updateGeneralSettings: (generalSettings) => set((state) => {
           Object.assign(state.settings.general, generalSettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         updateMachineSettings: (machineSettings) => set((state) => {
           Object.assign(state.settings.machine, machineSettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         updateUISettings: (uiSettings) => set((state) => {
           Object.assign(state.settings.ui, uiSettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         updatePerformanceSettings: (performanceSettings) => set((state) => {
           Object.assign(state.settings.performance, performanceSettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         updateSecuritySettings: (securitySettings) => set((state) => {
           Object.assign(state.settings.security, securitySettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         // Specific Machine Settings
         updateWorkingArea: (area) => set((state) => {
           state.settings.machine.workingArea = area;
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         updateMovementSettings: (movementSettings) => set((state) => {
           Object.assign(state.settings.machine.movement, movementSettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         updateSafetySettings: (safetySettings) => set((state) => {
           Object.assign(state.settings.machine.safety, safetySettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         updateCalibrationSettings: (calibrationSettings) => set((state) => {
           Object.assign(state.settings.machine.calibration, calibrationSettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         updateConnectionSettings: (connectionSettings) => set((state) => {
           Object.assign(state.settings.machine.connection, connectionSettings);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         // Validation and Persistence
         validateSettings: () => {
           const state = get();
           const errors: Record<string, string[]> = {};
-          
+
           Object.entries(validationRules).forEach(([path, validator]) => {
             const value = getNestedValue(state.settings, path);
             const error = validator(value, state.settings);
-            
+
             if (error) {
               const pathParts = path.split('.');
               const errorKey = pathParts.slice(0, -1).join('.');
-              
+
               if (!errors[errorKey]) {
                 errors[errorKey] = [];
               }
               errors[errorKey].push(error);
             }
           });
-          
+
           set((draft) => {
             draft.validationErrors = errors;
           });
-          
+
           return Object.keys(errors).length === 0;
         },
-        
+
         saveSettings: async () => {
           const state = get();
-          
+
           if (!state.validateSettings()) {
             throw new Error('Cannot save settings with validation errors');
           }
-          
+
           try {
             // In a real implementation, this would save to backend/file system
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
+            await new Promise((resolve) => setTimeout(resolve, 500));
+
             set((draft) => {
               draft.lastSaved = new Date();
               draft.hasUnsavedChanges = false;
@@ -315,74 +312,73 @@ export const useSettingsStore = create<SettingsStore>()((
             throw new Error(`Failed to save settings: ${error instanceof Error ? error.message : 'Unknown error'}`);
           }
         },
-        
+
         loadSettings: async () => {
           try {
             // In a real implementation, this would load from backend/file system
-            await new Promise(resolve => setTimeout(resolve, 300));
-            
+            await new Promise((resolve) => setTimeout(resolve, 300));
+
             set((draft) => {
               draft.isLoaded = true;
               draft.hasUnsavedChanges = false;
             });
-            
+
             get().validateSettings();
           } catch (error) {
             throw new Error(`Failed to load settings: ${error instanceof Error ? error.message : 'Unknown error'}`);
           }
         },
-        
+
         resetToDefaults: () => set((state) => {
           state.settings = JSON.parse(JSON.stringify(defaultSettings));
           state.hasUnsavedChanges = true;
           state.validationErrors = {};
           get().validateSettings();
         }),
-        
+
         exportSettings: () => {
           const state = get();
           return JSON.stringify(state.settings, null, 2);
         },
-        
+
         importSettings: async (settingsJson) => {
           try {
             const importedSettings = JSON.parse(settingsJson);
-            
+
             // Validate imported settings structure
             const requiredKeys = ['general', 'machine', 'ui', 'performance', 'security'];
-            const missingKeys = requiredKeys.filter(key => !(key in importedSettings));
-            
+            const missingKeys = requiredKeys.filter((key) => !(key in importedSettings));
+
             if (missingKeys.length > 0) {
               throw new Error(`Missing required settings sections: ${missingKeys.join(', ')}`);
             }
-            
+
             set((draft) => {
               draft.settings = { ...defaultSettings, ...importedSettings };
               draft.hasUnsavedChanges = true;
             });
-            
+
             const isValid = get().validateSettings();
             if (!isValid) {
               throw new Error('Imported settings contain validation errors');
             }
-            
           } catch (error) {
             throw new Error(`Failed to import settings: ${error instanceof Error ? error.message : 'Invalid JSON'}`);
           }
         },
-        
+
         // Utility Actions
         getSetting: <T = any>(path: string): T | undefined => {
           const state = get();
           return getNestedValue(state.settings, path) as T;
         },
-        
+
         setSetting: (path, value) => set((state) => {
           setNestedValue(state.settings, path, value);
           state.hasUnsavedChanges = true;
           get().validateSettings();
         }),
-        
+
         getValidationErrors: (path) => {
           const state = get();
           if (path) {
@@ -390,7 +386,7 @@ export const useSettingsStore = create<SettingsStore>()((
           }
           return Object.values(state.validationErrors).flat();
         },
-        
+
         clearValidationErrors: (path) => set((state) => {
           if (path) {
             delete state.validationErrors[path];
@@ -398,7 +394,7 @@ export const useSettingsStore = create<SettingsStore>()((
             state.validationErrors = {};
           }
         }),
-        
+
         reset: () => set((state) => {
           state.settings = JSON.parse(JSON.stringify(defaultSettings));
           state.isLoaded = false;
@@ -406,18 +402,19 @@ export const useSettingsStore = create<SettingsStore>()((
           state.hasUnsavedChanges = false;
           state.validationErrors = {};
         }),
-      })),
-      {
-        name: 'settings-store',
-        storage: localStorage,
-        partialize: (state) => ({
-          settings: state.settings,
-          lastSaved: state.lastSaved,
-        }),
-        version: 1,
-      }
-    )
-  ));
+      }),
+    ),
+    {
+      name: 'settings-store',
+      storage: localStorage,
+      partialize: (state) => ({
+        settings: state.settings,
+        lastSaved: state.lastSaved,
+      }),
+      version: 1,
+    },
+  )
+));
 
 // ============================================================================
 // STORE SELECTORS
@@ -452,7 +449,9 @@ export const settingsPresets = {
     ...defaultSettings,
     machine: {
       ...defaultSettings.machine,
-      workingArea: { width: 200, height: 200, depth: 50, units: 'mm' as const },
+      workingArea: {
+        width: 200, height: 200, depth: 50, units: 'mm' as const,
+      },
       movement: {
         ...defaultSettings.machine.movement,
         maxFeedRate: 2000,
@@ -471,12 +470,14 @@ export const settingsPresets = {
       chartUpdateInterval: 2000,
     },
   },
-  
+
   professional: {
     ...defaultSettings,
     machine: {
       ...defaultSettings.machine,
-      workingArea: { width: 600, height: 400, depth: 150, units: 'mm' as const },
+      workingArea: {
+        width: 600, height: 400, depth: 150, units: 'mm' as const,
+      },
       movement: {
         ...defaultSettings.machine.movement,
         maxFeedRate: 5000,
@@ -495,12 +496,14 @@ export const settingsPresets = {
       chartUpdateInterval: 500,
     },
   },
-  
+
   industrial: {
     ...defaultSettings,
     machine: {
       ...defaultSettings.machine,
-      workingArea: { width: 1200, height: 800, depth: 300, units: 'mm' as const },
+      workingArea: {
+        width: 1200, height: 800, depth: 300, units: 'mm' as const,
+      },
       movement: {
         ...defaultSettings.machine.movement,
         maxFeedRate: 10000,
@@ -531,7 +534,7 @@ export const settingsPresets = {
 export const applySettingsPreset = (preset: keyof typeof settingsPresets) => {
   const store = useSettingsStore.getState();
   const presetSettings = settingsPresets[preset];
-  
+
   store.updateGeneralSettings(presetSettings.general);
   store.updateMachineSettings(presetSettings.machine);
   store.updateUISettings(presetSettings.ui);
@@ -558,7 +561,7 @@ useSettingsStore.subscribe(
         }, 5000);
       }
     }
-  }
+  },
 );
 
 // Initialize settings on first load

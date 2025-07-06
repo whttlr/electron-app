@@ -29,7 +29,11 @@
     "paths": {
       "@/*": ["src/*"],
       "@config/*": ["config/*"],
-      "@locales/*": ["locales/*"]
+      "@locales/*": ["locales/*"],
+      "@whttlr/ui-core": ["../ui-library/packages/core/src"],
+      "@whttlr/ui-cnc": ["../ui-library/packages/cnc/src"],
+      "@whttlr/ui-theme": ["../ui-library/packages/theme/src"],
+      "@whttlr/ui-adapters": ["../ui-library/packages/adapters/src"]
     }
   },
   "include": [

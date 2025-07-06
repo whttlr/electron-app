@@ -4,7 +4,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Statistic, Badge, Alert, Tabs, Progress, Table, Tag } from 'antd';
+import {
+  Card, Row, Col, Statistic, Badge, Alert, Tabs, Progress, Table, Tag,
+} from 'antd';
 import {
   LineChart,
   Line,
@@ -17,7 +19,7 @@ import {
   ResponsiveContainer,
   PieChart,
   Pie,
-  Cell
+  Cell,
 } from 'recharts';
 import {
   DashboardOutlined,
@@ -28,7 +30,7 @@ import {
   SettingOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
-  CloseCircleOutlined
+  CloseCircleOutlined,
 } from '@ant-design/icons';
 import { useAnalytics } from '../../../services/analytics/hooks/useAnalytics';
 import './MonitoringDashboard.css';
@@ -42,7 +44,7 @@ interface MonitoringDashboardProps {
 
 export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
   className,
-  refreshInterval = 30000 // 30 seconds
+  refreshInterval = 30000, // 30 seconds
 }) => {
   const { track } = useAnalytics();
   const [activeTab, setActiveTab] = useState('overview');
@@ -53,7 +55,7 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
     cncMachinesOnline: 8,
     systemLoad: 0.45,
     memoryUsage: 0.67,
-    networkLatency: 23
+    networkLatency: 23,
   });
   const [alerts, setAlerts] = useState([
     {
@@ -62,7 +64,7 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
       title: 'High Memory Usage',
       description: 'Memory usage has exceeded 80% threshold',
       timestamp: Date.now() - 300000,
-      severity: 'warning'
+      severity: 'warning',
     },
     {
       id: '2',
@@ -70,8 +72,8 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
       title: 'CNC Machine Connected',
       description: 'Machine #3 has come online',
       timestamp: Date.now() - 150000,
-      severity: 'info'
-    }
+      severity: 'info',
+    },
   ]);
 
   // Mock performance data
@@ -83,7 +85,7 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
         responseTime: Math.floor(Math.random() * 200) + 100,
         errorRate: Math.random() * 0.05,
         throughput: Math.floor(Math.random() * 1000) + 500,
-        memoryUsage: Math.random() * 0.3 + 0.4
+        memoryUsage: Math.random() * 0.3 + 0.4,
       });
     }
     return data;
@@ -91,16 +93,16 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
 
   useEffect(() => {
     track('user_interaction', 'ui_interaction', 'monitoring_dashboard_viewed');
-    
+
     // Set up real-time data updates
     const interval = setInterval(() => {
-      setRealTimeData(prev => ({
+      setRealTimeData((prev) => ({
         ...prev,
         responseTime: Math.floor(Math.random() * 100) + 100,
         errorRate: Math.random() * 0.05,
         systemLoad: Math.random() * 0.3 + 0.3,
         memoryUsage: Math.random() * 0.4 + 0.4,
-        networkLatency: Math.floor(Math.random() * 20) + 10
+        networkLatency: Math.floor(Math.random() * 20) + 10,
       }));
     }, refreshInterval);
 
@@ -127,33 +129,33 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
         const colors = {
           critical: 'red',
           warning: 'orange',
-          info: 'blue'
+          info: 'blue',
         };
         return <Tag color={colors[severity as keyof typeof colors]}>{severity.toUpperCase()}</Tag>;
-      }
+      },
     },
     {
       title: 'Title',
       dataIndex: 'title',
-      key: 'title'
+      key: 'title',
     },
     {
       title: 'Description',
       dataIndex: 'description',
-      key: 'description'
+      key: 'description',
     },
     {
       title: 'Time',
       dataIndex: 'timestamp',
       key: 'timestamp',
-      render: (timestamp: number) => new Date(timestamp).toLocaleTimeString()
-    }
+      render: (timestamp: number) => new Date(timestamp).toLocaleTimeString(),
+    },
   ];
 
   const pieData = [
     { name: 'Connected', value: realTimeData.cncMachinesOnline, color: '#52c41a' },
     { name: 'Offline', value: 4, color: '#ff4d4f' },
-    { name: 'Maintenance', value: 2, color: '#faad14' }
+    { name: 'Maintenance', value: 2, color: '#faad14' },
   ];
 
   return (
@@ -162,8 +164,8 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
         <h2>
           <DashboardOutlined /> System Monitoring
         </h2>
-        <Badge 
-          count={alerts.filter(a => a.severity === 'critical').length} 
+        <Badge
+          count={alerts.filter((a) => a.severity === 'critical').length}
           style={{ backgroundColor: '#ff4d4f' }}
         >
           <AlertOutlined style={{ fontSize: '18px' }} />
@@ -199,8 +201,8 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
                   value={realTimeData.responseTime}
                   suffix="ms"
                   prefix={<ThunderboltOutlined />}
-                  valueStyle={{ 
-                    color: getStatusColor(realTimeData.responseTime, { warning: 200, critical: 500 })
+                  valueStyle={{
+                    color: getStatusColor(realTimeData.responseTime, { warning: 200, critical: 500 }),
                   }}
                 />
               </Card>
@@ -212,8 +214,8 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
                   value={(realTimeData.errorRate * 100).toFixed(2)}
                   suffix="%"
                   prefix={<BugOutlined />}
-                  valueStyle={{ 
-                    color: getStatusColor(realTimeData.errorRate, { warning: 0.02, critical: 0.05 })
+                  valueStyle={{
+                    color: getStatusColor(realTimeData.errorRate, { warning: 0.02, critical: 0.05 }),
                   }}
                 />
               </Card>
@@ -235,8 +237,8 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
           <Row gutter={[16, 16]} className="health-row">
             <Col xs={24} md={12}>
               <Card title="System Load" extra={<Tag color="green">Healthy</Tag>}>
-                <Progress 
-                  percent={realTimeData.systemLoad * 100} 
+                <Progress
+                  percent={realTimeData.systemLoad * 100}
                   status={realTimeData.systemLoad > 0.8 ? 'exception' : 'active'}
                   strokeColor={getStatusColor(realTimeData.systemLoad, { warning: 0.7, critical: 0.9 })}
                 />
@@ -244,7 +246,7 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
             </Col>
             <Col xs={24} md={12}>
               <Card title="Memory Usage" extra={<Tag color="orange">Warning</Tag>}>
-                <Progress 
+                <Progress
                   percent={realTimeData.memoryUsage * 100}
                   status={realTimeData.memoryUsage > 0.8 ? 'exception' : 'active'}
                   strokeColor={getStatusColor(realTimeData.memoryUsage, { warning: 0.7, critical: 0.9 })}
@@ -263,10 +265,10 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
                     <XAxis dataKey="time" />
                     <YAxis />
                     <Tooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="responseTime" 
-                      stroke="#1890ff" 
+                    <Line
+                      type="monotone"
+                      dataKey="responseTime"
+                      stroke="#1890ff"
                       strokeWidth={2}
                     />
                   </LineChart>
@@ -301,16 +303,16 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
             <Col xs={24} lg={12}>
               <Card title="Recent Alerts">
                 <div className="alerts-list">
-                  {alerts.slice(0, 5).map(alert => (
+                  {alerts.slice(0, 5).map((alert) => (
                     <Alert
                       key={alert.id}
                       message={alert.title}
                       description={alert.description}
                       type={alert.severity as any}
                       icon={
-                        alert.severity === 'critical' ? <CloseCircleOutlined /> :
-                        alert.severity === 'warning' ? <ExclamationCircleOutlined /> :
-                        <CheckCircleOutlined />
+                        alert.severity === 'critical' ? <CloseCircleOutlined />
+                          : alert.severity === 'warning' ? <ExclamationCircleOutlined />
+                            : <CheckCircleOutlined />
                       }
                       style={{ marginBottom: 8 }}
                       closable
@@ -411,10 +413,10 @@ export const MonitoringDashboard: React.FC<MonitoringDashboardProps> = ({
                     <XAxis dataKey="time" />
                     <YAxis />
                     <Tooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="errorRate" 
-                      stroke="#ff4d4f" 
+                    <Line
+                      type="monotone"
+                      dataKey="errorRate"
+                      stroke="#ff4d4f"
                       strokeWidth={2}
                     />
                   </LineChart>
