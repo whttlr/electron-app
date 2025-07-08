@@ -1,16 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Card, Row, Col, Typography, Button, InputNumber, Select, Space, Alert, Divider, Spin,
-} from 'antd';
+import { Divider, Typography } from 'antd';
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardContent, 
+  Button, 
+  Select, 
+  Alert, 
+  AlertTitle, 
+  AlertDescription, 
+  AlertActions,
+  Grid, 
+  ControlContainer,
+  WorkingAreaPreview, 
+  MachineDisplay2D,
+  PrecisionInput,
+  Stack,
+  Skeleton 
+} from '@whttlr/ui-core';
+
 import {
   ArrowUpOutlined, ArrowDownOutlined, ArrowLeftOutlined, ArrowRightOutlined,
 } from '@ant-design/icons';
-import { WorkingAreaPreview, MachineDisplay2D } from '@whttlr/ui-core';
 import { PluginRenderer } from '../../components';
 import { useMachineConfig, useStateConfig } from '../../services/config/useConfig';
 
 const { Title } = Typography;
-const { Option } = Select;
 
 const ControlsView: React.FC = () => {
   // Configuration hooks
@@ -88,11 +104,11 @@ const ControlsView: React.FC = () => {
   // Show loading spinner while configuration loads
   if (machineLoading || stateLoading) {
     return (
-      <div style={{
-        display: 'flex', justifyContent: 'center', alignItems: 'center', height: '200px',
-      }}>
-        <Spin size="large" tip="Loading configuration..." />
-      </div>
+      <ControlContainer style={{ padding: '2rem' }}>
+        <Title level={2}>Loading Configuration...</Title>
+        <Skeleton variant="text" lines={3} />
+        <Skeleton variant="rectangular" width="100%" height="200px" style={{ marginTop: '1rem' }} />
+      </ControlContainer>
     );
   }
 
@@ -100,30 +116,28 @@ const ControlsView: React.FC = () => {
   if (machineError) {
     return (
       <Alert
-        message="Configuration Error"
+        variant="destructive"
+        title="Configuration Error"
         description={`Failed to load machine configuration: ${machineError}`}
-        type="error"
-        showIcon
       />
     );
   }
 
   return (
-    <div data-testid="controls-container">
+    <ControlContainer data-testid="controls-container">
       <Title level={2}>Jog Controls</Title>
 
       {!isConnected && (
         <Alert
-          message="Machine Not Connected"
+          variant="warning"
+          title="Machine Not Connected"
           description="Connect to your CNC machine to enable jog controls."
-          type="warning"
-          showIcon
-          style={{ marginBottom: '24px' }}
-          action={
-            <Button type="primary" onClick={() => setIsConnected(true)}>
+          actions={
+            <Button variant="default" onClick={() => setIsConnected(true)}>
               Connect
             </Button>
           }
+          style={{ marginBottom: '24px' }}
         />
       )}
 
@@ -151,33 +165,40 @@ const ControlsView: React.FC = () => {
         </Col>
       </Row> */}
 
-      <Row gutter={[16, 16]}>
-        <Col xs={24} md={12}>
-          <Card title="Position Display">
+      <Grid cols={2} gap={4}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Position Display</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div style={{ textAlign: 'center', fontSize: '18px', marginBottom: '16px' }}>
               <div>X: {position.x.toFixed(machineConfig?.features.coordinateDisplay.precision || 3)} {isMetric ? 'mm' : 'in'}</div>
               <div>Y: {position.y.toFixed(machineConfig?.features.coordinateDisplay.precision || 3)} {isMetric ? 'mm' : 'in'}</div>
               <div>Z: {position.z.toFixed(machineConfig?.features.coordinateDisplay.precision || 3)} {isMetric ? 'mm' : 'in'}</div>
             </div>
-            <Button type="primary" block onClick={handleHome}>
+            <Button variant="default" onClick={handleHome} style={{ width: '100%' }}>
               Home All Axes
             </Button>
-          </Card>
-        </Col>
+          </CardContent>
+        </Card>
 
-        <Col xs={24} md={12}>
-          <Card title="Jog Settings">
-            <Space direction="vertical" style={{ width: '100%' }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Jog Settings</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Stack spacing={16} style={{ width: '100%' }}>
               <div>
                 <label>Unit System:</label>
                 <Select
                   value={isMetric ? 'metric' : 'imperial'}
                   onChange={(value) => setIsMetric(value === 'metric')}
                   style={{ width: '100%', marginTop: '8px' }}
-                >
-                  <Option value="metric">Metric (mm)</Option>
-                  <Option value="imperial">Imperial (inches)</Option>
-                </Select>
+                  options={[
+                    { value: 'metric', label: 'Metric (mm)' },
+                    { value: 'imperial', label: 'Imperial (inches)' }
+                  ]}
+                />
               </div>
 
               <div>
@@ -186,133 +207,135 @@ const ControlsView: React.FC = () => {
                   value={jogDistance}
                   onChange={setJogDistance}
                   style={{ width: '100%', marginTop: '8px' }}
-                >
-                  {availableIncrements.map((increment, index) => (
-                    <Option key={increment} value={increment}>
-                      {increment} {isMetric ? 'mm' : 'in'}
-                    </Option>
-                  ))}
-                </Select>
+                  options={availableIncrements.map((increment) => ({
+                    value: increment,
+                    label: `${increment} ${isMetric ? 'mm' : 'in'}`
+                  }))}
+                />
               </div>
 
               <div>
                 <label>Feed Rate (mm/min):</label>
-                <InputNumber
+                <PrecisionInput
                   value={feedRate}
-                  onChange={(value) => setFeedRate(value || feedLimits.default)}
-                  min={feedLimits.min}
-                  max={feedLimits.max}
+                  onChange={(value) => setFeedRate(value || 1000)}
+                  min={feedLimits?.min || 100}
+                  max={feedLimits?.max || 5000}
                   step={10}
+                  precision={0}
                   style={{ width: '100%', marginTop: '8px' }}
                 />
               </div>
-            </Space>
-          </Card>
-        </Col>
-      </Row>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Grid>
 
-      <Row gutter={[16, 16]} style={{ marginTop: '24px' }}>
-        <Col xs={24} md={8}>
-          <Card title="X/Y Controls">
+      <Grid cols={3} gap={4} style={{ marginTop: '24px' }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>X/Y Controls</CardTitle>
+          </CardHeader>
+          <CardContent>
             <div style={{
               display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center',
             }}>
               <div></div>
               <Button
-                type="primary"
-                icon={<ArrowUpOutlined />}
+                variant="default"
                 onClick={() => handleJog('y', 1)}
                 disabled={!isConnected}
               >
-                Y+
+                <ArrowUpOutlined /> Y+
               </Button>
               <div></div>
 
               <Button
-                type="primary"
-                icon={<ArrowLeftOutlined />}
+                variant="default"
                 onClick={() => handleJog('x', -1)}
                 disabled={!isConnected}
               >
-                X-
+                <ArrowLeftOutlined /> X-
               </Button>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 XY
               </div>
               <Button
-                type="primary"
-                icon={<ArrowRightOutlined />}
+                variant="default"
                 onClick={() => handleJog('x', 1)}
                 disabled={!isConnected}
               >
-                X+
+                <ArrowRightOutlined /> X+
               </Button>
 
               <div></div>
               <Button
-                type="primary"
-                icon={<ArrowDownOutlined />}
+                variant="default"
                 onClick={() => handleJog('y', -1)}
                 disabled={!isConnected}
               >
-                Y-
+                <ArrowDownOutlined /> Y-
               </Button>
               <div></div>
             </div>
-          </Card>
-        </Col>
+          </CardContent>
+        </Card>
 
-        <Col xs={24} md={8}>
-          <Card title="Z Controls">
-            <Space direction="vertical" style={{ width: '100%' }}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Z Controls</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Stack spacing={8} style={{ width: '100%' }}>
               <Button
-                type="primary"
-                block
-                icon={<ArrowUpOutlined />}
+                variant="default"
+                style={{ width: '100%' }}
                 onClick={() => handleJog('z', 1)}
                 disabled={!isConnected}
               >
-                Z+ (Up)
+                <ArrowUpOutlined /> Z+ (Up)
               </Button>
               <Button
-                type="primary"
-                block
-                icon={<ArrowDownOutlined />}
+                variant="default"
+                style={{ width: '100%' }}
                 onClick={() => handleJog('z', -1)}
                 disabled={!isConnected}
               >
-                Z- (Down)
+                <ArrowDownOutlined /> Z- (Down)
               </Button>
-            </Space>
-          </Card>
-        </Col>
+            </Stack>
+          </CardContent>
+        </Card>
 
-        <Col xs={24} md={8}>
-          <Card title="Quick Actions">
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Button block disabled={!isConnected}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Stack spacing={8} style={{ width: '100%' }}>
+              <Button variant="outline" disabled={!isConnected} style={{ width: '100%' }}>
                 Set Origin (G92)
               </Button>
-              <Button block disabled={!isConnected}>
+              <Button variant="outline" disabled={!isConnected} style={{ width: '100%' }}>
                 Go to Origin
               </Button>
-              <Button block disabled={!isConnected}>
+              <Button variant="outline" disabled={!isConnected} style={{ width: '100%' }}>
                 Probe Z
               </Button>
-              <Button block disabled={!isConnected} danger>
+              <Button variant="destructive" disabled={!isConnected} style={{ width: '100%' }}>
                 Emergency Stop
               </Button>
-            </Space>
-          </Card>
-        </Col>
-      </Row>
+            </Stack>
+          </CardContent>
+        </Card>
+      </Grid>
 
       {/* Render plugins configured for the controls screen */}
       <div style={{ marginTop: '32px' }}>
         <Divider>Control Plugins</Divider>
         <PluginRenderer screen="controls" />
       </div>
-    </div>
+    </ControlContainer>
   );
 };
 

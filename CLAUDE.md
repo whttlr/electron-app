@@ -167,7 +167,8 @@ electron-app/
 
 ## Dependencies
 - **React & TypeScript**: Modern UI framework with type safety
-- **Ant Design**: Professional UI component library
+- **UI Library**: Custom design system and component library (primary UI source)
+- **Ant Design**: Professional UI component library (fallback for complex components)
 - **React Three Fiber**: 3D visualization and working area preview
 - **React Router**: Client-side routing and navigation
 - **Vite**: Fast build tool and development server
@@ -262,10 +263,13 @@ interface PluginConfig {
 ## Development Guidelines
 
 ### Component Development
-- Use TypeScript interfaces for all props and data structures
-- Follow React hooks patterns and best practices
-- Implement proper error boundaries and loading states
-- Keep components focused and reusable
+- **UI Library First**: ALWAYS use components from the UI Library as the primary source
+- **Component Planning**: If a component doesn't exist in UI Library, plan to add it there
+- **TypeScript Interfaces**: Use TypeScript interfaces for all props and data structures
+- **React Patterns**: Follow React hooks patterns and best practices
+- **Error Handling**: Implement proper error boundaries and loading states
+- **Reusability**: Keep components focused and reusable
+- **Ant Design Fallback**: Only use Ant Design for complex components not available in UI Library
 
 ### Plugin Development
 - Follow established plugin API interfaces
@@ -426,12 +430,230 @@ Each module folder must contain:
 - **Import discipline**: Clear dependency boundaries between layers
 - **Test co-location**: Tests live with the code they test
 
+## UI Library Integration
+
+### UI Library Priority System
+**CRITICAL**: This application uses a custom UI Library as the primary source for all UI components.
+
+#### Component Selection Priority Order:
+1. **UI Library Components** (Primary) - Custom design system components
+2. **Ant Design Components** (Fallback) - Only for complex components not in UI Library
+3. **Custom Components** (Last Resort) - Only when neither above options are suitable
+
+#### UI Library Usage Rules:
+- **ALWAYS check UI Library first** before using any other component source
+- **NEVER duplicate UI Library components** - use existing ones or extend them
+- **Plan additions to UI Library** when creating new reusable components
+- **Follow UI Library patterns** for consistency and maintainability
+- **Document component usage** in UI Library when adding new components
+
+### UI Library Development Workflow
+
+#### Local Development with UI Library
+1. **Link UI Library Locally**:
+   ```bash
+   # In UI Library repository
+   npm link
+   
+   # In electron-app repository
+   npm link ui-library
+   ```
+
+2. **Development Commands**:
+   ```bash
+   # Start UI Library in watch mode
+   cd path/to/ui-library
+   npm run dev
+   
+   # Start electron-app with linked UI Library
+   cd path/to/electron-app
+   npm start
+   ```
+
+3. **Hot Reload Setup**:
+   - UI Library changes automatically reflect in electron-app
+   - Vite handles hot module replacement for both libraries
+   - TypeScript types update in real-time
+
+#### Adding Components to UI Library
+1. **Component Creation**:
+   ```bash
+   # In UI Library repository
+   npm run generate:component ComponentName
+   ```
+
+2. **Component Structure**:
+   ```
+   ui-library/src/components/ComponentName/
+   ├── ComponentName.tsx          # Main component
+   ├── ComponentName.stories.tsx  # Storybook stories
+   ├── ComponentName.test.tsx     # Unit tests
+   ├── ComponentName.module.css   # Component styles
+   ├── index.ts                   # Exports
+   └── README.md                  # Component documentation
+   ```
+
+3. **Development Process**:
+   - Create component in UI Library with full TypeScript support
+   - Add comprehensive Storybook stories for all variants
+   - Write unit tests with React Testing Library
+   - Document component API and usage examples
+   - Test component in electron-app via npm link
+
+#### UI Library Deployment Process
+
+##### Development Deployment
+1. **Version Management**:
+   ```bash
+   # Increment version (patch/minor/major)
+   npm version patch
+   ```
+
+2. **Build and Test**:
+   ```bash
+   # Run full test suite
+   npm test
+   
+   # Build library for distribution
+   npm run build
+   
+   # Generate and validate TypeScript declarations
+   npm run build:types
+   ```
+
+3. **Publish to Registry**:
+   ```bash
+   # Publish to npm registry
+   npm publish
+   
+   # Or publish to private registry
+   npm publish --registry https://your-private-registry.com
+   ```
+
+##### Production Deployment
+1. **Release Preparation**:
+   ```bash
+   # Create release branch
+   git checkout -b release/v1.2.3
+   
+   # Update CHANGELOG.md with new features/fixes
+   # Update package.json version
+   # Update documentation
+   ```
+
+2. **Quality Assurance**:
+   ```bash
+   # Run comprehensive test suite
+   npm run test:coverage
+   
+   # Visual regression testing with Chromatic
+   npm run chromatic
+   
+   # Accessibility testing
+   npm run test:a11y
+   
+   # Performance testing
+   npm run test:performance
+   ```
+
+3. **Release Process**:
+   ```bash
+   # Create production build
+   npm run build:production
+   
+   # Create git tag
+   git tag v1.2.3
+   
+   # Push to main branch
+   git push origin main --tags
+   
+   # Publish to registry
+   npm publish --tag latest
+   ```
+
+#### Integration in Electron App
+1. **Install UI Library**:
+   ```bash
+   npm install ui-library@latest
+   ```
+
+2. **Import and Use Components**:
+   ```typescript
+   // Preferred: Import from UI Library
+   import { Button, Card, Modal } from 'ui-library';
+   
+   // Fallback: Import from Ant Design (only if not in UI Library)
+   import { DatePicker, Table } from 'antd';
+   
+   // Last Resort: Create custom component (plan to add to UI Library)
+   import { CustomSpecializedComponent } from './components/CustomSpecializedComponent';
+   ```
+
+3. **Theme Integration**:
+   ```typescript
+   // Use UI Library theme provider
+   import { ThemeProvider } from 'ui-library';
+   
+   function App() {
+     return (
+       <ThemeProvider theme="cnc-controls">
+         <YourAppComponents />
+       </ThemeProvider>
+     );
+   }
+   ```
+
+#### Component Migration Strategy
+1. **Audit Existing Components**: Identify reusable components not in UI Library
+2. **Prioritize by Usage**: Move most-used components to UI Library first
+3. **Create Migration Plan**: Phase out Ant Design components in favor of UI Library
+4. **Maintain Backward Compatibility**: Ensure smooth transition during migration
+
+#### Storybook Documentation
+- **Component Showcase**: All UI Library components documented in Storybook
+- **Usage Examples**: Interactive examples for all component variants
+- **Design Tokens**: Color palettes, typography, spacing documented
+- **Accessibility Guidelines**: Screen reader support and keyboard navigation
+
+#### Quality Standards for UI Library
+- **100% TypeScript Coverage**: All components fully typed
+- **95%+ Test Coverage**: Comprehensive unit and integration tests
+- **WCAG 2.1 AA Compliance**: Full accessibility support
+- **Performance Optimized**: Tree-shakeable, optimized bundle size
+- **Design System Consistency**: Follows established design tokens
+
+### UI Library Commands Reference
+```bash
+# Local Development
+npm link ui-library              # Link local UI Library
+npm start                        # Start with linked library
+
+# UI Library Development
+npm run dev                      # Start library in watch mode
+npm run storybook               # Start Storybook development server
+npm run test:watch              # Run tests in watch mode
+
+# Building and Publishing
+npm run build                    # Build library for production
+npm run build:types             # Generate TypeScript declarations
+npm run test:coverage           # Run tests with coverage report
+npm publish                     # Publish to npm registry
+
+# Quality Assurance
+npm run lint                     # ESLint code analysis
+npm run test:a11y               # Accessibility testing
+npm run chromatic               # Visual regression testing
+```
+
 ## Recent Updates
 - Migrated from Node.js CLI application to React/TypeScript desktop app
 - Implemented comprehensive plugin system with dynamic loading
 - Added 3D visualization using React Three Fiber
-- Created professional UI with Ant Design components
+- **NEW**: Integrated custom UI Library as primary component source
+- Established UI Library development and deployment workflows
+- Created professional UI with design system consistency
 - Established proper project architecture with clean separation of concerns
 - Removed legacy CNC protocol code in favor of modern web technologies
 - Cleaned up unused directories and files for better maintainability
 - **NEW**: Defined strict self-contained module architecture for better organization and maintainability
+- **NEW**: Defined UI Library integration standards and development workflows

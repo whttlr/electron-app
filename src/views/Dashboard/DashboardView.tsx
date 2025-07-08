@@ -1,7 +1,15 @@
 import React from 'react';
-import {
-  Card, Row, Col, Typography, Button, Divider,
-} from 'antd';
+import { Typography, Divider } from 'antd';
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardContent, 
+  CardFooter, 
+  Button, 
+  Grid,
+  DashboardContainer 
+} from '@whttlr/ui-core';
 import {
   ControlOutlined, ToolOutlined, SettingOutlined, AppstoreOutlined,
 } from '@ant-design/icons';
@@ -16,7 +24,7 @@ const { Title, Paragraph } = Typography;
 // In your component:
 
 const DashboardView: React.FC = () => (
-    <div data-testid="dashboard-container">
+    <DashboardContainer data-testid="dashboard-container">
       <Title level={2}>CNC Dashboard</Title>
         <DatabaseIntegrationDemo />
 
@@ -25,71 +33,83 @@ const DashboardView: React.FC = () => (
         Welcome to the CNC Jog Controls dashboard. Select a section below to get started.
       </Paragraph>
 
-      <Row gutter={[16, 16]} style={{ marginTop: '24px' }} className="dashboard-grid">
-        <Col xs={24} sm={12} md={6}>
-          <Card
-            className="dashboard-card"
-            data-testid="quick-actions"
-            title="Jog Controls"
-            extra={<ControlOutlined />}
-            actions={[
-              <Button type="link" href="/controls" data-testid="quick-action-jog-controls">
-                Open Controls
-              </Button>,
-            ]}
-          >
+      <Grid cols={4} gap={4} style={{ marginTop: '24px' }} className="dashboard-grid">
+        <Card
+          variant="dashboard"
+          className="dashboard-card"
+          data-testid="quick-actions"
+        >
+          <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <CardTitle>Jog Controls</CardTitle>
+            <ControlOutlined style={{ fontSize: '1.25rem', color: '#666' }} />
+          </CardHeader>
+          <CardContent>
             <p>Manual machine control and positioning</p>
-          </Card>
-        </Col>
+          </CardContent>
+          <CardFooter>
+            <Button variant="link" onClick={() => window.location.href = '/controls'} data-testid="quick-action-jog-controls">
+              Open Controls
+            </Button>
+          </CardFooter>
+        </Card>
 
-        <Col xs={24} sm={12} md={6}>
-          <Card
-            className="dashboard-card"
-            data-testid="connection-status"
-            title="Machine Status"
-            extra={<ToolOutlined />}
-            actions={[
-              <Button type="link">
-                View Status
-              </Button>,
-            ]}
-          >
+        <Card
+          variant="dashboard"
+          className="dashboard-card"
+          data-testid="connection-status"
+        >
+          <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <CardTitle>Machine Status</CardTitle>
+            <ToolOutlined style={{ fontSize: '1.25rem', color: '#666' }} />
+          </CardHeader>
+          <CardContent>
             <p>Real-time machine monitoring and diagnostics</p>
-          </Card>
-        </Col>
+          </CardContent>
+          <CardFooter>
+            <Button variant="link">
+              View Status
+            </Button>
+          </CardFooter>
+        </Card>
 
-        <Col xs={24} sm={12} md={6}>
-          <Card
-            className="dashboard-card"
-            data-testid="plugins-card"
-            title="Plugins"
-            extra={<AppstoreOutlined />}
-            actions={[
-              <Button type="link" href="/plugins">
-                Manage Plugins
-              </Button>,
-            ]}
-          >
+        <Card
+          variant="dashboard"
+          className="dashboard-card"
+          data-testid="plugins-card"
+        >
+          <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <CardTitle>Plugins</CardTitle>
+            <AppstoreOutlined style={{ fontSize: '1.25rem', color: '#666' }} />
+          </CardHeader>
+          <CardContent>
             <p>Install and configure CNC plugins</p>
-          </Card>
-        </Col>
+          </CardContent>
+          <CardFooter>
+            <Button variant="link" onClick={() => window.location.href = '/plugins'}>
+              Manage Plugins
+            </Button>
+          </CardFooter>
+        </Card>
 
-        <Col xs={24} sm={12} md={6}>
-          <Card
-            className="dashboard-card"
-            data-testid="settings-card"
-            title="Settings"
-            extra={<SettingOutlined />}
-            actions={[
-              <Button type="link" href="/settings">
-                Configure
-              </Button>,
-            ]}
-          >
+        <Card
+          variant="dashboard"
+          className="dashboard-card"
+          data-testid="settings-card"
+        >
+          <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+            <CardTitle>Settings</CardTitle>
+            <SettingOutlined style={{ fontSize: '1.25rem', color: '#666' }} />
+          </CardHeader>
+          <CardContent>
             <p>System configuration and preferences</p>
-          </Card>
-        </Col>
-      </Row>
+          </CardContent>
+          <CardFooter>
+            <Button variant="link" onClick={() => window.location.href = '/settings'}>
+              Configure
+            </Button>
+          </CardFooter>
+        </Card>
+      </Grid>
 
       {/* Render plugins configured for the main screen */}
       <PluginRenderer screen="main" />
@@ -99,7 +119,7 @@ const DashboardView: React.FC = () => (
         <Divider>Additional Tools</Divider>
         <PluginRenderer screen="main" placement="modal" />
       </div>
-    </div>
+    </DashboardContainer>
 );
 
 export default DashboardView;

@@ -34,7 +34,7 @@ import {
   JogControls,
   CoordinateDisplay,
   CompactCoordinateDisplay,
-  StatusIndicator,
+  StatusIndicatorCard as StatusIndicator,
   ConnectionStatus,
   StatusDashboard,
   SafetyControlPanel,

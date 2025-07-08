@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Typography, Tabs, Space, Form, message, Modal, Tag,
-} from 'antd';
+import { Typography, Form, message, Modal } from 'antd';
+import { Tabs, Badge } from '@whttlr/ui-core';
 import { AppstoreOutlined, GlobalOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
 import { usePlugins, Plugin, PluginUpdate } from '../../services/plugin';
@@ -381,19 +380,14 @@ const PluginsView: React.FC = () => {
     <div data-testid="plugins-container">
       <Title level={2}>Plugin Management</Title>
 
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
+      <Tabs 
+        value={activeTab} 
+        onValueChange={setActiveTab}
         items={[
           {
-            key: 'local',
-            label: (
-              <span>
-                <AppstoreOutlined style={{ marginRight: '8px' }}/>
-                Local Plugins
-              </span>
-            ),
-            children: (
+            value: 'local',
+            label: 'Local Plugins',
+            content: (
               <LocalPluginsView
                 plugins={plugins}
                 updates={updates}
@@ -411,16 +405,12 @@ const PluginsView: React.FC = () => {
                 getTypeColor={getTypeColor}
               />
             ),
+            icon: <AppstoreOutlined />
           },
           {
-            key: 'marketplace',
-            label: (
-              <span>
-                <GlobalOutlined style={{ marginRight: '8px' }} />
-                Marketplace
-              </span>
-            ),
-            children: (
+            value: 'marketplace',
+            label: 'Marketplace',
+            content: (
               <MarketplaceView
                 marketplacePlugins={marketplacePlugins}
                 marketplaceLoading={marketplaceLoading}
@@ -437,23 +427,20 @@ const PluginsView: React.FC = () => {
                 getTypeColor={getTypeColor}
               />
             ),
+            icon: <GlobalOutlined />
           },
           {
-            key: 'registry',
-            label: (
-              <Space>
-                <CloudUploadOutlined style={{ marginRight: '8px' }} />
-                Registry
-                {registryConfig && <Tag color="green" size="small">Connected</Tag>}
-              </Space>
-            ),
-            children: (
+            value: 'registry',
+            label: 'Registry',
+            content: (
               <RegistryView
                 plugins={plugins}
                 marketplacePlugins={marketplacePlugins}
               />
             ),
-          },
+            icon: <CloudUploadOutlined />,
+            badge: registryConfig ? 'Connected' : undefined
+          }
         ]}
       />
 

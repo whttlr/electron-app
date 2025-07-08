@@ -15,7 +15,7 @@ export {
   JogControls,
   CoordinateDisplay,
   CompactCoordinateDisplay,
-  StatusIndicator,
+  StatusIndicatorCard as StatusIndicator, // StatusIndicator is exported as part of compound components
   ConnectionStatus,
   StatusDashboard,
   SafetyControlPanel,

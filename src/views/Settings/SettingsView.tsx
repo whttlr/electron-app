@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Card, Row, Col, Typography, Form, Input, InputNumber, Select, Switch, Button, Divider, Spin, Alert, message,
-} from 'antd';
+import { Typography, Form, InputNumber, Divider, Spin, message, Row, Col, Select as AntSelect } from 'antd';
+import { 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardContent, 
+  Input, 
+  Select, 
+  Button, 
+  Alert, 
+  Toggle, 
+  Grid 
+} from '@whttlr/ui-core';
 import { SettingOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
 import { PluginRenderer } from '../../ui/plugin';
 import { useUpdateService } from '../../services/update/useUpdateService';
@@ -12,7 +22,7 @@ import { AppSettings } from '../../services/settings';
 import { useSettings } from '../../services/settings/SettingsContext';
 
 const { Title } = Typography;
-const { Option } = Select;
+const { Option } = AntSelect;
 
 const SettingsView: React.FC = () => {
   const [form] = Form.useForm();
@@ -159,10 +169,10 @@ const SettingsView: React.FC = () => {
               </Form.Item>
 
               <Form.Item label="Units" name={['machine', 'units']}>
-                <Select>
+                <AntSelect>
                   <Option value="metric">Metric (mm)</Option>
                   <Option value="imperial">Imperial (inches)</Option>
-                </Select>
+                </AntSelect>
               </Form.Item>
 
               <Divider>Work Area (mm)</Divider>
@@ -208,22 +218,22 @@ const SettingsView: React.FC = () => {
           <Col xs={24} lg={12}>
             <Card title="Connection Settings">
               <Form.Item label="Serial Port" name={['connection', 'port']}>
-                <Select>
+                <AntSelect>
                   <Option value="/dev/ttyUSB0">/dev/ttyUSB0</Option>
                   <Option value="/dev/ttyACM0">/dev/ttyACM0</Option>
                   <Option value="COM3">COM3</Option>
                   <Option value="COM4">COM4</Option>
-                </Select>
+                </AntSelect>
               </Form.Item>
 
               <Form.Item label="Baud Rate" name={['connection', 'baudRate']}>
-                <Select>
+                <AntSelect>
                   <Option value={9600}>9600</Option>
                   <Option value={19200}>19200</Option>
                   <Option value={38400}>38400</Option>
                   <Option value={57600}>57600</Option>
                   <Option value={115200}>115200</Option>
-                </Select>
+                </AntSelect>
               </Form.Item>
 
               <Form.Item label="Connection Timeout (ms)" name={['connection', 'timeout']}>
@@ -235,19 +245,19 @@ const SettingsView: React.FC = () => {
           <Col xs={24} lg={12}>
             <Card title="User Interface">
               <Form.Item label="Theme" name={['ui', 'theme']}>
-                <Select>
+                <AntSelect>
                   <Option value="light">Light</Option>
                   <Option value="dark">Dark</Option>
-                </Select>
+                </AntSelect>
               </Form.Item>
 
               <Form.Item label="Language" name={['ui', 'language']}>
-                <Select>
+                <AntSelect>
                   <Option value="en">English</Option>
                   <Option value="es">Spanish</Option>
                   <Option value="fr">French</Option>
                   <Option value="de">German</Option>
-                </Select>
+                </AntSelect>
               </Form.Item>
 
               <Form.Item name={['ui', 'showGrid']} valuePropName="checked">
@@ -273,14 +283,14 @@ const SettingsView: React.FC = () => {
               </Form.Item>
 
               <Form.Item label="Check Interval" name={['updates', 'checkInterval']}>
-                <Select>
+                <AntSelect>
                   <Option value={1800000}>30 minutes</Option>
                   <Option value={3600000}>1 hour</Option>
                   <Option value={7200000}>2 hours</Option>
                   <Option value={21600000}>6 hours</Option>
                   <Option value={43200000}>12 hours</Option>
                   <Option value={86400000}>24 hours</Option>
-                </Select>
+                </AntSelect>
               </Form.Item>
 
               <Form.Item name={['updates', 'includePreReleases']} valuePropName="checked">

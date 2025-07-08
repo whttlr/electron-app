@@ -8,7 +8,7 @@ import {
 import dayjs from 'dayjs';
 import 'dayjs/locale/en';
 import {
-  DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined, BookOutlined,
+  DashboardOutlined, ControlOutlined, AppstoreOutlined, SettingOutlined, MonitorOutlined, BookOutlined, ExperimentOutlined,
 } from '@ant-design/icons';
 import { PluginProvider, usePlugins } from './services/plugin';
 import { databaseService } from './services/database';
@@ -21,6 +21,7 @@ import SettingsView from './views/Settings/SettingsView';
 import ControlsView from './views/Controls/ControlsView';
 import PluginView from './views/Plugin/PluginView';
 import { StyleGuideView } from './views/StyleGuide';
+import UILibraryView from './views/UILibrary/UILibraryView';
 import './App.css';
 
 // Set dayjs locale
@@ -66,6 +67,11 @@ const AppContent: React.FC = () => {
       key: '/style-guide',
       icon: <BookOutlined />,
       label: <Link to="/style-guide" data-testid="nav-style-guide">Style Guide</Link>,
+    },
+    {
+      key: '/ui-library',
+      icon: <ExperimentOutlined />,
+      label: <Link to="/ui-library" data-testid="nav-ui-library">UI Library</Link>,
     },
     // Add standalone plugin menu items
     ...standalonePlugins.map((plugin) => ({
@@ -133,6 +139,7 @@ const AppContent: React.FC = () => {
               <Route path="/" element={<DashboardView />} />
               <Route path="/controls" element={<ControlsView />} />
               <Route path="/style-guide" element={<StyleGuideView />} />
+              <Route path="/ui-library" element={<UILibraryView />} />
               <Route path="/plugins" element={<PluginsView />} />
               <Route path="/settings" element={<SettingsView />} />
               {/* Dynamic plugin routes */}
