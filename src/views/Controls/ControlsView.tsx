@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { Divider, Typography } from 'antd';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent, 
-  Button, 
-  Select, 
-  Alert, 
-  AlertTitle, 
-  AlertDescription, 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Button,
+  Select,
+  Alert,
+  AlertTitle,
+  AlertDescription,
   AlertActions,
-  Grid, 
+  Grid,
   ControlContainer,
-  WorkingAreaPreview, 
+  WorkingAreaPreview,
   MachineDisplay2D,
-  PrecisionInput,
+  Input,
+  NumberInput,
   Stack,
-  Skeleton 
+  Skeleton,
 } from '@whttlr/ui-core';
 
 import {
@@ -25,8 +25,6 @@ import {
 } from '@ant-design/icons';
 import { PluginRenderer } from '../../components';
 import { useMachineConfig, useStateConfig } from '../../services/config/useConfig';
-
-const { Title } = Typography;
 
 const ControlsView: React.FC = () => {
   // Configuration hooks
@@ -105,7 +103,7 @@ const ControlsView: React.FC = () => {
   if (machineLoading || stateLoading) {
     return (
       <ControlContainer style={{ padding: '2rem' }}>
-        <Title level={2}>Loading Configuration...</Title>
+        <h2 style={{ marginBottom: '16px' }}>Loading Configuration...</h2>
         <Skeleton variant="text" lines={3} />
         <Skeleton variant="rectangular" width="100%" height="200px" style={{ marginTop: '1rem' }} />
       </ControlContainer>
@@ -125,7 +123,7 @@ const ControlsView: React.FC = () => {
 
   return (
     <ControlContainer data-testid="controls-container">
-      <Title level={2}>Jog Controls</Title>
+      <h2 style={{ marginBottom: '24px' }}>Jog Controls</h2>
 
       {!isConnected && (
         <Alert
@@ -196,7 +194,7 @@ const ControlsView: React.FC = () => {
                   style={{ width: '100%', marginTop: '8px' }}
                   options={[
                     { value: 'metric', label: 'Metric (mm)' },
-                    { value: 'imperial', label: 'Imperial (inches)' }
+                    { value: 'imperial', label: 'Imperial (inches)' },
                   ]}
                 />
               </div>
@@ -209,20 +207,19 @@ const ControlsView: React.FC = () => {
                   style={{ width: '100%', marginTop: '8px' }}
                   options={availableIncrements.map((increment) => ({
                     value: increment,
-                    label: `${increment} ${isMetric ? 'mm' : 'in'}`
+                    label: `${increment} ${isMetric ? 'mm' : 'in'}`,
                   }))}
                 />
               </div>
 
               <div>
                 <label>Feed Rate (mm/min):</label>
-                <PrecisionInput
+                <NumberInput
                   value={feedRate}
                   onChange={(value) => setFeedRate(value || 1000)}
                   min={feedLimits?.min || 100}
                   max={feedLimits?.max || 5000}
                   step={10}
-                  precision={0}
                   style={{ width: '100%', marginTop: '8px' }}
                 />
               </div>
@@ -332,7 +329,7 @@ const ControlsView: React.FC = () => {
 
       {/* Render plugins configured for the controls screen */}
       <div style={{ marginTop: '32px' }}>
-        <Divider>Control Plugins</Divider>
+        <h3 style={{ borderBottom: '1px solid #e0e0e0', paddingBottom: '8px', marginBottom: '16px' }}>Control Plugins</h3>
         <PluginRenderer screen="controls" />
       </div>
     </ControlContainer>

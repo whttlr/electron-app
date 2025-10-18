@@ -2,8 +2,8 @@ import * as React from 'react';
 import {
   ChevronUp, ChevronDown, ChevronLeft, ChevronRight,
 } from 'lucide-react';
-import { cn } from './utils';
 import { Badge, Button } from '@whttlr/ui-core';
+import { cn } from './utils';
 
 interface Column<T> {
   header: string;

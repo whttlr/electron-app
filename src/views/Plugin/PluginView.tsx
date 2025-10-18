@@ -1,7 +1,9 @@
 import React from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import { Typography } from 'antd';
-import { Card, CardHeader, CardTitle, CardContent, Alert } from '@whttlr/ui-core';
+import {
+  Card, CardHeader, CardTitle, CardContent, Alert,
+} from '@whttlr/ui-core';
 import { usePlugins } from '../../services/plugin';
 
 const { Title, Paragraph } = Typography;

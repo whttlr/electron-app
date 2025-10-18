@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Form, InputNumber, Divider, Spin, message, Row, Col, Select as AntSelect } from 'antd';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent, 
-  Input, 
-  Select, 
-  Button, 
-  Alert, 
-  Toggle, 
-  Grid 
+import { message } from 'antd';
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  Input,
+  NumberInput,
+  Select,
+  Button,
+  Alert,
+  Toggle,
+  Grid,
+  FormField,
+  Stack,
+  Skeleton,
 } from '@whttlr/ui-core';
 import { SettingOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
 import { PluginRenderer } from '../../ui/plugin';
@@ -21,11 +25,8 @@ import {
 import { AppSettings } from '../../services/settings';
 import { useSettings } from '../../services/settings/SettingsContext';
 
-const { Title } = Typography;
-const { Option } = AntSelect;
-
 const SettingsView: React.FC = () => {
-  const [form] = Form.useForm();
+  const [formValues, setFormValues] = useState<AppSettings | null>(null);
 
   // Global settings context
   const {
@@ -70,14 +71,35 @@ const SettingsView: React.FC = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [checkingForUpdates, setCheckingForUpdates] = useState(false);
 
+  // Helper function to update nested form values
+  const updateFormValue = (path: string[], value: any) => {
+    if (!formValues) return;
+
+    const newValues = { ...formValues };
+    let current: any = newValues;
+
+    for (let i = 0; i < path.length - 1; i++) {
+      if (!current[path[i]]) {
+        current[path[i]] = {};
+      }
+      current = current[path[i]];
+    }
+
+    current[path[path.length - 1]] = value;
+    setFormValues(newValues);
+  };
+
   // Update form when settings change
   useEffect(() => {
     if (settings) {
-      form.setFieldsValue(settings);
+      setFormValues(settings);
     }
-  }, [settings, form]);
+  }, [settings]);
 
-  const handleSave = async (values: any) => {
+  const handleSave = async () => {
+    if (!formValues) return;
+
+    const values = formValues;
     try {
       setIsSaving(true);
 
@@ -115,24 +137,24 @@ const SettingsView: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div style={{ textAlign: 'center', padding: '50px' }}>
-        <Spin size="large" />
-        <div style={{ marginTop: '16px' }}>
-          {isLoadingSettings ? 'Loading settings...' : 'Loading configuration...'}
-        </div>
+      <div style={{ padding: '24px' }}>
+        <h2 style={{ marginBottom: '24px' }}>Settings</h2>
+        <Stack spacing={16}>
+          <Skeleton variant="rectangular" width="100%" height="200px" />
+          <Skeleton variant="rectangular" width="100%" height="200px" />
+        </Stack>
       </div>
     );
   }
 
   if (hasError) {
     return (
-      <div>
-        <Title level={2}>Settings</Title>
+      <div style={{ padding: '24px' }}>
+        <h2 style={{ marginBottom: '24px' }}>Settings</h2>
         <Alert
-          message="Configuration Error"
+          variant="destructive"
+          title="Configuration Error"
           description={`Failed to load configuration: ${hasError}`}
-          type="error"
-          showIcon
         />
       </div>
     );
@@ -140,13 +162,12 @@ const SettingsView: React.FC = () => {
 
   if (!settings) {
     return (
-      <div>
-        <Title level={2}>Settings</Title>
+      <div style={{ padding: '24px' }}>
+        <h2 style={{ marginBottom: '24px' }}>Settings</h2>
         <Alert
-          message="Configuration Loading"
+          variant="info"
+          title="Configuration Loading"
           description="Waiting for configuration to load..."
-          type="info"
-          showIcon
         />
       </div>
     );
@@ -154,204 +175,291 @@ const SettingsView: React.FC = () => {
 
   return (
     <div data-testid="settings-container">
-      <Title level={2}>Settings</Title>
+      <h2 style={{ marginBottom: '24px' }}>Settings</h2>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={handleSave}
-      >
-        <Row gutter={[16, 16]}>
-          <Col xs={24} lg={12}>
-            <Card title="Machine Configuration" extra={<SettingOutlined />}>
-              <Form.Item label="Machine Name" name={['machine', 'name']}>
-                <Input placeholder="Enter machine name" />
-              </Form.Item>
-
-              <Form.Item label="Units" name={['machine', 'units']}>
-                <AntSelect>
-                  <Option value="metric">Metric (mm)</Option>
-                  <Option value="imperial">Imperial (inches)</Option>
-                </AntSelect>
-              </Form.Item>
-
-              <Divider>Work Area (mm)</Divider>
-
-              <Row gutter={8}>
-                <Col span={8}>
-                  <Form.Item label="X" name={['machine', 'workArea', 'x']}>
-                    <InputNumber min={0} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label="Y" name={['machine', 'workArea', 'y']}>
-                    <InputNumber min={0} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-                <Col span={8}>
-                  <Form.Item label="Z" name={['machine', 'workArea', 'z']}>
-                    <InputNumber min={0} style={{ width: '100%' }} />
-                  </Form.Item>
-                </Col>
-              </Row>
-            </Card>
-          </Col>
-
-          <Col xs={24} lg={12}>
-            <Card title="Jog Settings">
-              <Form.Item label="Default Speed (mm/min)" name={['jog', 'defaultSpeed']}>
-                <InputNumber min={1} max={10000} style={{ width: '100%' }} />
-              </Form.Item>
-
-              <Form.Item label="Acceleration (mm/s²)" name={['jog', 'acceleration']}>
-                <InputNumber min={1} max={2000} style={{ width: '100%' }} />
-              </Form.Item>
-
-              <Form.Item label="Maximum Speed (mm/min)" name={['jog', 'maxSpeed']}>
-                <InputNumber min={1} max={20000} style={{ width: '100%' }} />
-              </Form.Item>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-          <Col xs={24} lg={12}>
-            <Card title="Connection Settings">
-              <Form.Item label="Serial Port" name={['connection', 'port']}>
-                <AntSelect>
-                  <Option value="/dev/ttyUSB0">/dev/ttyUSB0</Option>
-                  <Option value="/dev/ttyACM0">/dev/ttyACM0</Option>
-                  <Option value="COM3">COM3</Option>
-                  <Option value="COM4">COM4</Option>
-                </AntSelect>
-              </Form.Item>
-
-              <Form.Item label="Baud Rate" name={['connection', 'baudRate']}>
-                <AntSelect>
-                  <Option value={9600}>9600</Option>
-                  <Option value={19200}>19200</Option>
-                  <Option value={38400}>38400</Option>
-                  <Option value={57600}>57600</Option>
-                  <Option value={115200}>115200</Option>
-                </AntSelect>
-              </Form.Item>
-
-              <Form.Item label="Connection Timeout (ms)" name={['connection', 'timeout']}>
-                <InputNumber min={1000} max={30000} style={{ width: '100%' }} />
-              </Form.Item>
-            </Card>
-          </Col>
-
-          <Col xs={24} lg={12}>
-            <Card title="User Interface">
-              <Form.Item label="Theme" name={['ui', 'theme']}>
-                <AntSelect>
-                  <Option value="light">Light</Option>
-                  <Option value="dark">Dark</Option>
-                </AntSelect>
-              </Form.Item>
-
-              <Form.Item label="Language" name={['ui', 'language']}>
-                <AntSelect>
-                  <Option value="en">English</Option>
-                  <Option value="es">Spanish</Option>
-                  <Option value="fr">French</Option>
-                  <Option value="de">German</Option>
-                </AntSelect>
-              </Form.Item>
-
-              <Form.Item name={['ui', 'showGrid']} valuePropName="checked">
-                <Switch /> Show Grid in Workspace
-              </Form.Item>
-
-              <Form.Item name={['ui', 'showCoordinates']} valuePropName="checked">
-                <Switch /> Show Coordinates Display
-              </Form.Item>
-
-              <Form.Item name={['ui', 'autoConnect']} valuePropName="checked">
-                <Switch /> Auto-connect on Startup
-              </Form.Item>
-            </Card>
-          </Col>
-        </Row>
-
-        <Row gutter={[16, 16]} style={{ marginTop: '16px' }}>
-          <Col xs={24} lg={12}>
-            <Card title="Update Settings" extra={<UploadOutlined />}>
-              <Form.Item name={['updates', 'autoCheck']} valuePropName="checked">
-                <Switch /> Check for updates automatically
-              </Form.Item>
-
-              <Form.Item label="Check Interval" name={['updates', 'checkInterval']}>
-                <AntSelect>
-                  <Option value={1800000}>30 minutes</Option>
-                  <Option value={3600000}>1 hour</Option>
-                  <Option value={7200000}>2 hours</Option>
-                  <Option value={21600000}>6 hours</Option>
-                  <Option value={43200000}>12 hours</Option>
-                  <Option value={86400000}>24 hours</Option>
-                </AntSelect>
-              </Form.Item>
-
-              <Form.Item name={['updates', 'includePreReleases']} valuePropName="checked">
-                <Switch /> Include pre-release versions
-              </Form.Item>
-
-              <Form.Item name={['updates', 'autoDownload']} valuePropName="checked">
-                <Switch /> Download updates automatically
-              </Form.Item>
-
-              <Divider />
-
-              <div style={{ textAlign: 'center' }}>
-                <Button
-                  type="default"
-                  icon={<UploadOutlined />}
-                  loading={checkingForUpdates}
-                  onClick={handleCheckForUpdates}
-                  style={{ marginBottom: '8px' }}
-                >
-                  Check for Updates Now
-                </Button>
-                {updateData?.updateAvailable && (
-                  <div style={{ marginTop: '8px' }}>
-                    <Alert
-                      message="Update Available"
-                      description={`Version ${updateData.latestVersion} is available`}
-                      type="success"
-                      showIcon
-                      action={
-                        <Button size="small" type="link" onClick={showUpdateDialog}>
-                          View Details
-                        </Button>
-                      }
+      <div>
+        <Grid cols={2} gap={4}>
+            <Card>
+              <CardHeader>
+                <CardTitle>Machine Configuration</CardTitle>
+                <SettingOutlined style={{ fontSize: '18px' }} />
+              </CardHeader>
+              <CardContent>
+                <Stack spacing={12}>
+                  <FormField label="Machine Name">
+                    <Input
+                      placeholder="Enter machine name"
+                      value={formValues?.machine?.name || ''}
+                      onChange={(e) => updateFormValue(['machine', 'name'], e.target.value)}
                     />
-                  </div>
-                )}
-              </div>
-            </Card>
-          </Col>
-        </Row>
+                  </FormField>
 
-        <Row style={{ marginTop: '24px' }}>
-          <Col span={24}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              icon={<SaveOutlined />}
-              size="large"
-              loading={isSaving}
-              disabled={isSaving}
-            >
-              {isSaving ? 'Saving...' : 'Save Settings'}
-            </Button>
-          </Col>
-        </Row>
-      </Form>
+                  <FormField label="Units">
+                    <Select
+                      value={formValues?.machine?.units || 'metric'}
+                      onChange={(value) => updateFormValue(['machine', 'units'], value)}
+                      options={[
+                        { value: 'metric', label: 'Metric (mm)' },
+                        { value: 'imperial', label: 'Imperial (inches)' },
+                      ]}
+                    />
+                  </FormField>
+
+                  <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '12px', marginTop: '12px' }}>
+                    <h4 style={{ marginBottom: '12px' }}>Work Area (mm)</h4>
+                    <Grid cols={3} gap={2}>
+                      <FormField label="X">
+                        <NumberInput
+                          min={0}
+                          value={formValues?.machine?.workArea?.x || 0}
+                          onChange={(value) => updateFormValue(['machine', 'workArea', 'x'], value || 0)}
+                          step={1}
+                        />
+                      </FormField>
+                      <FormField label="Y">
+                        <NumberInput
+                          min={0}
+                          value={formValues?.machine?.workArea?.y || 0}
+                          onChange={(value) => updateFormValue(['machine', 'workArea', 'y'], value || 0)}
+                          step={1}
+                        />
+                      </FormField>
+                      <FormField label="Z">
+                        <NumberInput
+                          min={0}
+                          value={formValues?.machine?.workArea?.z || 0}
+                          onChange={(value) => updateFormValue(['machine', 'workArea', 'z'], value || 0)}
+                          step={1}
+                        />
+                      </FormField>
+                    </Grid>
+                  </div>
+                </Stack>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Jog Settings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Stack spacing={12}>
+                  <FormField label="Default Speed (mm/min)">
+                    <NumberInput
+                      min={1}
+                      max={10000}
+                      value={formValues?.jog?.defaultSpeed || 1000}
+                      onChange={(value) => updateFormValue(['jog', 'defaultSpeed'], value || 1000)}
+                      step={10}
+                    />
+                  </FormField>
+
+                  <FormField label="Acceleration (mm/s²)">
+                    <NumberInput
+                      min={1}
+                      max={2000}
+                      value={formValues?.jog?.acceleration || 100}
+                      onChange={(value) => updateFormValue(['jog', 'acceleration'], value || 100)}
+                      step={1}
+                    />
+                  </FormField>
+
+                  <FormField label="Maximum Speed (mm/min)">
+                    <NumberInput
+                      min={1}
+                      max={20000}
+                      value={formValues?.jog?.maxSpeed || 5000}
+                      onChange={(value) => updateFormValue(['jog', 'maxSpeed'], value || 5000)}
+                      step={10}
+                    />
+                  </FormField>
+                </Stack>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Connection Settings</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Stack spacing={12}>
+                  <FormField label="Serial Port">
+                    <Select
+                      value={formValues?.connection?.port || '/dev/ttyUSB0'}
+                      onChange={(value) => updateFormValue(['connection', 'port'], value)}
+                      options={[
+                        { value: '/dev/ttyUSB0', label: '/dev/ttyUSB0' },
+                        { value: '/dev/ttyACM0', label: '/dev/ttyACM0' },
+                        { value: 'COM3', label: 'COM3' },
+                        { value: 'COM4', label: 'COM4' },
+                      ]}
+                    />
+                  </FormField>
+
+                  <FormField label="Baud Rate">
+                    <Select
+                      value={formValues?.connection?.baudRate?.toString() || '115200'}
+                      onChange={(value) => updateFormValue(['connection', 'baudRate'], Number(value))}
+                      options={[
+                        { value: '9600', label: '9600' },
+                        { value: '19200', label: '19200' },
+                        { value: '38400', label: '38400' },
+                        { value: '57600', label: '57600' },
+                        { value: '115200', label: '115200' },
+                      ]}
+                    />
+                  </FormField>
+
+                  <FormField label="Connection Timeout (ms)">
+                    <NumberInput
+                      min={1000}
+                      max={30000}
+                      value={formValues?.connection?.timeout || 5000}
+                      onChange={(value) => updateFormValue(['connection', 'timeout'], value || 5000)}
+                      step={100}
+                    />
+                  </FormField>
+                </Stack>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>User Interface</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Stack spacing={12}>
+                  <FormField label="Theme">
+                    <Select
+                      value={formValues?.ui?.theme || 'light'}
+                      onChange={(value) => updateFormValue(['ui', 'theme'], value)}
+                      options={[
+                        { value: 'light', label: 'Light' },
+                        { value: 'dark', label: 'Dark' },
+                      ]}
+                    />
+                  </FormField>
+
+                  <FormField label="Language">
+                    <Select
+                      value={formValues?.ui?.language || 'en'}
+                      onChange={(value) => updateFormValue(['ui', 'language'], value)}
+                      options={[
+                        { value: 'en', label: 'English' },
+                        { value: 'es', label: 'Spanish' },
+                        { value: 'fr', label: 'French' },
+                        { value: 'de', label: 'German' },
+                      ]}
+                    />
+                  </FormField>
+
+                  <FormField label="Display Options">
+                    <Stack spacing={8}>
+                      <Toggle
+                        checked={formValues?.ui?.showGrid || false}
+                        onChange={(checked) => updateFormValue(['ui', 'showGrid'], checked)}
+                        label="Show Grid in Workspace"
+                      />
+                      <Toggle
+                        checked={formValues?.ui?.showCoordinates || false}
+                        onChange={(checked) => updateFormValue(['ui', 'showCoordinates'], checked)}
+                        label="Show Coordinates Display"
+                      />
+                      <Toggle
+                        checked={formValues?.ui?.autoConnect || false}
+                        onChange={(checked) => updateFormValue(['ui', 'autoConnect'], checked)}
+                        label="Auto-connect on Startup"
+                      />
+                    </Stack>
+                  </FormField>
+                </Stack>
+              </CardContent>
+            </Card>
+        </Grid>
+
+        <Grid cols={2} gap={4} style={{ marginTop: '16px' }}>
+          <Card>
+            <CardHeader>
+              <CardTitle>Update Settings</CardTitle>
+              <UploadOutlined style={{ fontSize: '18px' }} />
+            </CardHeader>
+            <CardContent>
+              <Stack spacing={12}>
+                <FormField label="Update Options">
+                  <Stack spacing={8}>
+                    <Toggle
+                      checked={formValues?.updates?.autoCheck || false}
+                      onChange={(checked) => updateFormValue(['updates', 'autoCheck'], checked)}
+                      label="Check for updates automatically"
+                    />
+                    <Toggle
+                      checked={formValues?.updates?.includePreReleases || false}
+                      onChange={(checked) => updateFormValue(['updates', 'includePreReleases'], checked)}
+                      label="Include pre-release versions"
+                    />
+                  </Stack>
+                </FormField>
+
+                <FormField label="Check Interval">
+                  <Select
+                    value={formValues?.updates?.checkInterval?.toString() || '86400000'}
+                    onChange={(value) => updateFormValue(['updates', 'checkInterval'], Number(value))}
+                    options={[
+                      { value: '1800000', label: '30 minutes' },
+                      { value: '3600000', label: '1 hour' },
+                      { value: '7200000', label: '2 hours' },
+                      { value: '21600000', label: '6 hours' },
+                      { value: '43200000', label: '12 hours' },
+                      { value: '86400000', label: '24 hours' },
+                    ]}
+                  />
+                </FormField>
+                <div style={{ borderTop: '1px solid #e0e0e0', paddingTop: '12px', marginTop: '12px' }}>
+                  <Stack spacing={8} align="center">
+                    <Button
+                      variant="outline"
+                      leftIcon={<UploadOutlined />}
+                      loading={checkingForUpdates}
+                      onClick={handleCheckForUpdates}
+                    >
+                      Check for Updates Now
+                    </Button>
+                    {updateData?.updateAvailable && (
+                      <Alert
+                        variant="success"
+                        title="Update Available"
+                        description={`Version ${updateData.latestVersion} is available`}
+                        actions={
+                          <Button size="sm" variant="ghost" onClick={showUpdateDialog}>
+                            View Details
+                          </Button>
+                        }
+                      />
+                    )}
+                  </Stack>
+                </div>
+              </Stack>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        <div style={{ marginTop: '24px' }}>
+          <Button
+            variant="default"
+            leftIcon={<SaveOutlined />}
+            size="lg"
+            loading={isSaving}
+            disabled={isSaving}
+            onClick={handleSave}
+          >
+            {isSaving ? 'Saving...' : 'Save Settings'}
+          </Button>
+        </div>
+      </div>
 
       {/* Render plugins configured for the settings screen */}
       <div style={{ marginTop: '32px' }}>
-        <Divider>Plugin Settings</Divider>
+        <h3 style={{ borderBottom: '1px solid #e0e0e0', paddingBottom: '8px', marginBottom: '16px' }}>Plugin Settings</h3>
         <PluginRenderer screen="settings" />
       </div>
     </div>

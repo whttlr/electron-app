@@ -1,0 +1,66 @@
+/* Minimal UI Library CNC styles for JogControls component */
+/* Import only the CNC-specific styles without breaking the app theme */
+
+/* CNC Panel styling */
+.cnc-panel {
+  background: linear-gradient(135deg, rgb(31 41 55) 0%, rgb(17 24 39) 100%);
+  border: 2px solid rgb(75 85 99);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+}
+
+/* CNC Button variant styles */
+button[class*="cnc"],
+button[data-variant="cnc"] {
+  background-color: rgb(59 130 246) !important;
+  color: white !important;
+  border: 2px solid rgb(75 85 99) !important;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  min-width: 3rem;
+  min-height: 3rem;
+  transition: all 0.2s ease;
+}
+
+button[class*="cnc"]:hover,
+button[data-variant="cnc"]:hover {
+  background-color: rgb(37 99 235) !important;
+  border-color: rgb(107 114 128) !important;
+  transform: translateY(-1px);
+}
+
+button[class*="cnc"]:disabled,
+button[data-variant="cnc"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Jog button size variant */
+button[class*="size-jog"],
+button[data-size="jog"] {
+  min-width: 3.5rem;
+  min-height: 3.5rem;
+  font-size: 1.125rem;
+}
+
+/* Ensure icons and text are visible */
+button[class*="cnc"] svg,
+button[class*="cnc"] span,
+button[data-variant="cnc"] svg,
+button[data-variant="cnc"] span {
+  color: white !important;
+  fill: white !important;
+}
+
+/* Home button styling (center button) */
+button[class*="cnc"][class*="home"],
+button[data-variant="cnc"][aria-label*="home" i] {
+  background-color: rgb(34 197 94) !important;
+  border-color: rgb(22 163 74) !important;
+}
+
+button[class*="cnc"][class*="home"]:hover,
+button[data-variant="cnc"][aria-label*="home" i]:hover {
+  background-color: rgb(22 163 74) !important;
+}

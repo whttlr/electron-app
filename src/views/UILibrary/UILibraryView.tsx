@@ -17,16 +17,17 @@ import {
   DashboardContainer,
   ControlContainer,
   DashboardCard,
-  StatusCard,
-  
+
   // Form Components
   Button,
   Input,
+  NumberInput,
+  SliderInput,
   Select,
   Toggle,
   FormField,
   Upload,
-  
+
   // Data Display Components
   Badge,
   StatusBadge,
@@ -39,7 +40,8 @@ import {
   CompactCoordinateDisplay,
   Accordion,
   Collapse,
-  
+  DataTable,
+
   // Feedback Components
   Alert,
   AlertTitle,
@@ -55,7 +57,7 @@ import {
   WarningTooltip,
   SuccessTooltip,
   InfoTooltip,
-  
+
   // CNC-Specific Components
   JogControls,
   JogSpeedControl,
@@ -65,21 +67,26 @@ import {
   ConnectionStatus,
   WorkingAreaPreview,
   MachineDisplay2D,
-  
+
   // Utility Functions
   cn,
   tokens,
-  
+
   // Design Token Helpers
   getButtonVariantStyles,
   getBadgeVariantStyles,
   getCardVariantStyles,
-  getProgressVariantStyles
+  getProgressVariantStyles,
+
 } from '@whttlr/ui-core';
+// Remove JogControlsWrapper import - using JogControls directly from ui-library
+
+// Updated to use NumberInput component from UI Library for all numeric inputs
+// NumberInput provides increment/decrement buttons, precision control, and CNC-optimized styling
 
 const UILibraryView: React.FC = () => {
   const [activeTab, setActiveTab] = useState('primitives');
-  
+
   // Form States
   const [inputValue, setInputValue] = useState('');
   const [searchValue, setSearchValue] = useState('');
@@ -91,40 +98,159 @@ const UILibraryView: React.FC = () => {
   const [precisionValue, setPrecisionValue] = useState(1.234);
   const [toggleValue, setToggleValue] = useState(false);
   
+  // NumberInput specific states
+  const [spindleSpeed, setSpindleSpeed] = useState(1200);
+  const [feedRate, setFeedRate] = useState(800);
+  const [toolDiameter, setToolDiameter] = useState(6.35);
+  const [stepover, setStepover] = useState(0.8);
+  const [stepdown, setStepdown] = useState(2.0);
+  const [jogDistanceNumber, setJogDistanceNumber] = useState(1.0);
+  
+  // SliderInput states
+  const [sliderValue, setSliderValue] = useState(50);
+  const [precisionSlider, setPrecisionSlider] = useState(75.5);
+
   // Progress States
   const [progressValue, setProgressValue] = useState(65);
   const [circularProgress, setCircularProgress] = useState(35);
   const [loadingStates, setLoadingStates] = useState({
     button: false,
     card: false,
-    skeleton: false
+    skeleton: false,
   });
-  
+
   // CNC States
   const [position, setPosition] = useState({ x: 10.5, y: 25.0, z: 2.3 });
   const [jogDistance, setJogDistance] = useState(1);
   const [jogSpeed, setJogSpeed] = useState(1000);
   const [isConnected, setIsConnected] = useState(true);
   const [machineStatus, setMachineStatus] = useState('idle');
-  
+
   // Layout States
   const [accordionOpen, setAccordionOpen] = useState(['item1']);
   const [collapseOpen, setCollapseOpen] = useState(false);
-  
+
   // Data States
-  const [tableData] = useState([
-    { id: 1, name: 'Spindle Motor', status: 'running', temp: 45, load: 78 },
-    { id: 2, name: 'X-Axis Drive', status: 'idle', temp: 32, load: 12 },
-    { id: 3, name: 'Y-Axis Drive', status: 'idle', temp: 31, load: 8 },
-    { id: 4, name: 'Z-Axis Drive', status: 'idle', temp: 29, load: 5 },
+  const [selectedRows, setSelectedRows] = useState<number[]>([]);
+  const [cncJobsData] = useState([
+    {
+      id: 1,
+      jobName: 'Aluminum Bracket',
+      status: 'running',
+      progress: 65,
+      material: 'Aluminum 6061',
+      tool: 'End Mill 6mm',
+      timeRemaining: '00:45:32',
+      startTime: '2024-01-15 08:30:00',
+      operator: 'John Smith',
+      priority: 'high'
+    },
+    {
+      id: 2,
+      jobName: 'Steel Plate Cut',
+      status: 'queued',
+      progress: 0,
+      material: 'Steel 1020',
+      tool: 'End Mill 10mm',
+      timeRemaining: '01:20:00',
+      startTime: '-',
+      operator: 'Sarah Johnson',
+      priority: 'medium'
+    },
+    {
+      id: 3,
+      jobName: 'Precision Bore',
+      status: 'completed',
+      progress: 100,
+      material: 'Stainless Steel',
+      tool: 'Boring Bar 12mm',
+      timeRemaining: '00:00:00',
+      startTime: '2024-01-15 06:15:00',
+      operator: 'Mike Wilson',
+      priority: 'low'
+    },
+    {
+      id: 4,
+      jobName: 'Titanium Component',
+      status: 'error',
+      progress: 23,
+      material: 'Titanium Grade 5',
+      tool: 'Carbide End Mill 4mm',
+      timeRemaining: '-',
+      startTime: '2024-01-15 10:45:00',
+      operator: 'Lisa Chen',
+      priority: 'high'
+    },
+    {
+      id: 5,
+      jobName: 'Brass Fitting',
+      status: 'paused',
+      progress: 78,
+      material: 'Brass C360',
+      tool: 'End Mill 8mm',
+      timeRemaining: '00:12:45',
+      startTime: '2024-01-15 11:20:00',
+      operator: 'David Brown',
+      priority: 'medium'
+    }
   ]);
 
-  const handleJog = (axis: 'x' | 'y' | 'z', direction: 1 | -1) => {
+  const [machineData] = useState([
+    {
+      id: 1,
+      machineName: 'Haas VF-2',
+      status: 'running',
+      xPosition: 125.450,
+      yPosition: 78.250,
+      zPosition: -12.300,
+      spindleSpeed: 2500,
+      feedRate: 800,
+      coolant: true,
+      lastMaintenance: '2024-01-10'
+    },
+    {
+      id: 2,
+      machineName: 'DMG Mori NLX',
+      status: 'idle',
+      xPosition: 0.000,
+      yPosition: 0.000,
+      zPosition: 0.000,
+      spindleSpeed: 0,
+      feedRate: 0,
+      coolant: false,
+      lastMaintenance: '2024-01-12'
+    },
+    {
+      id: 3,
+      machineName: 'Mazak Integrex',
+      status: 'maintenance',
+      xPosition: 50.000,
+      yPosition: 25.000,
+      zPosition: 10.000,
+      spindleSpeed: 0,
+      feedRate: 0,
+      coolant: false,
+      lastMaintenance: '2024-01-15'
+    }
+  ]);
+
+  const handleJog = (axis: 'X' | 'Y' | 'Z', direction: number) => {
     const distance = jogDistance * direction;
-    setPosition(prev => ({
+    setPosition((prev) => ({
       ...prev,
-      [axis]: Math.max(0, prev[axis] + distance) // Ensure no negative values
+      [axis.toLowerCase()]: Math.max(0, prev[axis.toLowerCase() as keyof typeof prev] + distance), // Ensure no negative values
     }));
+  };
+
+  const handleZero = (axis?: 'X' | 'Y' | 'Z') => {
+    if (axis) {
+      setPosition((prev) => ({
+        ...prev,
+        [axis.toLowerCase()]: 0,
+      }));
+    } else {
+      setPosition({ x: 0, y: 0, z: 0 });
+    }
   };
 
   // Helper Data
@@ -132,58 +258,58 @@ const UILibraryView: React.FC = () => {
     { value: 'option1', label: 'Option 1', description: 'First option' },
     { value: 'option2', label: 'Option 2', description: 'Second option' },
     { value: 'option3', label: 'Option 3', description: 'Third option' },
-    { value: 'option4', label: 'Disabled Option', disabled: true }
+    { value: 'option4', label: 'Disabled Option', disabled: true },
   ];
 
   const multiSelectOptions = [
     { value: 'feature1', label: 'Advanced Toolpath' },
     { value: 'feature2', label: 'Real-time Monitoring' },
     { value: 'feature3', label: 'Auto-calibration' },
-    { value: 'feature4', label: 'Safety Interlocks' }
+    { value: 'feature4', label: 'Safety Interlocks' },
   ];
 
   const accordionItems = [
-    { 
-      id: 'item1', 
-      title: 'Machine Configuration', 
+    {
+      id: 'item1',
+      title: 'Machine Configuration',
       content: (
         <p style={{ margin: '0', color: tokens.colors.text.secondary }}>
           Configure machine parameters, work area dimensions, and axis limits.
         </p>
-      )
+      ),
     },
-    { 
-      id: 'item2', 
-      title: 'Tool Library', 
+    {
+      id: 'item2',
+      title: 'Tool Library',
       content: (
         <p style={{ margin: '0', color: tokens.colors.text.secondary }}>
           Manage cutting tools, speeds, feeds, and tool change procedures.
         </p>
-      )
+      ),
     },
-    { 
-      id: 'item3', 
-      title: 'Safety Settings', 
+    {
+      id: 'item3',
+      title: 'Safety Settings',
       content: (
         <p style={{ margin: '0', color: tokens.colors.text.secondary }}>
           Configure emergency stops, safety zones, and protective systems.
         </p>
-      )
-    }
+      ),
+    },
   ];
 
   const workArea = { x: 300, y: 200, z: 50 };
 
   // Helper Functions
   const toggleLoading = (key: string) => {
-    setLoadingStates(prev => ({
+    setLoadingStates((prev) => ({
       ...prev,
-      [key]: !prev[key]
+      [key]: !prev[key],
     }));
     setTimeout(() => {
-      setLoadingStates(prev => ({
+      setLoadingStates((prev) => ({
         ...prev,
-        [key]: false
+        [key]: false,
       }));
     }, 3000);
   };
@@ -206,28 +332,28 @@ const UILibraryView: React.FC = () => {
 
       <div>
         <div style={{ marginBottom: '24px' }}>
-          <Button 
+          <Button
             variant={activeTab === 'primitives' ? 'default' : 'outline'}
             onClick={() => setActiveTab('primitives')}
             style={{ marginRight: '8px' }}
           >
             Primitive Components
           </Button>
-          <Button 
+          <Button
             variant={activeTab === 'cnc' ? 'default' : 'outline'}
             onClick={() => setActiveTab('cnc')}
             style={{ marginRight: '8px' }}
           >
             CNC Components
           </Button>
-          <Button 
+          <Button
             variant={activeTab === 'examples' ? 'default' : 'outline'}
             onClick={() => setActiveTab('examples')}
             style={{ marginRight: '8px' }}
           >
             Real Examples
           </Button>
-          <Button 
+          <Button
             variant={activeTab === 'tokens' ? 'default' : 'outline'}
             onClick={() => setActiveTab('tokens')}
           >
@@ -251,7 +377,7 @@ const UILibraryView: React.FC = () => {
                   {/* All Button Variants */}
                   <div>
                     <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>All Variants</h4>
-                    <Grid cols={4} gap={3}>
+                    <Grid cols={4} gap={4}>
                       <Button variant="default">Default</Button>
                       <Button variant="destructive">Destructive</Button>
                       <Button variant="outline">Outline</Button>
@@ -260,7 +386,7 @@ const UILibraryView: React.FC = () => {
                       <Button variant="subtle">Subtle</Button>
                       <Button variant="ghost">Ghost</Button>
                       <Button variant="link">Link</Button>
-                      <Button variant="white">White</Button>
+                      <Button variant="white" style={{ border: `1px solid ${tokens.colors.border.primary}` }}>White</Button>
                       <Button variant="cnc">CNC Style</Button>
                       <Button variant="emergency">Emergency</Button>
                       <Button variant="success">Success</Button>
@@ -271,7 +397,7 @@ const UILibraryView: React.FC = () => {
                   {/* All Button Sizes */}
                   <div>
                     <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>All Sizes</h4>
-                    <Flex gap={12} align="center">
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
                       <Button size="sm">Small</Button>
                       <Button size="default">Default</Button>
                       <Button size="lg">Large</Button>
@@ -279,7 +405,7 @@ const UILibraryView: React.FC = () => {
                       <Button size="icon">⚙</Button>
                       <Button size="iconlg">🔧</Button>
                       <Button size="jog">JOG</Button>
-                    </Flex>
+                    </div>
                   </div>
 
                   {/* Interactive States */}
@@ -288,19 +414,19 @@ const UILibraryView: React.FC = () => {
                     <Grid cols={3} gap={4}>
                       <Stack spacing={8}>
                         <Button disabled>Disabled</Button>
-                        <Button 
+                        <Button
                           loading={loadingStates.button}
                           onClick={() => toggleLoading('button')}
                         >
                           {loadingStates.button ? 'Loading...' : 'Click to Load'}
                         </Button>
                       </Stack>
-                      
+
                       <Stack spacing={8}>
                         <Button leftIcon="🚀">With Left Icon</Button>
                         <Button rightIcon="📊">With Right Icon</Button>
                       </Stack>
-                      
+
                       <Stack spacing={8}>
                         <Button as="a" href="#" variant="link">As Link</Button>
                         <Button variant="emergency" size="lg">EMERGENCY STOP</Button>
@@ -331,7 +457,7 @@ const UILibraryView: React.FC = () => {
               <CardHeader>
                 <CardTitle>Form System - Complete Input Library</CardTitle>
                 <p style={{ color: tokens.colors.text.secondary, margin: '8px 0 0 0' }}>
-                  All input variants, number inputs with CNC-specific formatting, and form validation
+                  All input variants, NumberInput with precision controls, SliderInput components, and CNC-optimized numeric inputs
                 </p>
               </CardHeader>
               <CardContent>
@@ -348,7 +474,7 @@ const UILibraryView: React.FC = () => {
                             placeholder="Enter text..."
                           />
                         </FormField>
-                        
+
                         <FormField label="Search Input">
                           <Input
                             variant="search"
@@ -357,7 +483,7 @@ const UILibraryView: React.FC = () => {
                             placeholder="Search..."
                           />
                         </FormField>
-                        
+
                         <FormField label="Password Input">
                           <Input
                             variant="password"
@@ -366,18 +492,19 @@ const UILibraryView: React.FC = () => {
                             placeholder="Enter password..."
                           />
                         </FormField>
-                        
+
                         <FormField label="Number Input">
-                          <Input
-                            variant="number"
+                          <NumberInput
                             value={numberValue}
-                            onChange={(e) => setNumberValue(Number(e.target.value))}
+                            onChange={(value) => setNumberValue(value || 0)}
                             min={0}
                             max={100}
+                            step={1}
+                            placeholder="Enter number..."
                           />
                         </FormField>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <FormField label="CNC Input" description="Industrial-grade input styling">
                           <Input
@@ -387,7 +514,7 @@ const UILibraryView: React.FC = () => {
                             placeholder="CNC parameter..."
                           />
                         </FormField>
-                        
+
                         <FormField label="Input with Left Icon">
                           <Input
                             value={searchValue}
@@ -395,7 +522,7 @@ const UILibraryView: React.FC = () => {
                             placeholder="Search with icon..."
                           />
                         </FormField>
-                        
+
                         <FormField label="Input with Right Addon">
                           <Input
                             value={coordinateValue}
@@ -403,7 +530,7 @@ const UILibraryView: React.FC = () => {
                             placeholder="0.000 mm"
                           />
                         </FormField>
-                        
+
                         <FormField label="Error State" error="This field is required">
                           <Input
                             value=""
@@ -416,58 +543,238 @@ const UILibraryView: React.FC = () => {
                     </Grid>
                   </div>
 
-                  {/* CNC-Specialized Inputs */}
+                  {/* NumberInput Showcase */}
                   <div>
-                    <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>CNC-Optimized Number Inputs</h4>
+                    <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>NumberInput Component - CNC-Optimized</h4>
                     <Grid cols={2} gap={6}>
                       <Stack spacing={12}>
-                        <FormField label="Coordinate Input" description="High-precision coordinate with unit display">
-                          <Input
-                            type="number"
+                        <FormField label="Coordinate Input" description="High-precision coordinate with increment/decrement buttons">
+                          <NumberInput
+                            label="X Position (mm)"
                             value={coordinateValue}
-                            onChange={(e) => setCoordinateValue(Math.max(0, Number(e.target.value) || 0))}
-                            placeholder="0.500 mm"
-                            step="0.001"
-                            min="0"
-                            max="1000"
+                            onChange={(value) => setCoordinateValue(Math.max(0, value || 0))}
+                            placeholder="0.500"
+                            step={0.001}
+                            min={0}
+                            max={1000}
+                            size="md"
                           />
                         </FormField>
-                        
-                        <FormField label="Precision Input" description="Ultra-precise numeric input">
-                          <Input
-                            type="number"
+
+                        <FormField label="Precision Input" description="Ultra-precise numeric input with step controls">
+                          <NumberInput
+                            label="Precision Value"
                             value={precisionValue}
-                            onChange={(e) => setPrecisionValue(Number(e.target.value) || 0)}
+                            onChange={(value) => setPrecisionValue(value || 0)}
                             placeholder="1.234"
-                            step="0.0001"
-                            min="0"
-                            max="100"
+                            step={0.0001}
+                            min={0}
+                            max={100}
+                            size="md"
+                          />
+                        </FormField>
+
+                        <FormField label="Tool Diameter" description="Tool diameter with 0.01mm precision">
+                          <NumberInput
+                            label="Diameter (mm)"
+                            value={toolDiameter}
+                            onChange={(value) => setToolDiameter(value || 0)}
+                            placeholder="6.35"
+                            step={0.01}
+                            min={0.1}
+                            max={50}
+                            size="md"
                           />
                         </FormField>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
-                        <FormField label="Speed Input (RPM)">
-                          <Input
-                            type="number"
-                            value={jogSpeed}
-                            onChange={(e) => setJogSpeed(Number(e.target.value) || 1000)}
-                            placeholder="1000 RPM"
-                            step="50"
-                            min="100"
-                            max="5000"
+                        <FormField label="Spindle Speed" description="RPM control with 100 RPM increments">
+                          <NumberInput
+                            label="Speed (RPM)"
+                            value={spindleSpeed}
+                            onChange={(value) => setSpindleSpeed(value || 1000)}
+                            placeholder="1200"
+                            step={100}
+                            min={0}
+                            max={10000}
+                            size="md"
                           />
                         </FormField>
-                        
-                        <FormField label="Distance Input">
-                          <Input
-                            type="number"
-                            value={jogDistance}
-                            onChange={(e) => setJogDistance(Math.max(0.001, Number(e.target.value) || 0.001))}
-                            placeholder="1.000 mm"
-                            step="0.001"
-                            min="0.001"
-                            max="1000"
+
+                        <FormField label="Feed Rate" description="Feed rate with 50 mm/min increments">
+                          <NumberInput
+                            label="Feed Rate (mm/min)"
+                            value={feedRate}
+                            onChange={(value) => setFeedRate(value || 800)}
+                            placeholder="800"
+                            step={50}
+                            min={0}
+                            max={5000}
+                            size="md"
+                          />
+                        </FormField>
+
+                        <FormField label="Jog Distance" description="Jog distance with 0.1mm precision">
+                          <NumberInput
+                            label="Distance (mm)"
+                            value={jogDistanceNumber}
+                            onChange={(value) => setJogDistanceNumber(Math.max(0.001, value || 0.001))}
+                            placeholder="1.000"
+                            step={0.1}
+                            min={0.001}
+                            max={1000}
+                            size="md"
+                          />
+                        </FormField>
+                      </Stack>
+                    </Grid>
+                  </div>
+
+                  {/* NumberInput Sizes and Variants */}
+                  <div>
+                    <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>NumberInput Sizes & Variants</h4>
+                    <Grid cols={3} gap={6}>
+                      <Stack spacing={8}>
+                        <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Small Size</h5>
+                        <NumberInput
+                          label="Small Number"
+                          size="sm"
+                          value={25}
+                          onChange={(value) => console.log('Small:', value)}
+                          min={0}
+                          max={100}
+                          step={1}
+                        />
+                      </Stack>
+
+                      <Stack spacing={8}>
+                        <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Default Size</h5>
+                        <NumberInput
+                          label="Default Number"
+                          size="md"
+                          value={50}
+                          onChange={(value) => console.log('Default:', value)}
+                          min={0}
+                          max={100}
+                          step={1}
+                        />
+                      </Stack>
+
+                      <Stack spacing={8}>
+                        <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Large Size</h5>
+                        <NumberInput
+                          label="Large Number"
+                          size="lg"
+                          value={75}
+                          onChange={(value) => console.log('Large:', value)}
+                          min={0}
+                          max={100}
+                          step={1}
+                        />
+                      </Stack>
+
+                      <Stack spacing={8}>
+                        <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Error State</h5>
+                        <NumberInput
+                          label="Error Example"
+                          variant="error"
+                          value={-5}
+                          onChange={(value) => console.log('Error:', value)}
+                          min={0}
+                          max={100}
+                          step={1}
+                          error="Value must be between 0 and 100"
+                        />
+                      </Stack>
+
+                      <Stack spacing={8}>
+                        <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Disabled State</h5>
+                        <NumberInput
+                          label="Disabled"
+                          value={30}
+                          onChange={(value) => console.log('Disabled:', value)}
+                          min={0}
+                          max={100}
+                          step={1}
+                          disabled
+                        />
+                      </Stack>
+
+                      <Stack spacing={8}>
+                        <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>High Precision</h5>
+                        <NumberInput
+                          label="Precision (μm)"
+                          value={123.4567}
+                          onChange={(value) => console.log('Precision:', value)}
+                          min={0}
+                          max={1000}
+                          step={0.0001}
+                          placeholder="0.0000"
+                        />
+                      </Stack>
+                    </Grid>
+                  </div>
+
+                  {/* SliderInput Showcase */}
+                  <div>
+                    <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>SliderInput Component</h4>
+                    <Grid cols={2} gap={6}>
+                      <Stack spacing={12}>
+                        <FormField label="Standard Slider" description="Slider with value display">
+                          <SliderInput
+                            label="Standard Range"
+                            value={sliderValue}
+                            onValueChange={setSliderValue}
+                            min={0}
+                            max={100}
+                            step={1}
+                            showValue={true}
+                            unit="%"
+                          />
+                        </FormField>
+
+                        <FormField label="Precision Slider" description="High-precision slider with decimal values">
+                          <SliderInput
+                            label="Precision Control"
+                            value={precisionSlider}
+                            onValueChange={setPrecisionSlider}
+                            min={0}
+                            max={100}
+                            step={0.1}
+                            showValue={true}
+                            unit="%"
+                            variant="success"
+                          />
+                        </FormField>
+                      </Stack>
+
+                      <Stack spacing={12}>
+                        <FormField label="Stepover Percentage" description="CNC stepover control">
+                          <SliderInput
+                            label="Stepover"
+                            value={stepover * 100}
+                            onValueChange={(value) => setStepover(value / 100)}
+                            min={10}
+                            max={100}
+                            step={5}
+                            showValue={true}
+                            unit="%"
+                            variant="info"
+                          />
+                        </FormField>
+
+                        <FormField label="Spindle Speed Control" description="RPM control via slider">
+                          <SliderInput
+                            label="Spindle RPM"
+                            value={spindleSpeed}
+                            onValueChange={setSpindleSpeed}
+                            min={0}
+                            max={10000}
+                            step={100}
+                            showValue={true}
+                            unit=" RPM"
+                            variant="warning"
                           />
                         </FormField>
                       </Stack>
@@ -487,7 +794,7 @@ const UILibraryView: React.FC = () => {
                             placeholder="Choose an option..."
                           />
                         </FormField>
-                        
+
                         <FormField label="Multi-Select">
                           <Select
                             value={multiSelectValue}
@@ -498,7 +805,7 @@ const UILibraryView: React.FC = () => {
                           />
                         </FormField>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <FormField label="Searchable Select">
                           <Select
@@ -509,7 +816,7 @@ const UILibraryView: React.FC = () => {
                             searchable
                           />
                         </FormField>
-                        
+
                         <FormField label="CNC Select Variant">
                           <Select
                             variant="cnc"
@@ -535,7 +842,7 @@ const UILibraryView: React.FC = () => {
                             label="Enable feature"
                           />
                         </FormField>
-                        
+
                         <FormField label="Large Toggle">
                           <Toggle
                             size="lg"
@@ -545,47 +852,46 @@ const UILibraryView: React.FC = () => {
                           />
                         </FormField>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
-                        <FormField label="Custom Control">
-                          <Input
-                            type="number"
+                        <FormField label="Custom NumberInput">
+                          <NumberInput
+                            label="Custom Value"
                             value={precisionValue}
-                            onChange={(e) => setPrecisionValue(Number(e.target.value) || 0)}
+                            onChange={(value) => setPrecisionValue(value || 0)}
                             placeholder="Enter value"
-                            step="1"
-                            min="0"
-                            max="100"
+                            step={1}
+                            min={0}
+                            max={100}
+                            size="sm"
                           />
                         </FormField>
-                        
+
                         <FormField label="Range Control">
                           <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                            <Input
-                              type="number"
+                            <NumberInput
                               value={20}
-                              onChange={(e) => console.log('Range start:', e.target.value)}
+                              onChange={(value) => console.log('Range start:', value)}
                               placeholder="Min"
-                              step="1"
-                              min="0"
-                              max="100"
-                              style={{ flex: 1 }}
+                              step={1}
+                              min={0}
+                              max={100}
+                              size="sm"
                             />
                             <span style={{ color: tokens.colors.text.secondary }}>-</span>
-                            <Input
-                              type="number"
+                            <NumberInput
                               value={80}
-                              onChange={(e) => console.log('Range end:', e.target.value)}
+                              onChange={(value) => console.log('Range end:', value)}
                               placeholder="Max"
-                              step="1"
-                              min="0"
-                              max="100"
-                              style={{ flex: 1 }}
+                              step={1}
+                              min={0}
+                              max={100}
+                              size="sm"
                             />
                           </div>
                         </FormField>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <FormField label="File Upload">
                           <Upload
@@ -628,7 +934,7 @@ const UILibraryView: React.FC = () => {
                           <Badge variant="info">Info</Badge>
                         </div>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Outline Badges</h5>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -640,7 +946,7 @@ const UILibraryView: React.FC = () => {
                           <Badge variant="outline-info">Info</Badge>
                         </div>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Bright Badges</h5>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -661,13 +967,15 @@ const UILibraryView: React.FC = () => {
                     <Grid cols={3} gap={6}>
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Size Variants</h5>
-                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+                        <div style={{
+                          display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap',
+                        }}>
                           <Badge size="sm">Small</Badge>
                           <Badge size="default">Default</Badge>
                           <Badge size="lg">Large</Badge>
                         </div>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>With Indicators</h5>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -676,7 +984,7 @@ const UILibraryView: React.FC = () => {
                           <Badge showIndicator variant="info">Active</Badge>
                         </div>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>CNC Status Badges</h5>
                         <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -698,41 +1006,37 @@ const UILibraryView: React.FC = () => {
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Linear Progress Variants</h5>
                         <Stack spacing={8}>
                           <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                            <div style={{ marginBottom: '4px' }}>
                               <span style={{ fontSize: '0.875rem' }}>Default Progress</span>
-                              <span style={{ fontSize: '0.875rem', color: tokens.colors.text.secondary }}>{progressValue.toFixed(0)}%</span>
                             </div>
-                            <Progress value={progressValue} max={100} />
+                            <Progress value={progressValue} max={100} showPercentage />
                           </div>
-                          
+
                           <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                            <div style={{ marginBottom: '4px' }}>
                               <span style={{ fontSize: '0.875rem' }}>Success Progress</span>
-                              <span style={{ fontSize: '0.875rem', color: tokens.colors.text.secondary }}>{circularProgress.toFixed(0)}%</span>
                             </div>
-                            <Progress value={circularProgress} max={100} variant="success" />
+                            <Progress value={circularProgress} max={100} variant="success" showPercentage />
                           </div>
-                          
+
                           <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                            <div style={{ marginBottom: '4px' }}>
                               <span style={{ fontSize: '0.875rem' }}>Warning Progress</span>
-                              <span style={{ fontSize: '0.875rem', color: tokens.colors.text.secondary }}>85%</span>
                             </div>
-                            <Progress value={85} max={100} variant="warning" />
+                            <Progress value={85} max={100} variant="warning" showPercentage />
                           </div>
-                          
+
                           <div>
-                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                            <div style={{ marginBottom: '4px' }}>
                               <span style={{ fontSize: '0.875rem' }}>Error Progress</span>
-                              <span style={{ fontSize: '0.875rem', color: tokens.colors.text.secondary }}>25%</span>
                             </div>
-                            <Progress value={25} max={100} variant="destructive" />
+                            <Progress value={25} max={100} variant="destructive" showPercentage />
                           </div>
                         </Stack>
-                        
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
+
+                        <Button
+                          variant="outline"
+                          size="sm"
                           onClick={() => {
                             setProgressValue(Math.random() * 100);
                             setCircularProgress(Math.random() * 100);
@@ -741,7 +1045,7 @@ const UILibraryView: React.FC = () => {
                           Randomize Progress Values
                         </Button>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Circular Progress Variants</h5>
                         <Grid cols={2} gap={4}>
@@ -751,21 +1055,21 @@ const UILibraryView: React.FC = () => {
                               Job Progress
                             </div>
                           </div>
-                          
+
                           <div style={{ textAlign: 'center' }}>
                             <CircularProgress value={circularProgress} size={80} variant="success" />
                             <div style={{ fontSize: '0.75rem', color: tokens.colors.text.secondary, marginTop: '8px' }}>
                               Success Rate
                             </div>
                           </div>
-                          
+
                           <div style={{ textAlign: 'center' }}>
                             <CircularProgress value={75} size={80} variant="warning" />
                             <div style={{ fontSize: '0.75rem', color: tokens.colors.text.secondary, marginTop: '8px' }}>
                               Load Level
                             </div>
                           </div>
-                          
+
                           <div style={{ textAlign: 'center' }}>
                             <CircularProgress value={90} size={80} variant="info" />
                             <div style={{ fontSize: '0.75rem', color: tokens.colors.text.secondary, marginTop: '8px' }}>
@@ -775,6 +1079,258 @@ const UILibraryView: React.FC = () => {
                         </Grid>
                       </Stack>
                     </Grid>
+                  </div>
+
+                  {/* DataTable Components */}
+                  <div>
+                    <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>DataTable Component - CNC Job Management</h4>
+                    <Stack spacing={16}>
+                      {/* CNC Jobs Table */}
+                      <div>
+                        <h5 style={{ margin: '0 0 12px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Job Queue Management</h5>
+                        <DataTable
+                          columns={[
+                            {
+                              key: 'jobName',
+                              title: 'Job Name',
+                              sortable: true,
+                              width: '200px',
+                              render: (value, row) => (
+                                <div style={{ fontWeight: 'medium' }}>
+                                  {value}
+                                </div>
+                              )
+                            },
+                            {
+                              key: 'status',
+                              title: 'Status',
+                              sortable: true,
+                              width: '120px',
+                              render: (value) => {
+                                // Map data statuses to StatusBadge statuses
+                                const statusMap: { [key: string]: 'connected' | 'disconnected' | 'idle' | 'running' | 'error' | 'warning' } = {
+                                  'running': 'running',
+                                  'queued': 'idle',
+                                  'completed': 'connected',
+                                  'error': 'error',
+                                  'paused': 'warning'
+                                };
+                                return (
+                                  <StatusBadge status={statusMap[value as string] || 'idle'} />
+                                );
+                              }
+                            },
+                            {
+                              key: 'progress',
+                              title: 'Progress',
+                              sortable: true,
+                              width: '150px',
+                              render: (value) => (
+                                <Progress value={value as number} max={100} showPercentage />
+                              )
+                            },
+                            {
+                              key: 'material',
+                              title: 'Material',
+                              sortable: true,
+                              width: '140px'
+                            },
+                            {
+                              key: 'tool',
+                              title: 'Tool',
+                              sortable: true,
+                              width: '140px'
+                            },
+                            {
+                              key: 'timeRemaining',
+                              title: 'Time Remaining',
+                              sortable: true,
+                              width: '120px',
+                              render: (value) => (
+                                <MonospaceText size="sm">{value}</MonospaceText>
+                              )
+                            },
+                            {
+                              key: 'operator',
+                              title: 'Operator',
+                              sortable: true,
+                              width: '120px'
+                            },
+                            {
+                              key: 'priority',
+                              title: 'Priority',
+                              sortable: true,
+                              width: '100px',
+                              render: (value) => (
+                                <Badge 
+                                  variant={value === 'high' ? 'destructive' : value === 'medium' ? 'warning' : 'secondary'}
+                                  size="sm"
+                                >
+                                  {value}
+                                </Badge>
+                              )
+                            }
+                          ]}
+                          data={cncJobsData}
+                          searchable
+                          sortable
+                          pagination
+                          selectable
+                          pageSize={5}
+                          onRowSelect={(selectedIds) => setSelectedRows(selectedIds)}
+                          onRowClick={(row) => console.log('Job clicked:', row.jobName)}
+                        />
+                      </div>
+
+                      {/* Machine Status Table */}
+                      <div>
+                        <h5 style={{ margin: '0 0 12px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Machine Monitoring</h5>
+                        <DataTable
+                          columns={[
+                            {
+                              key: 'machineName',
+                              title: 'Machine',
+                              sortable: true,
+                              width: '150px',
+                              render: (value) => (
+                                <div style={{ fontWeight: 'medium' }}>{value}</div>
+                              )
+                            },
+                            {
+                              key: 'status',
+                              title: 'Status',
+                              sortable: true,
+                              width: '120px',
+                              render: (value) => {
+                                // Map machine statuses to StatusBadge statuses
+                                const statusMap: { [key: string]: 'connected' | 'disconnected' | 'idle' | 'running' | 'error' | 'warning' } = {
+                                  'running': 'running',
+                                  'idle': 'idle',
+                                  'maintenance': 'warning'
+                                };
+                                return (
+                                  <StatusBadge status={statusMap[value as string] || 'idle'} />
+                                );
+                              }
+                            },
+                            {
+                              key: 'xPosition',
+                              title: 'X Position',
+                              sortable: true,
+                              width: '100px',
+                              render: (value) => (
+                                <MonospaceText size="sm">{(value as number).toFixed(3)}</MonospaceText>
+                              )
+                            },
+                            {
+                              key: 'yPosition',
+                              title: 'Y Position',
+                              sortable: true,
+                              width: '100px',
+                              render: (value) => (
+                                <MonospaceText size="sm">{(value as number).toFixed(3)}</MonospaceText>
+                              )
+                            },
+                            {
+                              key: 'zPosition',
+                              title: 'Z Position',
+                              sortable: true,
+                              width: '100px',
+                              render: (value) => (
+                                <MonospaceText size="sm">{(value as number).toFixed(3)}</MonospaceText>
+                              )
+                            },
+                            {
+                              key: 'spindleSpeed',
+                              title: 'Spindle RPM',
+                              sortable: true,
+                              width: '120px',
+                              render: (value) => (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                  <MonospaceText size="sm">{value}</MonospaceText>
+                                  {value > 0 && <Badge variant="success" size="sm">ON</Badge>}
+                                </div>
+                              )
+                            },
+                            {
+                              key: 'feedRate',
+                              title: 'Feed Rate',
+                              sortable: true,
+                              width: '100px',
+                              render: (value) => (
+                                <MonospaceText size="sm">{value}</MonospaceText>
+                              )
+                            },
+                            {
+                              key: 'coolant',
+                              title: 'Coolant',
+                              sortable: true,
+                              width: '80px',
+                              render: (value) => (
+                                <Badge variant={value ? 'success' : 'secondary'} size="sm">
+                                  {value ? 'ON' : 'OFF'}
+                                </Badge>
+                              )
+                            }
+                          ]}
+                          data={machineData}
+                          searchable
+                          sortable
+                          pageSize={10}
+                          onRowClick={(row) => console.log('Machine clicked:', row.machineName)}
+                        />
+                      </div>
+
+                      {/* DataTable Features Demo */}
+                      <div>
+                        <h5 style={{ margin: '0 0 12px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>DataTable Features</h5>
+                        <div style={{ 
+                          padding: '16px', 
+                          backgroundColor: tokens.colors.bg.secondary, 
+                          borderRadius: tokens.radius.md,
+                          border: `1px solid ${tokens.colors.border.primary}`
+                        }}>
+                          <Grid cols={2} gap={4}>
+                            <div>
+                              <h6 style={{ margin: '0 0 8px 0', fontSize: '0.875rem', fontWeight: 'medium' }}>Available Features:</h6>
+                              <ul style={{ 
+                                margin: 0, 
+                                paddingLeft: '16px', 
+                                fontSize: '0.875rem',
+                                color: tokens.colors.text.secondary 
+                              }}>
+                                <li>Search & Filter functionality</li>
+                                <li>Column sorting with visual indicators</li>
+                                <li>Row selection with checkboxes</li>
+                                <li>Pagination with page size controls</li>
+                                <li>Custom cell rendering</li>
+                                <li>Click handlers for rows and cells</li>
+                                <li>Responsive design with horizontal scroll</li>
+                                <li>Empty state handling</li>
+                              </ul>
+                            </div>
+                            <div>
+                              <h6 style={{ margin: '0 0 8px 0', fontSize: '0.875rem', fontWeight: 'medium' }}>CNC-Optimized Styling:</h6>
+                              <ul style={{ 
+                                margin: 0, 
+                                paddingLeft: '16px', 
+                                fontSize: '0.875rem',
+                                color: tokens.colors.text.secondary 
+                              }}>
+                                <li>Professional dark theme</li>
+                                <li>Monospace fonts for numeric data</li>
+                                <li>Status badge integration</li>
+                                <li>Progress bar components</li>
+                                <li>Consistent spacing and typography</li>
+                                <li>Accessible color contrast</li>
+                                <li>Industrial-grade visual hierarchy</li>
+                                <li>Design token integration</li>
+                              </ul>
+                            </div>
+                          </Grid>
+                        </div>
+                      </div>
+                    </Stack>
                   </div>
 
                   {/* Monospace Text and Coordinates */}
@@ -795,7 +1351,7 @@ const UILibraryView: React.FC = () => {
                           </MonospaceText>
                         </Stack>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Coordinate Display</h5>
                         <Stack spacing={8}>
@@ -848,12 +1404,12 @@ const UILibraryView: React.FC = () => {
                         <Alert variant="success" size="sm" title="Small Success" description="Compact alert for minimal space." />
                         <Alert variant="warning" size="sm" title="Small Warning" description="Warning in compact form." />
                       </Stack>
-                      
+
                       <Stack spacing={8}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Default Size</h5>
                         <Alert variant="info" title="Standard Alert" description="Default sizing for most use cases." />
                       </Stack>
-                      
+
                       <Stack spacing={8}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Large Alerts</h5>
                         <Alert variant="destructive" size="lg" title="Large Error Alert" description="Enhanced visibility for critical messages requiring immediate attention." />
@@ -865,8 +1421,8 @@ const UILibraryView: React.FC = () => {
                   <div>
                     <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>Interactive Alerts with Actions</h4>
                     <Stack spacing={12}>
-                      <Alert 
-                        variant="warning" 
+                      <Alert
+                        variant="warning"
                         title="Tool Replacement Required"
                         description="Current cutting tool has exceeded recommended usage. Replace before continuing operations."
                         actions={
@@ -876,9 +1432,9 @@ const UILibraryView: React.FC = () => {
                           </AlertActions>
                         }
                       />
-                      
-                      <Alert 
-                        variant="info" 
+
+                      <Alert
+                        variant="info"
                         title="Software Update Available"
                         description="CNC Control System v2.1.3 is available with performance improvements and bug fixes."
                         actions={
@@ -888,9 +1444,9 @@ const UILibraryView: React.FC = () => {
                           </AlertActions>
                         }
                       />
-                      
-                      <Alert 
-                        variant="destructive" 
+
+                      <Alert
+                        variant="destructive"
                         title="Emergency Stop Activated"
                         description="All machine operations have been halted. Clear the workspace and verify safety before resuming."
                         dismissible
@@ -909,24 +1465,24 @@ const UILibraryView: React.FC = () => {
                   <div>
                     <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>Alert Banners</h4>
                     <Stack spacing={8}>
-                      <AlertBanner 
-                        type="info" 
+                      <AlertBanner
+                        type="info"
                         title="System Maintenance"
                         message="Scheduled maintenance will occur tonight at 2:00 AM EST. Plan accordingly."
                         onDismiss={() => console.log('Banner dismissed')}
                       />
-                      <AlertBanner 
-                        type="success" 
+                      <AlertBanner
+                        type="success"
                         message="All systems operational. Machine ready for production."
                         onDismiss={() => console.log('Banner dismissed')}
                       />
-                      <AlertBanner 
-                        type="warning" 
+                      <AlertBanner
+                        type="warning"
                         message="Coolant level low - refill recommended before next job."
                         onDismiss={() => console.log('Banner dismissed')}
                       />
-                      <AlertBanner 
-                        type="error" 
+                      <AlertBanner
+                        type="error"
                         title="Connection Lost"
                         message="Lost connection to CNC controller. Check network and USB connections."
                       />
@@ -943,14 +1499,14 @@ const UILibraryView: React.FC = () => {
                         <Skeleton variant="text" lines={2} />
                         <Skeleton variant="text" lines={3} />
                       </Stack>
-                      
+
                       <Stack spacing={8}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Shaped Skeletons</h5>
                         <Skeleton variant="rectangular" width="100%" height="40px" />
                         <Skeleton variant="rectangular" width="80%" height="24px" />
                         <Skeleton variant="rectangular" width="60%" height="16px" />
                       </Stack>
-                      
+
                       <Stack spacing={8}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Complex Skeletons</h5>
                         <SkeletonCard />
@@ -963,23 +1519,23 @@ const UILibraryView: React.FC = () => {
                   <div>
                     <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>Loading State Controls</h4>
                     <Grid cols={3} gap={4}>
-                      <Button 
-                        variant="outline" 
+                      <Button
+                        variant="outline"
                         onClick={() => toggleLoading('skeleton')}
                         loading={loadingStates.skeleton}
                       >
                         {loadingStates.skeleton ? 'Loading...' : 'Trigger Loading'}
                       </Button>
-                      
-                      <Button 
-                        variant="outline" 
+
+                      <Button
+                        variant="outline"
                         onClick={() => toggleLoading('card')}
                       >
                         Toggle Card Skeleton
                       </Button>
-                      
-                      <Button 
-                        variant="outline" 
+
+                      <Button
+                        variant="outline"
                         onClick={() => console.log('Skeleton demo')}
                       >
                         Demo All Skeletons
@@ -1006,34 +1562,44 @@ const UILibraryView: React.FC = () => {
                     <Stack spacing={16}>
                       <div>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Auto-fit Grid</h5>
-                        <Grid cols="auto-fit" gap={3} style={{ border: '1px dashed ' + tokens.colors.border.primary, padding: '16px', borderRadius: '8px' }}>
-                          {[1,2,3,4,5,6].map(i => (
-                            <div key={i} style={{ padding: '12px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '6px', textAlign: 'center' }}>
+                        <Grid cols="auto-fit" gap={3} style={{ border: `1px dashed ${tokens.colors.border.primary}`, padding: '16px', borderRadius: '8px' }}>
+                          {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <div key={i} style={{
+                              padding: '12px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '6px', textAlign: 'center',
+                            }}>
                               Item {i}
                             </div>
                           ))}
                         </Grid>
                       </div>
-                      
+
                       <div>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Fixed Column Grids</h5>
                         <Stack spacing={12}>
                           <div>
                             <span style={{ fontSize: '0.8rem', color: tokens.colors.text.secondary }}>2 Columns:</span>
-                            <Grid cols={2} gap={2} style={{ border: '1px dashed ' + tokens.colors.border.primary, padding: '12px', borderRadius: '6px', marginTop: '4px' }}>
-                              {[1,2,3,4].map(i => (
-                                <div key={i} style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px', textAlign: 'center', fontSize: '0.875rem' }}>
+                            <Grid cols={2} gap={2} style={{
+                              border: `1px dashed ${tokens.colors.border.primary}`, padding: '12px', borderRadius: '6px', marginTop: '4px',
+                            }}>
+                              {[1, 2, 3, 4].map((i) => (
+                                <div key={i} style={{
+                                  padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px', textAlign: 'center', fontSize: '0.875rem',
+                                }}>
                                   Col {i}
                                 </div>
                               ))}
                             </Grid>
                           </div>
-                          
+
                           <div>
                             <span style={{ fontSize: '0.8rem', color: tokens.colors.text.secondary }}>4 Columns:</span>
-                            <Grid cols={4} gap={2} style={{ border: '1px dashed ' + tokens.colors.border.primary, padding: '12px', borderRadius: '6px', marginTop: '4px' }}>
-                              {[1,2,3,4,5,6,7,8].map(i => (
-                                <div key={i} style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px', textAlign: 'center', fontSize: '0.875rem' }}>
+                            <Grid cols={4} gap={2} style={{
+                              border: `1px dashed ${tokens.colors.border.primary}`, padding: '12px', borderRadius: '6px', marginTop: '4px',
+                            }}>
+                              {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                                <div key={i} style={{
+                                  padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px', textAlign: 'center', fontSize: '0.875rem',
+                                }}>
                                   {i}
                                 </div>
                               ))}
@@ -1050,25 +1616,25 @@ const UILibraryView: React.FC = () => {
                     <Grid cols={3} gap={6}>
                       <div>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Vertical Stack (Small Spacing)</h5>
-                        <Stack spacing={4} style={{ border: '1px dashed ' + tokens.colors.border.primary, padding: '12px', borderRadius: '6px' }}>
+                        <Stack spacing={4} style={{ border: `1px dashed ${tokens.colors.border.primary}`, padding: '12px', borderRadius: '6px' }}>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Stack Item 1</div>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Stack Item 2</div>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Stack Item 3</div>
                         </Stack>
                       </div>
-                      
+
                       <div>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Vertical Stack (Large Spacing)</h5>
-                        <Stack spacing={16} style={{ border: '1px dashed ' + tokens.colors.border.primary, padding: '12px', borderRadius: '6px' }}>
+                        <Stack spacing={16} style={{ border: `1px dashed ${tokens.colors.border.primary}`, padding: '12px', borderRadius: '6px' }}>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Stack Item 1</div>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Stack Item 2</div>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Stack Item 3</div>
                         </Stack>
                       </div>
-                      
+
                       <div>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Flex Layout</h5>
-                        <Flex gap={8} align="center" justify="between" style={{ border: '1px dashed ' + tokens.colors.border.primary, padding: '12px', borderRadius: '6px' }}>
+                        <Flex gap={8} align="center" justify="between" style={{ border: `1px dashed ${tokens.colors.border.primary}`, padding: '12px', borderRadius: '6px' }}>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Left</div>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Center</div>
                           <div style={{ padding: '8px', backgroundColor: tokens.colors.bg.secondary, borderRadius: '4px' }}>Right</div>
@@ -1083,7 +1649,7 @@ const UILibraryView: React.FC = () => {
                     <Grid cols={2} gap={6}>
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Dashboard Container</h5>
-                        <div style={{ border: '1px dashed ' + tokens.colors.border.primary, borderRadius: '6px', overflow: 'hidden' }}>
+                        <div style={{ border: `1px dashed ${tokens.colors.border.primary}`, borderRadius: '6px', overflow: 'hidden' }}>
                           <DashboardContainer style={{ minHeight: '120px' }}>
                             <Card variant="dashboard" style={{ margin: '0' }}>
                               <CardContent>
@@ -1093,10 +1659,10 @@ const UILibraryView: React.FC = () => {
                           </DashboardContainer>
                         </div>
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Control Container</h5>
-                        <div style={{ border: '1px dashed ' + tokens.colors.border.primary, borderRadius: '6px', overflow: 'hidden' }}>
+                        <div style={{ border: `1px dashed ${tokens.colors.border.primary}`, borderRadius: '6px', overflow: 'hidden' }}>
                           <ControlContainer style={{ minHeight: '120px' }}>
                             <Card variant="cnc" style={{ margin: '0' }}>
                               <CardContent>
@@ -1115,19 +1681,19 @@ const UILibraryView: React.FC = () => {
                     <Grid cols={2} gap={6}>
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Accordion</h5>
-                        <Accordion 
+                        <Accordion
                           items={accordionItems}
                           defaultOpen={accordionOpen}
                           onOpenChange={setAccordionOpen}
                           multiple
                         />
                       </Stack>
-                      
+
                       <Stack spacing={12}>
                         <h5 style={{ margin: '0 0 8px 0', color: tokens.colors.text.secondary, fontSize: '0.875rem' }}>Simple Collapse</h5>
                         <div>
-                          <Button 
-                            variant="outline" 
+                          <Button
+                            variant="outline"
                             onClick={() => setCollapseOpen(!collapseOpen)}
                             style={{ marginBottom: '8px' }}
                           >
@@ -1144,14 +1710,15 @@ const UILibraryView: React.FC = () => {
                                     <Select options={selectOptions} placeholder="Select option..." />
                                   </FormField>
                                   <FormField label="Precision Setting">
-                                    <Input
-                                      type="number"
+                                    <NumberInput
+                                      label="Precision (mm)"
                                       value={1.234}
-                                      onChange={(e) => console.log('Precision demo:', e.target.value)}
+                                      onChange={(value) => console.log('Precision demo:', value)}
                                       placeholder="1.234"
-                                      step="0.0001"
-                                      min="0"
-                                      max="10"
+                                      step={0.0001}
+                                      min={0}
+                                      max={10}
+                                      size="sm"
                                     />
                                   </FormField>
                                 </Stack>
@@ -1177,7 +1744,7 @@ const UILibraryView: React.FC = () => {
                           </p>
                         </CardContent>
                       </Card>
-                      
+
                       <Card variant="dashboard">
                         <CardHeader>
                           <CardTitle>Dashboard Card</CardTitle>
@@ -1188,7 +1755,7 @@ const UILibraryView: React.FC = () => {
                           </p>
                         </CardContent>
                       </Card>
-                      
+
                       <Card variant="cnc">
                         <CardHeader>
                           <CardTitle>CNC Card</CardTitle>
@@ -1199,7 +1766,7 @@ const UILibraryView: React.FC = () => {
                           </p>
                         </CardContent>
                       </Card>
-                      
+
                       <DashboardCard
                         title="Dashboard Card"
                         value="125.45"
@@ -1208,22 +1775,29 @@ const UILibraryView: React.FC = () => {
                         trend="up"
                         icon={<div style={{ fontSize: '1.25rem' }}>📊</div>}
                       />
-                      
-                      <StatusCard
+
+                      <StatusIndicatorCard
                         title="Machine Status"
-                        status={isConnected ? "operational" : "offline"}
-                        description={isConnected ? "All systems running normally" : "Connection lost"}
-                      />
-                      
+                      >
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                          <StatusBadge 
+                            status={isConnected ? 'connected' : 'error'} 
+                          />
+                          <p style={{ margin: 0, fontSize: '0.875rem', color: tokens.colors.text.secondary }}>
+                            {isConnected ? 'All systems running normally' : 'Connection lost'}
+                          </p>
+                        </div>
+                      </StatusIndicatorCard>
+
                       <Card>
                         <CardHeader>
                           <CardIcon>⚙️</CardIcon>
                           <CardTitle>Status Card</CardTitle>
                         </CardHeader>
                         <CardContent>
-                          <CardValue>{isConnected ? "Online" : "Offline"}</CardValue>
+                          <CardValue>{isConnected ? 'Online' : 'Offline'}</CardValue>
                           <CardChange>
-                            {isConnected ? "+100%" : "Disconnected"}
+                            {isConnected ? '+100%' : 'Disconnected'}
                           </CardChange>
                         </CardContent>
                         <CardFooter>
@@ -1252,23 +1826,23 @@ const UILibraryView: React.FC = () => {
               <CardContent>
                 <Grid cols={2} gap={6}>
                   <Stack spacing={12}>
-                    <ConnectionStatus 
+                    <ConnectionStatus
                       isConnected={isConnected}
                       onToggle={() => setIsConnected(!isConnected)}
                     />
-                    
+
                     <StatusIndicatorCard
                       title="Machine Status"
-                      status={isConnected ? "connected" : "disconnected"}
-                      value={isConnected ? "Ready" : "Offline"}
+                      status={isConnected ? 'connected' : 'disconnected'}
+                      value={isConnected ? 'Ready' : 'Offline'}
                     />
                   </Stack>
-                  
+
                   <CoordinateDisplay
                     position={{
                       x: Math.abs(position.x),
-                      y: Math.abs(position.y), 
-                      z: Math.abs(position.z)
+                      y: Math.abs(position.y),
+                      z: Math.abs(position.z),
                     }}
                     unit="mm"
                     precision={3}
@@ -1287,12 +1861,10 @@ const UILibraryView: React.FC = () => {
                 <Grid cols={2} gap={6}>
                   <JogControls
                     onJog={handleJog}
-                    jogDistance={jogDistance}
-                    onJogDistanceChange={setJogDistance}
-                    isConnected={isConnected}
-                    availableIncrements={[0.1, 1, 10, 100]}
+                    onZero={handleZero}
+                    disabled={!isConnected}
                   />
-                  
+
                   <SafetyControlPanel
                     isConnected={isConnected}
                     onEmergencyStop={() => console.log('Emergency stop!')}
@@ -1316,7 +1888,7 @@ const UILibraryView: React.FC = () => {
                     position,
                     feedRate: 1000,
                     spindleSpeed: 0,
-                    coolant: false
+                    coolant: false,
                   }}
                 />
               </CardContent>
@@ -1374,15 +1946,15 @@ const UILibraryView: React.FC = () => {
                       <CompactCoordinateDisplay
                         position={{
                           x: Math.abs(position.x),
-                          y: Math.abs(position.y), 
-                          z: Math.abs(position.z)
+                          y: Math.abs(position.y),
+                          z: Math.abs(position.z),
                         }}
                         unit="mm"
                         precision={3}
                       />
                     </CardContent>
                   </Card>
-                  
+
                   <Card variant="cnc">
                     <CardHeader>
                       <CardTitle>Jog Settings</CardTitle>
@@ -1397,25 +1969,25 @@ const UILibraryView: React.FC = () => {
                               { value: '0.1', label: '0.1 mm' },
                               { value: '1', label: '1 mm' },
                               { value: '10', label: '10 mm' },
-                              { value: '100', label: '100 mm' }
+                              { value: '100', label: '100 mm' },
                             ]}
                           />
                         </FormField>
                       </Stack>
                     </CardContent>
                   </Card>
-                  
+
                   <Card variant="cnc">
                     <CardHeader>
                       <CardTitle>Status</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <Stack spacing={8}>
-                        <Badge variant={isConnected ? "success" : "destructive"}>
-                          {isConnected ? "Connected" : "Disconnected"}
+                        <Badge variant={isConnected ? 'success' : 'destructive'}>
+                          {isConnected ? 'Connected' : 'Disconnected'}
                         </Badge>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={() => setIsConnected(!isConnected)}
                         >
@@ -1445,59 +2017,59 @@ const UILibraryView: React.FC = () => {
                     <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>Colors</h4>
                     <Grid cols={4} gap={2}>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ 
-                          width: '60px', 
-                          height: '60px', 
+                        <div style={{
+                          width: '60px',
+                          height: '60px',
                           backgroundColor: tokens.colors.primary.main,
                           borderRadius: tokens.radius.md,
-                          margin: '0 auto 8px'
+                          margin: '0 auto 8px',
                         }} />
                         <MonospaceText size="sm">Primary</MonospaceText>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ 
-                          width: '60px', 
-                          height: '60px', 
+                        <div style={{
+                          width: '60px',
+                          height: '60px',
                           backgroundColor: tokens.colors.status.success,
                           borderRadius: tokens.radius.md,
-                          margin: '0 auto 8px'
+                          margin: '0 auto 8px',
                         }} />
                         <MonospaceText size="sm">Success</MonospaceText>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ 
-                          width: '60px', 
-                          height: '60px', 
+                        <div style={{
+                          width: '60px',
+                          height: '60px',
                           backgroundColor: tokens.colors.status.warning,
                           borderRadius: tokens.radius.md,
-                          margin: '0 auto 8px'
+                          margin: '0 auto 8px',
                         }} />
                         <MonospaceText size="sm">Warning</MonospaceText>
                       </div>
                       <div style={{ textAlign: 'center' }}>
-                        <div style={{ 
-                          width: '60px', 
-                          height: '60px', 
+                        <div style={{
+                          width: '60px',
+                          height: '60px',
                           backgroundColor: tokens.colors.status.error,
                           borderRadius: tokens.radius.md,
-                          margin: '0 auto 8px'
+                          margin: '0 auto 8px',
                         }} />
                         <MonospaceText size="sm">Error</MonospaceText>
                       </div>
                     </Grid>
                   </div>
-                  
+
                   <div>
                     <h4 style={{ margin: '0 0 16px 0', color: tokens.colors.text.primary }}>Spacing Scale</h4>
                     <Stack spacing={8}>
                       {Object.entries(tokens.spacing).map(([key, value]) => (
                         <div key={key} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                           <MonospaceText size="sm" style={{ minWidth: '40px' }}>{key}:</MonospaceText>
-                          <div style={{ 
-                            width: value, 
-                            height: '16px', 
+                          <div style={{
+                            width: value,
+                            height: '16px',
                             backgroundColor: tokens.colors.primary.main,
-                            borderRadius: '2px'
+                            borderRadius: '2px',
                           }} />
                           <MonospaceText size="sm" style={{ color: tokens.colors.text.secondary }}>
                             {value}

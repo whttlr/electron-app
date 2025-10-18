@@ -645,6 +645,155 @@ npm run test:a11y               # Accessibility testing
 npm run chromatic               # Visual regression testing
 ```
 
+## UI Library Issue Resolution Process
+
+### CRITICAL: Never Use CSS Overrides for UI Library Components
+
+**When you encounter styling issues with UI library components, ALWAYS follow this process:**
+
+#### 1. Identify the Root Cause
+- **Check if the issue exists in UI Library Storybook**
+- **If the issue is NOT in Storybook**: It's an integration problem, investigate CSS conflicts
+- **If the issue IS in Storybook**: The problem is in the UI Library component itself
+
+#### 2. Fix at the Source (UI Library)
+```bash
+# Navigate to UI Library repository
+cd /path/to/ui-library
+
+# Make component fixes in the appropriate file
+# Example: packages/core/src/primitives/ComponentName/ComponentName.tsx
+
+# Build the library
+npm run build
+
+# Test in Storybook
+npm run storybook
+```
+
+#### 3. Common UI Library Component Fixes
+
+**Button Height Issues:**
+```typescript
+// Fix container and button sizing
+const containerStyles = {
+  height: 'calc(100% - 2px)',
+  boxSizing: 'border-box',
+  display: 'flex',
+  flexDirection: 'column'
+};
+
+const buttonStyles = {
+  height: '50%',
+  minHeight: 0,
+  flex: 1,
+  boxSizing: 'border-box'
+};
+```
+
+**Duplicate Error Messages:**
+```typescript
+// Add conditional rendering control
+interface ComponentProps {
+  showError?: boolean; // Add this prop
+}
+
+// In component render
+{error && showError && (
+  <p>{error}</p>
+)}
+```
+
+**Transform/Scale Issues:**
+```typescript
+// Replace transform scaling with opacity
+onMouseDown={(e) => {
+  e.currentTarget.style.opacity = '0.8';
+}}
+onMouseUp={(e) => {
+  e.currentTarget.style.opacity = '1';
+}}
+```
+
+#### 4. Build and Deploy Fixed Library
+```bash
+# Build the core package
+npm run build --prefix /path/to/ui-library/packages/core
+
+# Or build entire library
+npm run build --prefix /path/to/ui-library
+
+# Update electron app to use new version
+cd /path/to/electron-app
+rm -rf node_modules/@whttlr/ui-core
+npm install
+```
+
+#### 5. Test Integration
+```bash
+# Start electron app
+npm start
+
+# Verify fixes work in the application
+# Check all affected components and views
+```
+
+#### 6. Clean Up
+```bash
+# Remove any CSS override files
+rm src/component-name-fixes.css
+
+# Remove CSS imports from App.tsx
+# Remove any temporary workarounds
+```
+
+### Why This Process is Critical
+
+1. **Architectural Integrity**: Fixes at the source maintain clean architecture
+2. **Consistency**: Ensures all applications using the UI Library benefit from fixes
+3. **Maintainability**: Prevents technical debt accumulation
+4. **Testing**: UI Library has proper testing infrastructure
+5. **Documentation**: Changes are properly documented in Storybook
+
+### When CSS Overrides Are Acceptable
+
+**NEVER** use CSS overrides for UI Library components. The only acceptable scenario is:
+- **Temporary emergency fixes** with a clear timeline for proper resolution
+- **Must be accompanied by a GitHub issue** to fix at the source
+- **Must include TODO comments** explaining the temporary nature
+
+### Red Flags - When You're Doing It Wrong
+
+- Creating files like `ui-library-fixes.css`
+- Adding `!important` declarations to override UI Library styles
+- Using attribute selectors like `div[style*="width: 100%"]`
+- Justifying overrides as "quick fixes" or "integration-specific"
+
+### Example: Proper Issue Resolution
+
+**Issue**: NumberInput buttons are taller than input field
+
+**❌ Wrong Approach:**
+```css
+/* ui-library-fixes.css */
+div[style*="width: 100%"] button {
+  height: 50% !important;
+}
+```
+
+**✅ Correct Approach:**
+```typescript
+// In UI Library: NumberInput.tsx
+const arrowButtonStyles = {
+  height: '50%',
+  minHeight: 0,
+  flex: 1,
+  boxSizing: 'border-box'
+};
+```
+
+This approach ensures the fix is permanent, tested, and benefits all users of the UI Library.
+
 ## Recent Updates
 - Migrated from Node.js CLI application to React/TypeScript desktop app
 - Implemented comprehensive plugin system with dynamic loading

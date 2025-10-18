@@ -1,14 +1,14 @@
 import React from 'react';
 import { Typography, Divider } from 'antd';
-import { 
-  Card, 
-  CardHeader, 
-  CardTitle, 
-  CardContent, 
-  CardFooter, 
-  Button, 
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+  Button,
   Grid,
-  DashboardContainer 
+  DashboardContainer,
 } from '@whttlr/ui-core';
 import {
   ControlOutlined, ToolOutlined, SettingOutlined, AppstoreOutlined,
@@ -39,7 +39,9 @@ const DashboardView: React.FC = () => (
           className="dashboard-card"
           data-testid="quick-actions"
         >
-          <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <CardHeader style={{
+            display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+          }}>
             <CardTitle>Jog Controls</CardTitle>
             <ControlOutlined style={{ fontSize: '1.25rem', color: '#666' }} />
           </CardHeader>
@@ -58,7 +60,9 @@ const DashboardView: React.FC = () => (
           className="dashboard-card"
           data-testid="connection-status"
         >
-          <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <CardHeader style={{
+            display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+          }}>
             <CardTitle>Machine Status</CardTitle>
             <ToolOutlined style={{ fontSize: '1.25rem', color: '#666' }} />
           </CardHeader>
@@ -77,7 +81,9 @@ const DashboardView: React.FC = () => (
           className="dashboard-card"
           data-testid="plugins-card"
         >
-          <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <CardHeader style={{
+            display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+          }}>
             <CardTitle>Plugins</CardTitle>
             <AppstoreOutlined style={{ fontSize: '1.25rem', color: '#666' }} />
           </CardHeader>
@@ -96,7 +102,9 @@ const DashboardView: React.FC = () => (
           className="dashboard-card"
           data-testid="settings-card"
         >
-          <CardHeader style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <CardHeader style={{
+            display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+          }}>
             <CardTitle>Settings</CardTitle>
             <SettingOutlined style={{ fontSize: '1.25rem', color: '#666' }} />
           </CardHeader>

@@ -75,7 +75,7 @@ export const CircularProgress = React.forwardRef<SVGSVGElement, CircularProgress
         )}
       </div>
     );
-  }
+  },
 );
 
 CircularProgress.displayName = 'CircularProgress';

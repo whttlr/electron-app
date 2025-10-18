@@ -11,6 +11,7 @@ import quarterOfYear from 'dayjs/plugin/quarterOfYear';
 import App from './App';
 import './index.css';
 import './globals.css';
+import './ui-library-cnc.css';
 
 // Configure dayjs for Ant Design
 dayjs.extend(customParseFormat);

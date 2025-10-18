@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Form, message, Modal } from 'antd';
+import {
+  Typography, Form, message, Modal,
+} from 'antd';
 import { Tabs, Badge } from '@whttlr/ui-core';
 import { AppstoreOutlined, GlobalOutlined, CloudUploadOutlined } from '@ant-design/icons';
 import type { UploadProps } from 'antd';
@@ -380,8 +382,8 @@ const PluginsView: React.FC = () => {
     <div data-testid="plugins-container">
       <Title level={2}>Plugin Management</Title>
 
-      <Tabs 
-        value={activeTab} 
+      <Tabs
+        value={activeTab}
         onValueChange={setActiveTab}
         items={[
           {
@@ -405,7 +407,7 @@ const PluginsView: React.FC = () => {
                 getTypeColor={getTypeColor}
               />
             ),
-            icon: <AppstoreOutlined />
+            icon: <AppstoreOutlined />,
           },
           {
             value: 'marketplace',
@@ -427,7 +429,7 @@ const PluginsView: React.FC = () => {
                 getTypeColor={getTypeColor}
               />
             ),
-            icon: <GlobalOutlined />
+            icon: <GlobalOutlined />,
           },
           {
             value: 'registry',
@@ -439,8 +441,8 @@ const PluginsView: React.FC = () => {
               />
             ),
             icon: <CloudUploadOutlined />,
-            badge: registryConfig ? 'Connected' : undefined
-          }
+            badge: registryConfig ? 'Connected' : undefined,
+          },
         ]}
       />
 
